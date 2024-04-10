@@ -48,3 +48,5 @@
 7.  **`.gitignore`**: Git 버전 관리에서 제외할 파일 목록을 정의합니다.
 
 8.  **`.pyproject.toml`**: 프로젝트의 의존성 관리와 패키지 설정을 포함합니다. Poetry를 사용하여 의존성을 관리하고, 프로젝트 설정을 정의합니다.
+
+- commit test-P-hongsi
