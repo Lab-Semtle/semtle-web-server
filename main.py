@@ -8,7 +8,7 @@ from src.api.v1.post import post_control
 
 app = FastAPI()
 
-app.include_router(post_control.app, tags = ["board"])
+app.include_router(post_control.app, tags = ["post"])
 
 @app.get("/")
 def read_root():
