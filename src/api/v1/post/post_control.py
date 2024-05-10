@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, UploadFile
 from src.api.v1.post import post_dto, post_service
 
 app = APIRouter(
-    prefix = "/board",
+    prefix = "/src/api/v1/post",
 )
 
 @app.post(path = "/create", description="기본 게시판 - 게시글 생성")
