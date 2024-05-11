@@ -15,6 +15,7 @@
 
 - `python` 버전 관리 목적 `pyenv` 설치
 - `python` 패키지 관리 목적 `poetry` 설치
+- Docker Descktop 설치 (WSL2 설치해야할 수도 있음.)
 
 ### 개발 빌드
 
@@ -25,15 +26,48 @@
    ```
 
 2. 의존성 설치
+   모듈 호환 에러 날 경우 개발 OS 차이 때문이니 poetry.toml 파일 참고해서 우선은 수동으로 설치해주세요.
+   추후, window에도 호환되게 수정해두겠습니다.
 
    ```shell
    poetry install
    ```
 
-3. 개발
-   - IDE `vscode`로 개발
+3. PostgreSQL 이미지 다운로드
 
-### PostgreSQL 설정
+   - 윈도우 CMD를 관리자 모드로 실행하여 도커가 설치되었는지 확인
+     ```
+     docker -v
+     ```
+   - 도커에서 postgres 이미지를 다운받는다.
+     ```
+     docker pull postgres:latest
+     ```
+   - 도커 이미지를 사용하기 위해 컨터이너 생성
+     ```
+     docker run --name postgres -e POSTGRES_PASSWORD=1234 -e TZ=Asia/Seoul -p 5432:5432 -d postgres:latest
+     ```
+   - 설치했던 도커 데스크톱에서 container가 정상적으로 실행되는지 확인한다.
+
+4. 이후 DBeaver에 접속해서 Docker에서 실행되는 PostgreSQL과 연결
+
+   - 좌측 최상단 콘센트모양(+) 를 클릭
+   - Connect to a databse 창이 뜨면 PostgreSQL 아이콘 클릭 후 `다음` 클릭
+   - URL 칸에 `jdbc:postgresql://localhost:5432/postgres` 적혀있는지 확인 후
+   - 각 칸에 DB정보를 기입한다.
+     - Host -> localhost
+     - Port -> 5432
+     - Database -> postgres
+     - Username -> postgres
+     - Password -> postgres (혹은 기입X)
+   - 이후 좌측 최하단 Test Connection 을 클릭해서 정상적으로 DB서버에 접속되었는지 확인한다.
+
+5. VScode에서 Uvicorn 서버 실행
+   ```
+   uvicorn src.main:app --reload
+   ```
+   서버 실행 이후 DBeaver 에서 postgres 를 우클릭하여 검증/재연결 을 눌러서 정상 연결되고 있는지 확인한 후,
+   public -> table -> user 을 클릭해서 user테이블이 정상적으로 생성되었는지 확인한다.
 
 ### 프로젝트 아키텍처 구조
 

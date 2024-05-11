@@ -1,6 +1,7 @@
 from typing import Annotated
 from typing import Optional
 from fastapi import APIRouter, Depends
+
 from src.api.v1.user.user_dto import ReadUserInfo, CreateUserInfo, UpdateUserInfo
 from src.api.v1.user import user_service
 from src.core.type import ResultType
