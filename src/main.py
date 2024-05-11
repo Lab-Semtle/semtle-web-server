@@ -1,28 +1,27 @@
 """
-Main Server Module
+메인 서버 모듈
 """
 from fastapi import FastAPI
-from src.api.v1.user import user_control
+from src.core.cors import setup_cors
+from src.core.event import app_lifespan
+from src.core.error import setup_error_handling
+from src.api.v1 import router as v1_router
+
 from src.var.session import engine, Base
-from src.var import models
 
 
-app = FastAPI()
-models.Base.metadata.create_all(bind=engine)
+app = FastAPI(
+    title="Semtle-Web-Server",
+    version="0.1",
+    description="API 서버",
+    lifespan=app_lifespan  # 생명주기 이벤트 설정
+)
 
-# async def create_tables():
-#     async with engine.begin() as conn:
-#         await conn.run_sync(Base.metadata.create_all)
+# CORS 설정
+setup_cors(app)
 
+# 에러 핸들링 설정 (미작성)
+setup_error_handling(app)
 
-# async def close_app():
-#     await engine.dispose()
-#     print("Application is shutting down.")
-
-# # 이벤트 핸들러 등록
-# app.add_event_handler("startup", create_tables)
-# app.add_event_handler("shutdown", close_app)
-
-
-# 라우터 포함
-app.include_router(user_control.router)
+# API v1 라우터 추가
+app.include_router(v1_router, prefix="/api/v1")

@@ -26,13 +26,12 @@ class UpdateUserInfo(BaseDTO):
 
 
 class CreateUserInfo(BaseDTO):
-    user_id: Annotated[str, Form(description="유저 아이디")]
-    user_password: Annotated[str, Form(description="유저 비밀번호")]
-    user_confirm_password: Annotated[str, Form(description="유저 비밀번호 확인")]
-    user_name: Annotated[str, Form(description="유저 이름")]
-    user_email: Annotated[str, Form(description="유저 이메일")]
-    user_phone: Annotated[str, Form(description="유저 전화번호")]
-    user_birth: Annotated[int, Form(description="유저 생년월일")]
+    user_id: Annotated[str, Field(description="유저 아이디")]
+    user_password: Annotated[str, Field(description="유저 비밀번호")]
+    user_name: Annotated[str, Field(description="유저 이름")]
+    user_email: Annotated[str, Field(description="유저 이메일")]  # str -> EmailStr
+    user_phone: Annotated[str, Field(description="유저 전화번호")]
+    user_birth: Annotated[int, Field(description="유저 생년월일")]
     create_date: Annotated[datetime, Depends(lambda: datetime.now(timezone.utc))] = Field(
         default_factory=lambda: datetime.now(timezone.utc), description="가입 일자"
     )

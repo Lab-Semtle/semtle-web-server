@@ -5,7 +5,7 @@ load_dotenv()
 
 
 class Settings:
-    DB_PROTOCAL: str = "postgresql"  # 환경변수에 저장해야 함 +asyncpg
+    DB_PROTOCAL: str = "postgresql+asyncpg"  # 환경변수에 저장해야 함
     DB_USERNAME: str = "postgres"
     DB_PASSWORD: str = "postgres"
     DB_HOST: str = "localhost"
