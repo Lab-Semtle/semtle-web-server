@@ -3,8 +3,8 @@ Main Server Module
 """
 from fastapi import FastAPI
 from src.api.v1.user import user_control
-from src.schema.session import engine, Base
-from src.schema import models
+from src.var.session import engine, Base
+from src.var import models
 
 
 app = FastAPI()

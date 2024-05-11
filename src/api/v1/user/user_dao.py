@@ -1,8 +1,8 @@
 from sqlalchemy import Result, ScalarResult, select, update, insert, delete
 from sqlalchemy.orm import joinedload, query
-from src.schema.models import User
+from src.var.models import User
 from src.api.v1.user.user_dto import CreateUserInfo, UpdateUserInfo, ReadUserInfo
-from src.schema.session import get_db
+from src.var.session import get_db
 from fastapi import Depends
 from sqlalchemy.orm import Session
 

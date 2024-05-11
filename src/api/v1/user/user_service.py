@@ -1,6 +1,6 @@
 from src.api.v1.user.user_dto import ReadUserInfo, CreateUserInfo, UpdateUserInfo
 from src.api.v1.user import user_dao
-from src.schema.models import User
+from src.var.models import User
 from fastapi import Depends
 
 

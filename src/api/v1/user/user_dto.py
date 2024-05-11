@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import Optional, Annotated
 from fastapi import Depends, Form, Path
 from pydantic import Field
-from src.schema.dto import BaseDTO
+from src.var.dto import BaseDTO
 
 
 class ReadUserInfo(BaseDTO):
