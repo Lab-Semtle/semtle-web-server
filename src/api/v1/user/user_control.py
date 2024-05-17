@@ -6,11 +6,14 @@ from src.api.v1.user.user_dto import ReadUserInfo, CreateUserInfo, UpdateUserInf
 from src.api.v1.user import user_service
 from src.core.type import ResultType
 from src.core.status import Status, SU, ER
+import logging
 
 # (db 세션 관련)이후 삭제 예정
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.var.session import get_db
 
+
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/user")
 
 
@@ -22,6 +25,8 @@ router = APIRouter(prefix="/user")
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 async def get_users(db: AsyncSession = Depends(get_db)):
+    # 개발 중 logging 사용하고 싶을 때 이 코드 추가
+    logger.info("----------전체 유저 정보 목록 조회----------")
     users_info = await user_service.get_users(db)
     return users_info
 
@@ -35,5 +40,6 @@ async def get_users(db: AsyncSession = Depends(get_db)):
     # status_code=Status.docs(SU.CREATED)
 )
 async def create_user(user_info: Optional[CreateUserInfo], db: AsyncSession = Depends(get_db)):
+    logger.info("----------신규 유저 생성----------")
     await user_service.create_user(user_info, db)
     return SU.CREATED

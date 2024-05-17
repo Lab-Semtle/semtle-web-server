@@ -45,7 +45,7 @@
      ```
    - 도커 이미지를 사용하기 위해 컨터이너 생성
      ```
-     docker run --name postgres -e POSTGRES_PASSWORD=1234 -e TZ=Asia/Seoul -p 5432:5432 -d postgres:latest
+     docker run --name postgres -e POSTGRES_PASSWORD=postgres -e TZ=Asia/Seoul -p 5432:5432 -d postgres:latest
      ```
    - 설치했던 도커 데스크톱에서 container가 정상적으로 실행되는지 확인한다.
 
