@@ -6,6 +6,14 @@ from sqlalchemy.orm import relationship
 from src.var.session import Base
 
 
+class Example(Base):
+    __tablename__ = "example"
+
+    example_id = Column(String, primary_key=True)
+    example_name = Column(Text, nullable=True)
+    example_comm1 = Column(Text, nullable=True)
+    example_comm2 = Column(Text, nullable=True)
+
 class User(Base):
     __tablename__ = "user"
 
