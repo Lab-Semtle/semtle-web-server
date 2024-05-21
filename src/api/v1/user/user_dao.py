@@ -13,6 +13,12 @@ async def get_users(db: AsyncSession) -> list[User]:  # = Depends(get_db)
     users_info = result.scalars().all()
     return users_info
 
+async def get_user(user_id: str, db: AsyncSession) -> list[User]:  # = Depends(get_db)
+    stmt = select(User).where(User.user_id == user_id)
+    result = await db.execute(stmt)
+    user_info = result.scalars().all()
+    return user_info
+
 
 async def create_user(user_info: CreateUserInfo, db: AsyncSession) -> None:
     user_data = user_info.model_dump()
@@ -20,12 +26,12 @@ async def create_user(user_info: CreateUserInfo, db: AsyncSession) -> None:
     await db.execute(stmt)
     await db.commit()
 
-async def delete_user_by_id(user_id: str, db: AsyncSession) -> None:
+async def delete_user(user_id: str, db: AsyncSession) -> None:
     stmt = delete(User).where(User.user_id == user_id)
     await db.execute(stmt)
     await db.commit()
 
-async def update_user_by_id(user_id: str, user_info: UpdateUserInfo, db: AsyncSession, user_data) -> None:
+async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession, user_data) -> None:
     stmt = update(User).where(User.user_id == user_id).values(**user_data)
     await db.execute(stmt)
     await db.commit()

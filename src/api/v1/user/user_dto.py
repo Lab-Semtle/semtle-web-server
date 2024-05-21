@@ -17,9 +17,7 @@ class UpdateUserInfo(BaseDTO):
     user_id: Annotated[str, Form(description="유저 아이디")]
     user_password: Annotated[str, Form(description="유저 비밀번호")]
     user_password: Annotated[str | None, Form(description="유저 신규 비밀번호")]
-    # user_confirm_password: Annotated[
-    #     str | None, Form(description="유저 신규 비밀번호 확인")         <-----------알 수 없는 열이라고 오류남
-    # ]                                       
+    # user_confirm_password: Annotated[str | None, Form(description="유저 신규 비밀번호 확인")]         <-----------알 수 없는 열이라고 오류남                                
     user_name: Annotated[str, Form(description="유저 이름")]
     user_email: Annotated[str, Form(description="유저 이메일")]
     user_phone: Annotated[str, Form(description="유저 전화번호")]
