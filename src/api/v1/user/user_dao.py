@@ -36,5 +36,14 @@ async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession,
     await db.execute(stmt)
     await db.commit()
 
-
+async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str, db: AsyncSession) -> bool:
+    stmt = select(User).where(
+        (User.user_id == user_id) |
+        (User.user_name == user_name) |
+        (User.user_email == user_email) |
+        (User.user_phone == user_phone)
+    )
+    result = await db.execute(stmt)
+    user_exists = result.scalars().first() is not None
+    return user_exists
 

@@ -13,6 +13,7 @@ from var.session import get_db
 # 호출할 모듈 추가
 from api.v1.user.user_dto import ReadUserInfo, CreateUserInfo, UpdateUserInfo
 from api.v1.user import user_service
+from api.v1.user import user_dao
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/user", tags=["user"])
@@ -51,6 +52,11 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
 )
 async def create_user(user_info: Optional[CreateUserInfo], db: AsyncSession = Depends(get_db)):
     logger.info("----------신규 유저 생성----------")
+    
+    if user_info and await user_dao.is_user(user_info.user_id, user_info.user_name, user_info.user_email, user_info.user_phone, db):
+        logger.warning("이미 존재하는 유저입니다.")
+        return ER.DUPLICATE_RECORD
+
     await user_service.create_user(user_info, db)
     return SU.CREATED
 
