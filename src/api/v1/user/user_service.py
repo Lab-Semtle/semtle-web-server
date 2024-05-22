@@ -23,7 +23,11 @@ async def delete_user(user_id: str, db: AsyncSession) -> None:
 
 async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession) -> None:
     user_data = user_info.dict(exclude_unset=True)
-    await user_dao.update_user(user_id,user_info, db, user_data)
+    await user_dao.update_user(user_id, user_info, db, user_data)
+
+async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str, db: AsyncSession) -> None:
+    is_user = await user_dao.is_user(user_id, user_name, user_email, user_phone, db)
+    return is_user
 
 
 
