@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from var.session import get_db
 
 # 호출할 모듈 추가
-from api.v1.user.user_dto import ReadUserInfo, CreateUserInfo, UpdateUserInfo
+from api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
 from api.v1.user import user_service
 
 logger = logging.getLogger(__name__)
@@ -41,23 +41,6 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
     logger.info("----------특정 유저 정보 목록 조회----------")
     user_info = await user_service.get_user(user_id, db)
     return user_info
-
-
-@router.post(
-    "/",
-    summary="신규 유저 생성",
-    description="- 중복 유저 확인 기능 아직 X, 데이터베이스에 유저 추가",
-    responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD),
-)
-async def create_user(user_info: Optional[CreateUserInfo], db: AsyncSession = Depends(get_db)):
-    logger.info("----------신규 유저 생성----------")
-    
-    if user_info and await user_service.is_user(user_info.user_id, user_info.user_name, user_info.user_email, user_info.user_phone, db):
-        logger.warning("이미 존재하는 유저입니다.")
-        return ER.DUPLICATE_RECORD
-
-    await user_service.create_user(user_info, db)
-    return SU.CREATED
 
 @router.patch(
     "/",
