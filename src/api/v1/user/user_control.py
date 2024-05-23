@@ -1,6 +1,5 @@
 # 기본적으로 추가
-from typing import Annotated
-from typing import Optional
+from typing import Annotated, Optional
 from fastapi import APIRouter, Depends
 from core.type import ResultType
 from core.status import Status, SU, ER
@@ -17,7 +16,7 @@ from api.v1.user import user_service
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/user", tags=["user"])
 
-
+# 전체 유저 정보 목록 조회 엔드포인트
 @router.get(
     "/",
     summary="전체 유저 정보 목록 조회",
@@ -30,6 +29,7 @@ async def get_users(db: AsyncSession = Depends(get_db)):
     users_info = await user_service.get_users(db)
     return users_info
 
+# 특정 유저 정보 조회 엔드포인트
 @router.get(
     "/{user_id}",
     summary="특정 유저 정보 목록 조회",
@@ -42,6 +42,7 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
     user_info = await user_service.get_user(user_id, db)
     return user_info
 
+# 유저 정보 수정 엔드포인트
 @router.patch(
     "/",
     summary="유저 정보 수정",
@@ -53,9 +54,10 @@ async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession 
     await user_service.update_user(user_id, user_info, db)
     return SU.SUCCESS
 
+# 유저 삭제 엔드포인트
 @router.delete(
     "/",
-    summary=" 유저 삭제",
+    summary="유저 삭제",
     description="- 유저 삭제",
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
 )
