@@ -4,10 +4,6 @@ from fastapi import APIRouter, Depends, Response, Request
 from core.type import ResultType
 from core.status import Status, SU, ER
 from fastapi.security import OAuth2PasswordRequestForm
-from jose import jwt
-import os
-from dotenv import load_dotenv
-from datetime import timedelta
 import logging
 
 # (db 세션 관련)이후 삭제 예정
@@ -18,12 +14,15 @@ from var.session import get_db
 from api.v1.login import login_service
 from core import security
 from api.v1.login.login_dto import CreateUserInfo
+
+from jose import jwt
+import os
+from dotenv import load_dotenv
+from datetime import timedelta
 from dependencies.auth import authenticate
 
 
 load_dotenv()
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = float(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 logger = logging.getLogger(__name__)
@@ -44,8 +43,8 @@ async def post_login(response: Response, login_form: OAuth2PasswordRequestForm =
         logger.warning("로그인 실패: 잘못된 사용자명 또는 비밀번호")
         return ER.UNAUTHORIZED
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = security.create_access_token(data={"user": login_form.username}, expires_delta=access_token_expires)
-    # 쿠키에 저장
+    access_token =await security.create_access_token(data={"user": login_form.username}, expires_delta=access_token_expires)
+    # # 쿠키에 저장
     response.set_cookie(key="access_token", value=access_token, expires=access_token_expires, httponly=True)
     logger.info("로그인 성공")
     return SU.SUCCESS
@@ -77,6 +76,8 @@ async def post_signup(login_info: Optional[CreateUserInfo], db: AsyncSession = D
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def get_logout(response: Response, request: Request):
+    access_token = request.cookies.get("access_token")
+
     # 쿠키 삭제
     response.delete_cookie(key="access_token")
 

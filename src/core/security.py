@@ -8,7 +8,6 @@ from core.status import Status, SU, ER
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = float(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 async def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
