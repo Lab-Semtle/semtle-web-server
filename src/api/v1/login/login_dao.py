@@ -11,11 +11,11 @@ from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# 주어진 사용자 ID와 비밀번호를 확인하는 함수
-async def verify(user_id: str, user_password: str, db: AsyncSession) -> bool:
+# 주어진 사용자 email과 비밀번호를 확인하는 함수
+async def verify(user_email: str, user_password: str, db: AsyncSession) -> bool:
     try:
         # 데이터베이스에서 사용자 정보를 조회
-        result = await db.execute(select(User).where(User.user_id == user_id))
+        result = await db.execute(select(User).where(User.user_email == user_email))
         user = result.scalar_one()
         # 비밀번호가 일치하는지 확인
         return pwd_context.verify(user_password, user.user_password)    # True이면 로그인 성공, False이면 로그인 실패

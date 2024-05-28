@@ -1,13 +1,12 @@
 from jose import jwt, JWTError
 from datetime import timedelta, datetime
-import os
-from dotenv import load_dotenv
-from fastapi import HTTPException, status
+from decouple import config
+from fastapi import HTTPException, status, Request
 from core.status import Status, SU, ER
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-load_dotenv()
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
+SECRET_KEY = config("SECRET_KEY")
+ALGORITHM = config("ALGORITHM")
 
 async def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -35,3 +34,30 @@ def verify_access_token(token: str):
 		return data
 	except JWTError:
 		ER.FORBIDDEN
+
+class JWTBearer(HTTPBearer):
+    def __init__(self, auto_error: bool = True):
+        super(JWTBearer, self).__init__(auto_error=auto_error)
+
+    async def __call__(self, request: Request):
+        credentials: HTTPAuthorizationCredentials = await super(JWTBearer, self).__call__(request)
+        if credentials:
+            if not credentials.scheme == "Bearer":
+                raise HTTPException(status_code=403, detail="Invalid authentication scheme.")
+            if not self.verify_jwt(credentials.credentials):
+                raise HTTPException(status_code=403, detail="Invalid token or expired token.")
+            return credentials.credentials
+        else:
+            raise HTTPException(status_code=403, detail="Invalid authorization code.")
+
+    def verify_jwt(self, jwtoken: str) -> bool:
+        isTokenValid: bool = False
+
+        try:
+            payload = verify_access_token(jwtoken)
+        except:
+            payload = None
+        if payload:
+            isTokenValid = True
+
+        return isTokenValid

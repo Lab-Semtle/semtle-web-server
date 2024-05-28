@@ -6,9 +6,9 @@ from api.v1.login.login_dto import CreateUserInfo
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # 사용자를 인증하는 서비스 함수
-async def verify(user_id: str, user_password: str, db: AsyncSession) -> bool:
+async def verify(user_email: str, user_password: str, db: AsyncSession) -> bool:
     # 데이터 접근 객체(DAO)를 사용하여 사용자 인증 확인
-    verify = await login_dao.verify(user_id, user_password, db)
+    verify = await login_dao.verify(user_email, user_password, db)
     return verify
 
 # 사용자가 존재하는지 확인하는 서비스 함수

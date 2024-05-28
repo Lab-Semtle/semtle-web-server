@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, Response, Request
 from core.type import ResultType
 from core.status import Status, SU, ER
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import logging
 
 # (db 세션 관련)이후 삭제 예정
@@ -14,19 +14,20 @@ from var.session import get_db
 from api.v1.login import login_service
 from core import security
 from api.v1.login.login_dto import CreateUserInfo
+from core.security import JWTBearer
 
 from jose import jwt
-import os
-from dotenv import load_dotenv
+from decouple import config
 from datetime import timedelta
-from dependencies.auth import authenticate
+from core.security import verify_access_token
 
 
-load_dotenv()
-ACCESS_TOKEN_EXPIRE_MINUTES = float(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+ACCESS_TOKEN_EXPIRE_MINUTES = float(config("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/login", tags=["login"])
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # 로그인 엔드포인트
 @router.post(
@@ -74,6 +75,7 @@ async def post_signup(login_info: Optional[CreateUserInfo], db: AsyncSession = D
     summary="로그아웃",
     description="- 로그아웃",
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
+    dependencies=[Depends(JWTBearer())]
 )
 async def get_logout(response: Response, request: Request):
     access_token = request.cookies.get("access_token")
@@ -91,5 +93,5 @@ async def get_logout(response: Response, request: Request):
 )
 async def get_token(request: Request):
     access_token = request.cookies.get("access_token")
-    auth = authenticate(access_token)
+    auth = verify_access_token(access_token)
     return {"auth": auth}
