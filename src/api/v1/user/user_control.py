@@ -12,6 +12,7 @@ from var.session import get_db
 # 호출할 모듈 추가
 from api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
 from api.v1.user import user_service
+from core.security import JWTBearer
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/user", tags=["user"])
@@ -22,7 +23,8 @@ router = APIRouter(prefix="/user", tags=["user"])
     summary="전체 유저 정보 목록 조회",
     description="- 유저 정보 리스트 반환, 등록된 유저가 없는 경우 `[]` 반환",
     response_model=list[ReadUserInfo],
-    responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
+    responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
+    dependencies=[Depends(JWTBearer())],
 )
 async def get_users(db: AsyncSession = Depends(get_db)):
     logger.info("----------전체 유저 정보 목록 조회----------")
@@ -35,7 +37,8 @@ async def get_users(db: AsyncSession = Depends(get_db)):
     summary="특정 유저 정보 목록 조회",
     description="- 유저 정보 리스트 반환, 유저 정보가 없는 경우 `[]` 반환",
     response_model=list[ReadUserInfo],
-    responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
+    responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
+    dependencies=[Depends(JWTBearer())],
 )
 async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
     logger.info("----------특정 유저 정보 목록 조회----------")
@@ -48,6 +51,7 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
     summary="유저 정보 수정",
     description="- 유저 정보 수정 비번 재확인 과정 구현 x",
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
+    dependencies=[Depends(JWTBearer())],
 )
 async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession = Depends(get_db)):
     logger.info("----------유저 정보 수정----------")
@@ -60,6 +64,7 @@ async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession 
     summary="유저 삭제",
     description="- 유저 삭제",
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
+    dependencies=[Depends(JWTBearer())],
 )
 async def delete_user(user_id: str, db: AsyncSession = Depends(get_db)):
     logger.info("----------유저 삭제----------")
