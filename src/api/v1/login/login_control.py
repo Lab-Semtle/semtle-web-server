@@ -19,10 +19,10 @@ from core.security import JWTBearer
 from jose import jwt
 from decouple import config
 from datetime import timedelta
-from core.security import verify_access_token
 
 
 ACCESS_TOKEN_EXPIRE_MINUTES = float(config("ACCESS_TOKEN_EXPIRE_MINUTES"))
+REFRESH_TOKEN_EXPIRE_MINUTES = float(config("REFRESH_TOKEN_EXPIRE_MINUTES"))
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/login", tags=["login"])
@@ -44,9 +44,12 @@ async def post_login(response: Response, login_form: OAuth2PasswordRequestForm =
         logger.warning("로그인 실패: 잘못된 사용자명 또는 비밀번호")
         return ER.UNAUTHORIZED
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token =await security.create_access_token(data={"user": login_form.username}, expires_delta=access_token_expires)
+    refresh_token_expires = timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
+    access_token =await security.create_access_token(data={"sub": login_form.username}, expires_delta=access_token_expires)
+    refresh_token =await security.create_refresh_token(data={"sub": login_form.username}, expires_delta=refresh_token_expires)
     # # 쿠키에 저장
     response.set_cookie(key="access_token", value=access_token, expires=access_token_expires, httponly=True)
+    response.set_cookie(key="refresh_token", value=refresh_token, expires=refresh_token_expires, httponly=True)
     logger.info("로그인 성공")
     return SU.SUCCESS
 
@@ -82,16 +85,42 @@ async def get_logout(response: Response, request: Request):
 
     # 쿠키 삭제
     response.delete_cookie(key="access_token")
+    response.delete_cookie(key="refresh_token")
 
     return SU.SUCCESS
 
+# 리프레시 토큰을 이용해 새로운 접근 토큰을 발급하는 엔드포인트
 @router.get(
-    "/{token}",
+    "/refresh",
+    summary="access토큰 재발급",
+    description="- refresh토큰을 이용해 access토큰 재발급",
+    responses=Status.docs(SU.CREATED, ER.INVALID_REQUEST),
+)
+async def refresh_token(request: Request, response: Response):
+    try:
+        refresh_token = request.cookies.get("refresh_token")
+        if not refresh_token:
+            raise HTTPException(status_code=400, detail="리프레시 토큰이 없습니다")
+        # 리프레시 토큰 검증
+        refresh_data =  security.verify_refresh_token(refresh_token)
+        # 리프레시 토큰에서 사용자 정보 추출
+        user_data = {"sub": refresh_data.get("sub")}
+        # # 새로운 접근 토큰 생성
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        new_access_token = await security.create_access_token(data=user_data, expires_delta=access_token_expires)
+        response.set_cookie(key="access_token", value=new_access_token, httponly=True, expires=access_token_expires)
+        return SU.CREATED
+    except:
+        return ER.INVALID_REQUEST
+@router.get(
+    "/token",
     summary="token",
     description="- token",
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def get_token(request: Request):
     access_token = request.cookies.get("access_token")
-    auth = verify_access_token(access_token)
-    return {"auth": auth}
+    refresh_token = request.cookies.get("refresh_token")
+    ac = security.verify_access_token(access_token)
+    rf = security.verify_refresh_token(refresh_token)
+    return {"access_token": ac, "refresh_token": rf}
