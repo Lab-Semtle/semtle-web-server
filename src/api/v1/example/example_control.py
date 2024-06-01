@@ -46,7 +46,6 @@ async def get_examples(db: AsyncSession = Depends(get_db)):
     "/",
     summary="입력 받은 데이터를 데이터베이스에 추가",
     description="- String-Form / Text-Form / Text-Form / Text-Field",
-    # response_model=ResultType, # -> 코드 미완성, 주석처리
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD)
 )
 async def create_example(

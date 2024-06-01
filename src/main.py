@@ -1,13 +1,11 @@
 """
 메인 서버 모듈
 """
-import uvicorn
 from fastapi import FastAPI
 from src.core.cors import setup_cors
 from src.core.event import app_lifespan
 from src.core.error import setup_error_handling
 from src.api.v1 import router as v1_router
-from src.var.session import engine, Base
 from src.core.config import setup_logging
 
 
@@ -27,5 +25,7 @@ setup_error_handling(app)  # 에러 핸들링 설정
 app.include_router(v1_router, prefix="/api/v1")  # API v1 라우터 추가
 
 
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
+if __name__ == "__main__":
+    ''' uvicorn 디버깅 용도 '''
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
