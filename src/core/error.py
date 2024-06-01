@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 def setup_error_handling(app: FastAPI):
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError):    
-        logger.error(f"전역 에러 실행 - 필드 유효성 검증에 실패하였습니다. : {exc}")
+        logger.error(f"전역 에러 실행 - 필드 유효성 검증에 실패하였습니다. 즉, 올바르지 않은 값을 입력하였습니다. : {exc}")
         return JSONResponse(
             status_code=ER.FIELD_VALIDATION_ERROR[0],
             content={"message": ER.FIELD_VALIDATION_ERROR[1]}

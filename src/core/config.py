@@ -17,7 +17,6 @@ class Settings:
 
     DATABASE_URL = f"{DB_PROTOCAL}://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-
 settings = Settings()
 
 
