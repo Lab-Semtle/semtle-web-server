@@ -1,7 +1,6 @@
 '''
 admin/user api : 관리자 페이지-사용자 관리 탭에서 사용되는 라우터
 '''
-from typing import Annotated
 from typing import Optional, List
 from pydantic import EmailStr
 from fastapi import APIRouter, Depends, Query
