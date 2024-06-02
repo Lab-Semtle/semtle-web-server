@@ -8,26 +8,6 @@ from datetime import datetime
 
 Base = declarative_base()
 
-class Example(Base):
-    __tablename__ = "example"
-
-    example_id = Column(String, primary_key=True)
-    example_name = Column(Text, nullable=True)
-    example_comm1 = Column(Text, nullable=True)
-    example_comm2 = Column(Text, nullable=True)
-
-
-# class UserRole(Enum):
-#     admin = "admin"
-#     menber = "member"
-
-# class UserGrade(Enum):
-#     A_plus = "A+"
-#     A = "A"
-#     B_plus = "B+"
-#     B = "B"
-#     F = "F"
-
 
 '''
 회원 관련
@@ -64,6 +44,15 @@ class Grade(Base):
 '''
 게시판 관련
 '''
+class BoardFree(Base):
+    __tablename__ = "board_free"
+    
+    Board_no = Column(Integer, primary_key=True, autoincrement=True)
+    Title = Column(String, nullable=False)
+    Content = Column(String, nullable=False)
+    Create_date = Column(DateTime(timezone=True))
+    Views = Column(Integer, nullable=False)
+
 # class Board(Base):
 #     __tablename__ = "posts"
 #     id = Column(Integer, primary_key=True, index=True)
