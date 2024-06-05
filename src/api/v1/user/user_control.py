@@ -1,6 +1,6 @@
 # 기본적으로 추가
 from typing import Annotated, Optional
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from core.type import ResultType
 from core.status import Status, SU, ER
 import logging
@@ -49,13 +49,13 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
 @router.patch(
     "/",
     summary="유저 정보 수정",
-    description="- 유저 정보 수정 비번 재확인 과정 구현 x",
+    description="- 비번 재확인 과정 구현 x, 현재 비밀번호와 일치/불일치 과정 구현 x",
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
     dependencies=[Depends(JWTBearer())],
 )
-async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession = Depends(get_db)):
+async def update_user(request: Request, user_info: UpdateUserInfo, db: AsyncSession = Depends(get_db)):
     logger.info("----------유저 정보 수정----------")
-    await user_service.update_user(user_id, user_info, db)
+    await user_service.update_user(request, user_info, db)
     return SU.SUCCESS
 
 # 유저 삭제 엔드포인트

@@ -81,8 +81,6 @@ async def post_signup(login_info: Optional[CreateUserInfo], db: AsyncSession = D
     dependencies=[Depends(JWTBearer())]
 )
 async def get_logout(response: Response, request: Request):
-    access_token = request.cookies.get("access_token")
-
     # 쿠키 삭제
     response.delete_cookie(key="access_token")
     response.delete_cookie(key="refresh_token")

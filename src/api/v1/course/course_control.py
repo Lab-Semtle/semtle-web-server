@@ -17,7 +17,7 @@ from core.security import JWTBearer
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/course", tags=["course"])
 
-@router.get(
+@router.post(
     "/",
     summary="별점 및 강의평",
     description="- 별점 및 강의평",
@@ -29,19 +29,19 @@ async def course_grade(couse_id: int, star: int, comment: str, request: Request,
     await course_service.course_grade(couse_id, star, comment, request, db)
     return SU.SUCCESS
 
-@router.get(
+@router.post(
     "/add_like",
     summary="좋아요",
     description="- 좋아요 수",
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
-    # dependencies=[Depends(JWTBearer())],
+    dependencies=[Depends(JWTBearer())],
 )
 async def add_like(id: int, db: AsyncSession = Depends(get_db)):
     logger.info("----------좋아요----------")
     await course_service.add_like(id, db)
     return SU.SUCCESS
 
-@router.get(
+@router.post(
     "/add",
     summary="강의 추가",
     description="- 강의 추가",
@@ -54,7 +54,7 @@ async def add(professor: str, course: str, db: AsyncSession = Depends(get_db)):
     return SU.SUCCESS
 
 @router.get(
-    "/get",
+    "/",
     summary="강의 목록 전체 조회",
     description="- 강의 목록 리스트 반환, 등록된 유저가 없는 경우 `[]` 반환",
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
