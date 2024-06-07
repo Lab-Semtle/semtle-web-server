@@ -1,19 +1,15 @@
 '''
 admin/user api : 관리자 페이지-사용자 관리 탭에서 사용되는 라우터
 '''
-from typing import Optional, List
+from typing import Annotated, Optional, List
 from pydantic import EmailStr
 from fastapi import APIRouter, Depends, Query
 from src.core.status import Status, SU, ER
 from src.api.v1.admin_user.admin_user_dto import (
-    UserRole,
-    UserGrade,
     ReadUserInfo,
-    UpdateUserActivate,
-    UpdateUserRole,
-    UpdateUserGrade,
-    # SearchUserDTO,
-    # FilterUserDTO
+    ReadFilterUser,
+    InfoUserRole,
+    InfoUserGrade
 )
 from src.api.v1.admin_user import admin_user_service
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,48 +20,26 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/admin/user", tags=["admin_user"])
 
 
+
 @router.get(
     "/",
-    summary="승인된 모든 유저 목록 조회",
-    description="- admin 페이지의 사용자 관리 탭 클릭 시 전체 유저를 목록 출력\n - 미승인 유저 조회 X",
+    summary="승인된 유저 중 특정 조건과 일치하는 유저 조회(전체 조회 포함)",
+    description="- admin 페이지의 사용자 관리 탭 클릭 시 전체 유저를 목록 출력\n - 미승인 유저 조회 X\n - 검색(이름/닉네임/이메일) 및 필터 조건을 통해 유저를 목록 출력",
     response_model=List[ReadUserInfo],
     responses=Status.docs(SU.SUCCESS, ER.FIELD_VALIDATION_ERROR),
 )
-async def get_all_users(db: AsyncSession = Depends(get_db)):
-    return await admin_user_service.get_all_users(db)
-
-
-@router.get(
-    "/search",
-    summary="이름/닉네임/이메일이 일치하는 유저 목록 조회",
-    description="- admin 페이지의 사용자 관리 탭에서 검색창을 통해 이름/닉네임/이메일 검색 시 일치하는 유저를 목록 출력",
-    response_model=List[ReadUserInfo],
-    responses=Status.docs(SU.SUCCESS, ER.FIELD_VALIDATION_ERROR),
-)
-async def get_search_user(
-    query: Optional[str] = Query(None, description="검색어 (이름, 닉네임, 이메일)"),
+async def get_filtered_users(
+    query: Optional[str] = Query(None, description="검색어"),
+    role: InfoUserRole = Query(None, description="유저 권한"),
+    grade: InfoUserGrade = Query(None, description="유저 등급"),
     db: AsyncSession = Depends(get_db)
 ):
-    return await admin_user_service.search_users(query, db)
+    filter = ReadFilterUser(role=role, grade=grade)
+    return await admin_user_service.get_filtered_users(query, filter, db)
 
 
 @router.get(
-    "/filter",
-    summary="등급/권한이 일치하는 유저 목록 조회",
-    description="- admin 페이지의 사용자 관리 탭에서 등급/권한 선택 시 일치하는 유저를 목록 출력",
-    response_model=List[ReadUserInfo],
-    responses=Status.docs(SU.SUCCESS, ER.FIELD_VALIDATION_ERROR)
-)
-async def get_filter_user(
-    role: Optional[UserRole] = Query(None, description="유저 권한"),
-    grade: Optional[UserGrade] = Query(None, description="유저 등급"),
-    db: AsyncSession = Depends(get_db)
-):
-    return await admin_user_service.filter_users(role, grade, db)
-
-
-@router.get(
-    "/new",
+    "/join",
     summary="회원가입 신청 완료, 미승인 유저 목록 조회",
     description="- admin 페이지의 사용자 관리 탭에서 회원가입 신청한(미승인된) 유저 목록 출력",
     response_model=List[ReadUserInfo],
@@ -73,7 +47,10 @@ async def get_filter_user(
 )
 async def get_new_users(db: AsyncSession = Depends(get_db)):
     return await admin_user_service.get_new_users(db)
-    
+
+
+# 미승인 유저 삭제 
+
 
 @router.put(
     "/activate",
@@ -97,11 +74,10 @@ async def update_user_activate(
 )
 async def update_user_role(
     user_email: List[EmailStr] = Query(..., description="유저 이메일 목록"),
-    role: UserRole = Query(..., description="유저 권한"),
+    role: InfoUserRole = Query(..., description="유저 권한"),
     db: AsyncSession = Depends(get_db)
 ):
     return await admin_user_service.update_user_role(user_email, role, db)
-
 
 
 @router.put(
@@ -112,7 +88,7 @@ async def update_user_role(
 )
 async def update_user_grade(
     user_email: List[EmailStr] = Query(..., description="유저 이메일 목록"),
-    grade: UserGrade = Query(..., description="유저 등급"),
+    grade: InfoUserGrade = Query(..., description="유저 등급"),
     db: AsyncSession = Depends(get_db)
 ):
     return await admin_user_service.update_user_grade(user_email, grade, db)
