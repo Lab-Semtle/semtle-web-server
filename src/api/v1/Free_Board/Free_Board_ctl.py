@@ -37,7 +37,7 @@ router = APIRouter(prefix="/Free_Board", tags=["Free_Board"])
 async def get_Free_Board(db: AsyncSession = Depends(get_db), page: int = 0, size: int = 10):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------자유 게시판 전체 목록 조회----------")
-    Total, Board_info = await Free_Board_svc.get_Free_Board(db, skip=page*size, limit=size)
+    Total, Board_info = await Free_Board_svc.get_Free_Board(db, skip=page)
     return {
         'Total': Total,
         'Board_info': Board_info
@@ -91,3 +91,22 @@ async def delete_Free_Board(
 ):
     await Free_Board_svc.delete_Free_Board(Free_Board_no, db)
     return SU.SUCCESS
+
+
+# sort Title
+@router.get(
+    "/sort Title",
+    summary="자유 게시판 게시물 제목 정렬",
+    description="- 자유 게시판 게시물 제목을 가나다순으로 정렬하여 반환, 등록된 예제가 없는 경우 `[]` 반환",
+    response_model=ReadBoard,
+    responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
+)
+# 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
+async def Sort_Free_Board(db: AsyncSession = Depends(get_db), page: int = 0, select: int = 0):
+    # 개발 중 logging 사용하고 싶을 때 이 코드 추가
+    logger.info("----------자유 게시판 제목 가나다순 정렬----------")
+    Total, Board_info = await Free_Board_svc.Sort_Free_Board(db, skip=page, select=select)
+    return {
+        'Total': Total,
+        'Board_info': Board_info
+    }

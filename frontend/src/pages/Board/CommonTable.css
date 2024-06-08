@@ -21,3 +21,6 @@
   .common-table-column {
     padding: 10px 5px;
   }
+  .common-table-row tr{
+    padding: 10px 5px;
+  }

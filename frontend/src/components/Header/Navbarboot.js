@@ -15,7 +15,7 @@ function Navbarboot() {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/Board">게시판</Nav.Link>
+              <Nav.Link as={Link} to="/Boardlist">게시판</Nav.Link>
               <Nav.Link href="#pricing">교수님</Nav.Link>
               <NavDropdown title="더보기" id="collapsible-nav-dropdown">
                 <NavDropdown.Item href="#action/3.1">sememem</NavDropdown.Item>

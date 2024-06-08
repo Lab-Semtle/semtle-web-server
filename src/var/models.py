@@ -4,6 +4,7 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Float, JSON, ForeignKey
 from sqlalchemy.orm import relationship
 from src.var.session import Base
+from datetime import datetime
 
 
 class Example(Base):
@@ -31,5 +32,18 @@ class Free_Board(Base):
     Board_no = Column(Integer, primary_key=True, autoincrement=True)
     Title = Column(String, nullable=False)
     Content = Column(String, nullable=False)
-    Create_date = Column(DateTime(timezone=True))
+    Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
     Views = Column(Integer, nullable=False)
+
+    Comment = relationship("Free_Board_Comment", back_populates="Board")
+
+class Free_Board_Comment(Base):
+    __tablename__ = "Free_Board_Comment"
+
+    Comment_no = Column(Integer, primary_key=True, autoincrement=True)
+    Board_no = Column(Integer, ForeignKey("Free_Board.Board_no"))
+    Content = Column(String, nullable=False)
+    Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
+    Views = Column(Integer, nullable=False)
+
+    Board = relationship("Free_Board", back_populates="Comment")
