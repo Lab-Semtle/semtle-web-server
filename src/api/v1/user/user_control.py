@@ -49,14 +49,17 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
 @router.patch(
     "/",
     summary="유저 정보 수정",
-    description="- 비번 재확인 과정 구현 x, 현재 비밀번호와 일치/불일치 과정 구현 x",
-    responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
+    description="- ",
+    responses=Status.docs(SU.ACCEPTED, ER.NOT_FOUND),
     dependencies=[Depends(JWTBearer())],
 )
 async def update_user(request: Request, user_info: UpdateUserInfo, db: AsyncSession = Depends(get_db)):
     logger.info("----------유저 정보 수정----------")
-    await user_service.update_user(request, user_info, db)
-    return SU.SUCCESS
+    res = await user_service.update_user(request, user_info, db)
+    if res:
+        return SU.ACCEPTED
+    else:
+        return ER.NOT_FOUND
 
 # 유저 삭제 엔드포인트
 @router.delete(

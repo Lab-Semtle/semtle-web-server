@@ -1,7 +1,7 @@
 """
 데이터베이스 테이블에 매핑될 모델 정의(ORM Model)
 """
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Float, JSON, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Float, JSON, ForeignKey, LargeBinary
 from sqlalchemy.orm import relationship
 from var.session import Base
 
@@ -33,3 +33,10 @@ class Professor(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     professor = Column(String, nullable=False)
     course = Column(String, nullable=False)
+
+class FileRecord(Base):
+    __tablename__ = 'file_records'
+
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String, unique=True, index=True)
+    content = Column(LargeBinary)

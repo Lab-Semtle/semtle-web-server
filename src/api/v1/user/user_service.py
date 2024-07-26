@@ -30,4 +30,5 @@ async def update_user(request: Request, user_info: UpdateUserInfo, db: AsyncSess
     data = verify_access_token(access_token)
     data = data.get('sub')
     # 사용자 정보를 업데이트합니다.
-    await user_dao.update_user(data, user_info, db)
+    res = await user_dao.update_user(data, user_info, db)
+    return res
