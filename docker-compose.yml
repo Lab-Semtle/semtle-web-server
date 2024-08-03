@@ -2,7 +2,7 @@
 
 services:
   db:
-    container_name: pgsqldb
+    container_name: pgsqldb-semtle
     image: postgres:latest #ankane/pgvector
     restart: unless-stopped
     volumes:
@@ -16,6 +16,7 @@ services:
 
 volumes:
   postgres-data: {}
+
 #   external: true
 
 # networks:

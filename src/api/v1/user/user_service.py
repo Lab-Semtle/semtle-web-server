@@ -1,6 +1,8 @@
 # 모듈 호출
-from src.api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
-from src.api.v1.user import user_dao
+from api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
+from api.v1.user import user_dao
+from fastapi import Request
+from core.security import verify_access_token
 
 # 사용되지 않는 모듈은 삭제될 예정입니다.
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,8 +25,10 @@ async def delete_user(user_id: str, db: AsyncSession) -> None:
     await user_dao.delete_user(user_id, db)
 
 # 사용자 정보를 업데이트하는 함수
-async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession) -> None:
-    # 업데이트할 사용자 데이터를 가져옵니다.
-    user_data = user_info.dict(exclude_unset=True)
+async def update_user(request: Request, user_info: UpdateUserInfo, db: AsyncSession) -> None:
+    access_token = request.cookies.get("access_token")
+    data = verify_access_token(access_token)
+    data = data.get('sub')
     # 사용자 정보를 업데이트합니다.
-    await user_dao.update_user(user_id, user_info, db, user_data)
+    res = await user_dao.update_user(data, user_info, db)
+    return res

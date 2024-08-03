@@ -23,9 +23,3 @@ app = FastAPI(
 setup_cors(app)  # CORS 설정
 setup_error_handling(app)  # 에러 핸들링 설정
 app.include_router(v1_router, prefix="/api/v1")  # API v1 라우터 추가
-
-
-if __name__ == "__main__":
-    ''' uvicorn 디버깅 용도 '''
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)

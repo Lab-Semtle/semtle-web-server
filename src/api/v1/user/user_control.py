@@ -1,22 +1,21 @@
 # 기본적으로 추가
 from typing import Annotated, Optional
-from fastapi import APIRouter, Depends
-from src.core.type import ResultType
-from src.core.status import Status, SU, ER
+from fastapi import APIRouter, Depends, Request
+from core.type import ResultType
+from core.status import Status, SU, ER
 import logging
 
 # (db 세션 관련)이후 삭제 예정
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.var.session import get_db
+from var.session import get_db
 
 # 호출할 모듈 추가
-from src.api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
-from src.api.v1.user import user_service
-# from src.core.security import JWTBearer
+from api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
+from api.v1.user import user_service
+from core.security import JWTBearer
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/user", tags=["user"])
-
 
 # 전체 유저 정보 목록 조회 엔드포인트
 @router.get(
@@ -25,7 +24,7 @@ router = APIRouter(prefix="/user", tags=["user"])
     description="- 유저 정보 리스트 반환, 등록된 유저가 없는 경우 `[]` 반환",
     response_model=list[ReadUserInfo],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
-    # dependencies=[Depends(JWTBearer())],
+    dependencies=[Depends(JWTBearer())],
 )
 async def get_users(db: AsyncSession = Depends(get_db)):
     logger.info("----------전체 유저 정보 목록 조회----------")
@@ -39,7 +38,7 @@ async def get_users(db: AsyncSession = Depends(get_db)):
     description="- 유저 정보 리스트 반환, 유저 정보가 없는 경우 `[]` 반환",
     response_model=list[ReadUserInfo],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
-    # dependencies=[Depends(JWTBearer())],
+    dependencies=[Depends(JWTBearer())],
 )
 async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
     logger.info("----------특정 유저 정보 목록 조회----------")
@@ -50,14 +49,17 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
 @router.patch(
     "/",
     summary="유저 정보 수정",
-    description="- 유저 정보 수정 비번 재확인 과정 구현 x",
-    responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
-    # dependencies=[Depends(JWTBearer())],
+    description="- ",
+    responses=Status.docs(SU.ACCEPTED, ER.NOT_FOUND),
+    dependencies=[Depends(JWTBearer())],
 )
-async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession = Depends(get_db)):
+async def update_user(request: Request, user_info: UpdateUserInfo, db: AsyncSession = Depends(get_db)):
     logger.info("----------유저 정보 수정----------")
-    await user_service.update_user(user_id, user_info, db)
-    return SU.SUCCESS
+    res = await user_service.update_user(request, user_info, db)
+    if res:
+        return SU.ACCEPTED
+    else:
+        return ER.NOT_FOUND
 
 # 유저 삭제 엔드포인트
 @router.delete(
@@ -65,7 +67,7 @@ async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession 
     summary="유저 삭제",
     description="- 유저 삭제",
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
-    # dependencies=[Depends(JWTBearer())],
+    dependencies=[Depends(JWTBearer())],
 )
 async def delete_user(user_id: str, db: AsyncSession = Depends(get_db)):
     logger.info("----------유저 삭제----------")

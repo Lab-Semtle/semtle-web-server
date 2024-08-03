@@ -1,11 +1,15 @@
 from sqlalchemy import Result, ScalarResult, select, update, insert, delete
 from sqlalchemy.orm import joinedload, query
-from src.var.models import User
-from src.api.v1.user.user_dto import UpdateUserInfo, ReadUserInfo
-from src.var.session import get_db
+from var.models import User
+from api.v1.user.user_dto import UpdateUserInfo, ReadUserInfo
+from var.session import get_db
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
+from passlib.context import CryptContext
+from core.status import Status, SU, ER
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # 전체 유저 정보를 조회하는 함수
 async def get_users(db: AsyncSession) -> list[User]:
@@ -35,12 +39,26 @@ async def delete_user(user_id: str, db: AsyncSession) -> None:
     await db.commit()
 
 # 특정 유저 정보를 업데이트하는 함수
-async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession) -> None:
-    # 업데이트할 유저 데이터를 딕셔너리로 변환
-    user_data = user_info.model_dump()
-    # 특정 유저 아이디에 해당하는 유저 정보를 업데이트하는 쿼리 생성
-    stmt = update(User).where(User.user_id == user_id).values(**user_data)
-    # 쿼리를 실행
-    await db.execute(stmt)
-    # 트랜잭션 커밋
-    await db.commit()
+async def update_user(data: str, user_info: UpdateUserInfo, db: AsyncSession) -> None:
+    # 제공된 새 비밀번호를 해시화
+    fhashed_password = pwd_context.hash(user_info.future_user_password)
+
+    # 데이터베이스에서 사용자의 현재 비밀번호를 조회
+    query = select(User).where(User.user_email == data)
+    result = await db.execute(query)
+    user = result.scalar_one_or_none()
+    res = user and pwd_context.verify(user_info.present_user_password, user.user_password)
+    # 사용자가 존재하고 현재 비밀번호가 일치하는지 확인
+    if res:
+        # 현재 비밀번호와 미래 비밀번호를 user_info에서 제거
+        user_info_dict = user_info.dict(exclude={"present_user_password", "future_user_password"}, exclude_unset=True)
+        # 새로 해시화된 비밀번호로 업데이트
+        user_info_dict['user_password'] = fhashed_password
+        # 업데이트 쿼리 생성
+        stmt = update(User).where(User.user_email == data).values(**user_info_dict)
+        # 업데이트 쿼리 실행
+        await db.execute(stmt)
+        # 트랜잭션 커밋
+        await db.commit()
+
+    return res
