@@ -17,12 +17,12 @@ from src.var.dto import BaseDTO
 #   1) Read, Create, Update, Delete 중 1택
 #   2) 목적에 따라 클래스명 원하는 대로 선언(컨벤션에 맞춰 작성할 것, 대소문자 유의)
 
-class BoardBase(BaseDTO):
+class ReadBoard(BaseDTO):
     Board_no: Annotated[int, Field(description="자유 게시판 게시물 번호")]
     Title: Annotated[str, Form(description="자유 게시판 게시물 제목")]
     Content: Annotated[Optional[str] | None, Form(description="자유 게시판 게시물 내용")]
-    Create_date: Annotated[datetime, Field(description="가입 일자")] = Field(
-        default_factory=lambda: datetime.now().replace(second=0, microsecond=0).replace(tzinfo=None), description="가입 일자")
+    Create_date: Annotated[datetime, Field(description="자유 게시판 게시물 작성 일자")] = Field(
+        default_factory=lambda: datetime.now().replace(second=0, microsecond=0).replace(tzinfo=None), description="자유 게시판 게시물 작성 일자")
     Views: Annotated[int, Field(description="자유 게시판 게시물 조회수")]
 
     class Config:
@@ -32,12 +32,12 @@ class UpdateBoard(BaseDTO):
     Title: Annotated[str, Form(description="자유 게시판 게시물 제목")]
     Content: Annotated[Optional[str] | None, Form(description="자유 게시판 게시물 내용")]
 
-class ReadBoard(BaseDTO):
+class CreateBoard(UpdateBoard):
+    Views: Annotated[int, Field(description="자유 게시판 게시물 조회수")]
+
+class ReadBoardlist(BaseDTO):
     total: Annotated[int, Form(description="자유 게시판 전체 게시물 갯수")] = 0
-    Board_info: Annotated[List[BoardBase], Form(description="게시물 데이터")] = []
+    Board_info: Annotated[List[ReadBoard], Form(description="게시물 데이터")] = []
 
     class Config:
         from_attributes = True
-
-class CreateBoard(BoardBase):
-    ...

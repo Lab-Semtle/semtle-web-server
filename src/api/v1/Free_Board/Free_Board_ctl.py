@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.var.session import get_db
 
 # 호출할 모듈 추가
-from src.api.v1.Free_Board.Free_Board_dto import UpdateBoard, ReadBoard, CreateBoard
+from src.api.v1.Free_Board.Free_Board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
 from src.api.v1.Free_Board import Free_Board_svc
 
 
@@ -25,30 +25,45 @@ router = APIRouter(prefix="/Free_Board", tags=["Free_Board"])
 # 라우터 추가 시 현재는 src.api.v1.__init__.py에 생성하려는 라우터 추가해줘야 함.(수정 예정)
 
 
+# Read List
+@router.get(
+    "/Get List",
+    summary="자유 게시판 게시물 전체 조회",
+    description="- 자유 게시판 게시물 전체 리스트 반환, 등록된 예제가 없는 경우 `[]` 반환",
+    response_model=ReadBoardlist,
+    responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
+)
+# 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
+async def get_Free_Board_List(db: AsyncSession = Depends(get_db), page: int = 0):
+    # 개발 중 logging 사용하고 싶을 때 이 코드 추가
+    logger.info("----------자유 게시판 전체 목록 조회----------")
+    total, Board_info = await Free_Board_svc.get_Free_Board_List(db, skip=page)
+    return {
+        'total': total,
+        'Board_info': Board_info
+    }
+
 # Read
 @router.get(
     "/Get",
-    summary="자유 게시판 게시물 전체 조회",
-    description="- 자유 게시판 게시물 전체 리스트 반환, 등록된 예제가 없는 경우 `[]` 반환",
+    summary="자유 게시판 특정 게시물 조회",
+    description="- 자유 게시판 특정 게시물 정보 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoard,
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def get_Free_Board(db: AsyncSession = Depends(get_db), page: int = 0, size: int = 10):
+async def get_Free_Board(db: AsyncSession = Depends(get_db), Free_Board_no: int = 0):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
-    logger.info("----------자유 게시판 전체 목록 조회----------")
-    Total, Board_info = await Free_Board_svc.get_Free_Board(db, skip=page)
-    return {
-        'Total': Total,
-        'Board_info': Board_info
-    }
+    logger.info("----------자유 게시판 특정 게시물 조회----------")
+    Free_Board_info = await Free_Board_svc.get_Free_Board(db, Free_Board_no)
+    return Free_Board_info
 
 
 # Create
 @router.post(
     "/",
     summary="입력 받은 데이터를 데이터베이스에 추가",
-    description="- Integer-Field / String-Form / String-Form / datetime-Field / Integer-Field",
+    description="- String-Form / String-Form / Integer-Field",
     # response_model=ResultType, # -> 코드 미완성, 주석처리
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD)
 )
@@ -98,7 +113,7 @@ async def delete_Free_Board(
     "/sort Title",
     summary="자유 게시판 게시물 제목 정렬",
     description="- 자유 게시판 게시물 제목을 가나다순으로 정렬하여 반환, 등록된 예제가 없는 경우 `[]` 반환",
-    response_model=ReadBoard,
+    response_model=ReadBoardlist,
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성

@@ -44,6 +44,32 @@ class Free_Board_Comment(Base):
     Board_no = Column(Integer, ForeignKey("Free_Board.Board_no"))
     Content = Column(String, nullable=False)
     Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
-    Views = Column(Integer, nullable=False)
+    Likes = Column(Integer, nullable=False)
 
     Board = relationship("Free_Board", back_populates="Comment")
+
+class Study_Board(Base):
+    __tablename__ = "Study_Board"
+    
+    Board_no = Column(Integer, primary_key=True, autoincrement=True)
+    Title = Column(String, nullable=False)
+    Content = Column(String, nullable=False)
+    Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
+    Image_paths = Column(String, nullable=True)
+    Views = Column(Integer, nullable=False)
+
+    Comment = relationship("Study_Board_Comment", back_populates="Board")
+
+class Study_Board_Comment(Base):
+    __tablename__ = "Study_Board_Comment"
+
+    Comment_no = Column(Integer, primary_key=True, autoincrement=True)
+    Board_no = Column(Integer, ForeignKey("Study_Board.Board_no"))
+    Content = Column(String, nullable=False)
+    Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
+    Image_paths = Column(String, nullable=True)
+    Likes = Column(Integer, nullable=False)
+
+    Board = relationship("Study_Board", back_populates="Comment")
+
+

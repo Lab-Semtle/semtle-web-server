@@ -9,18 +9,24 @@ from sqlalchemy.orm import joinedload, query
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
-from src.api.v1.Free_Board.Free_Board_dto import UpdateBoard, ReadBoard, CreateBoard
+from src.api.v1.Free_Board.Free_Board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
 from src.var.models import Free_Board
 from src.var.session import get_db
 
 
-# Read
-async def get_Free_Board(db: AsyncSession, skip: int = 0) -> tuple[int, list[ReadBoard]]:
+# Read List
+async def get_Free_Board_List(db: AsyncSession, skip: int = 0) -> tuple[int, list[ReadBoardlist]]:
     result = await db.execute(select(Free_Board).order_by(Free_Board.Board_no.desc()).offset(skip*10).limit(10))
     Board_info = result.scalars().all()
-    Total = await db.execute(select(func.count(Free_Board.Board_no)))
-    Total = Total.scalar()
-    return Total, Board_info
+    total = await db.execute(select(func.count(Free_Board.Board_no)))
+    total = total.scalar()
+    return total, Board_info
+
+# Read
+async def get_Free_Board(db: AsyncSession, Board_no: int) -> ReadBoard:
+    result = await db.execute(select(Free_Board).filter(Free_Board.Board_no == Board_no))
+    Board_info = result.scalars().first()
+    return Board_info
 
 
 # Create
@@ -43,7 +49,7 @@ async def delete_Free_Board(Board_no: int, db: AsyncSession) -> None:
     await db.commit()
 
 #sort
-async def Sort_Free_Board(db: AsyncSession, skip: int = 0, sel: int = 0) -> tuple[int, list[ReadBoard]]:
+async def Sort_Free_Board(db: AsyncSession, skip: int = 0, sel: int = 0) -> tuple[int, list[ReadBoardlist]]:
     if sel == 0:
         result = await db.execute(select(Free_Board).order_by(Free_Board.Board_no.desc()).offset(skip*10).limit(10))
     elif sel == 1:
