@@ -1,0 +1,26 @@
+# version: '3.8'
+
+services:
+  db:
+    container_name: pgsqldb-semtle
+    image: postgres:latest #ankane/pgvector
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+
+volumes:
+  postgres-data: {}
+
+#   external: true
+
+# networks:
+#   default:
+#     driver: bridge
+#     name: semtle
+#     external: true

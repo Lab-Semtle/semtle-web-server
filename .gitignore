@@ -51,11 +51,11 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/
 lib64/
 parts/
 sdist/
-var/
+
 wheels/
 share/python-wheels/
 *.egg-info/
@@ -250,5 +250,10 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Alembic
+alembic.ini
+migrations/*
+
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,visualstudiocode,python
