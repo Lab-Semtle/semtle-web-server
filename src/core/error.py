@@ -16,7 +16,7 @@ def log_error(err: Exception):
     logger.error(f"Error: {traceback.format_exc()}")
 
 
-def setup_error_handling(app: FastAPI):
+def use(app: FastAPI):
     """ 전역 예외 핸들러 설정 """
 
     @app.exception_handler(RequestValidationError)

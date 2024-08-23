@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def app_lifespan(app: FastAPI):
+async def use(app: FastAPI):
     """
     애플리케이션 주요 생명주기 이벤트를 관리하는 함수
     - FastAPI 애플리케이션 인스턴스에 대한 이벤트 핸들러 등록
