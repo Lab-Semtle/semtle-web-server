@@ -11,7 +11,7 @@ from var.session import get_db
 
 # 호출할 모듈 추가
 from api.v1.course.course_dto import CourseGrade
-from api.v1.course import course_service
+from src.api.v1.course import course_svc
 from src.lib.security import JWTBearer
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ router = APIRouter(prefix="/course", tags=["course"])
 )
 async def course_grade(couse_id: int, star: int, comment: str, request: Request, db: AsyncSession = Depends(get_db)):
     logger.info("----------별점 및 강의평----------")
-    await course_service.course_grade(couse_id, star, comment, request, db)
+    await course_svc.course_grade(couse_id, star, comment, request, db)
     return SU.SUCCESS
 
 @router.post(
@@ -38,7 +38,7 @@ async def course_grade(couse_id: int, star: int, comment: str, request: Request,
 )
 async def add_like(id: int, db: AsyncSession = Depends(get_db)):
     logger.info("----------좋아요----------")
-    await course_service.add_like(id, db)
+    await course_svc.add_like(id, db)
     return SU.SUCCESS
 
 @router.post(
@@ -50,7 +50,7 @@ async def add_like(id: int, db: AsyncSession = Depends(get_db)):
 )
 async def add(professor: str, course: str, db: AsyncSession = Depends(get_db)):
     logger.info("----------강의 추가----------")
-    await course_service.add(professor, course, db)
+    await course_svc.add(professor, course, db)
     return SU.SUCCESS
 
 @router.get(
@@ -61,6 +61,6 @@ async def add(professor: str, course: str, db: AsyncSession = Depends(get_db)):
 )
 async def get_course(db: AsyncSession = Depends(get_db)):
     logger.info("----------전체 유저 정보 목록 조회----------")
-    course_info = await course_service.get_course(db)
+    course_info = await course_svc.get_course(db)
     return course_info
 

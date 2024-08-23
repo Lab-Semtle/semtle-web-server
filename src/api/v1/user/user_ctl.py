@@ -11,7 +11,7 @@ from var.session import get_db
 
 # 호출할 모듈 추가
 from api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
-from api.v1.user import user_service
+from src.api.v1.user import user_svc
 from src.lib.security import JWTBearer
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/user", tags=["user"])
 )
 async def get_users(db: AsyncSession = Depends(get_db)):
     logger.info("----------전체 유저 정보 목록 조회----------")
-    users_info = await user_service.get_users(db)
+    users_info = await user_svc.get_users(db)
     return users_info
 
 # 특정 유저 정보 조회 엔드포인트
@@ -42,7 +42,7 @@ async def get_users(db: AsyncSession = Depends(get_db)):
 )
 async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
     logger.info("----------특정 유저 정보 목록 조회----------")
-    user_info = await user_service.get_user(user_id, db)
+    user_info = await user_svc.get_user(user_id, db)
     return user_info
 
 # 유저 정보 수정 엔드포인트
@@ -55,7 +55,7 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
 )
 async def update_user(request: Request, user_info: UpdateUserInfo, db: AsyncSession = Depends(get_db)):
     logger.info("----------유저 정보 수정----------")
-    res = await user_service.update_user(request, user_info, db)
+    res = await user_svc.update_user(request, user_info, db)
     if res:
         return SU.ACCEPTED
     else:
@@ -71,5 +71,5 @@ async def update_user(request: Request, user_info: UpdateUserInfo, db: AsyncSess
 )
 async def delete_user(user_id: str, db: AsyncSession = Depends(get_db)):
     logger.info("----------유저 삭제----------")
-    await user_service.delete_user(user_id, db)
+    await user_svc.delete_user(user_id, db)
     return SU.SUCCESS

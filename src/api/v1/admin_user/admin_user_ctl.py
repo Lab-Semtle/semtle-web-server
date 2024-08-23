@@ -12,7 +12,7 @@ from src.api.v1.admin_user.admin_user_dto import (
     InfoUserRole,
     InfoUserGrade
 )
-from src.api.v1.admin_user import admin_user_service
+from src.api.v1.admin_user import admin_user_svc
 from src.database.session import get_db
 import logging
 
@@ -50,7 +50,7 @@ async def get_filtered_users(
     db: AsyncSession = Depends(get_db),
 ):
     filter = ReadFilterUser(role=role, grade=grade)
-    return await admin_user_service.get_filtered_users(query, filter, db)
+    return await admin_user_svc.get_filtered_users(query, filter, db)
 
 
 @router.get(
@@ -63,7 +63,7 @@ async def get_filtered_users(
 async def get_new_users(
     db: AsyncSession = Depends(get_db),
 ):
-    return await admin_user_service.get_new_users(db)
+    return await admin_user_svc.get_new_users(db)
 
 
 # 미승인 유저 삭제 라우터 추가
@@ -80,7 +80,7 @@ async def update_user_activate(
     activate: bool = Query(..., description="활성화 여부"),
     db: AsyncSession = Depends(get_db)
 ):
-    await admin_user_service.update_user_activate(user_email, activate, db)
+    await admin_user_svc.update_user_activate(user_email, activate, db)
     return SU.SUCCESS
 
 
@@ -95,7 +95,7 @@ async def update_user_role(
     role: InfoUserRole = Query(..., description="유저 권한"),
     db: AsyncSession = Depends(get_db)
 ):
-    await admin_user_service.update_user_role(user_email, role, db)
+    await admin_user_svc.update_user_role(user_email, role, db)
     return SU.SUCCESS
 
 
@@ -110,5 +110,5 @@ async def update_user_grade(
     grade: InfoUserGrade = Query(..., description="유저 등급"),
     db: AsyncSession = Depends(get_db)
 ):
-    await admin_user_service.update_user_grade(user_email, grade, db)
+    await admin_user_svc.update_user_grade(user_email, grade, db)
     return SU.SUCCESS
