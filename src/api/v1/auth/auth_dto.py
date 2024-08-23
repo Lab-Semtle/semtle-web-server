@@ -1,8 +1,15 @@
+"""
+API 수정 시 참고
+- import 경로 src 부터 시작할 수 있게 수정
+- validator -> field_validator 으로 변경 (validator은 래거시)
+- field_validator을 validator과 유사하게 사용하려면 mode='before' 주기(필드값 할당 전 유효성 검사함)
+- field_validator에서 mode 기본값은 'after'으로 필드 값 할당 후 유효성 검사함.
+"""
 from datetime import datetime, timezone
 from typing import Optional, Annotated
 from fastapi import Depends, Form, Path, HTTPException
-from pydantic import Field, EmailStr, validator
-from var.dto import BaseDTO
+from pydantic import Field, EmailStr, field_validator
+from src.lib.dto import BaseDTO
 
 # 사용자 생성 정보 데이터 전송 객체 (DTO)
 class CreateUserInfo(BaseDTO):
@@ -20,14 +27,14 @@ class CreateUserInfo(BaseDTO):
     )
     
     # 필수 필드가 빈 문자열이나 공백이 아닌지 확인하는 유효성 검사기
-    @validator('user_email', 'user_name', 'user_phone', 'user_password')
+    @field_validator('user_email', 'user_name', 'user_phone', 'user_password', mode='before')
     def check_empty(cls, v):
         if not v or v.isspace():
             raise HTTPException(status_code=422, detail="필수 항목을 입력해주세요.")
         return v
     
     # 전화번호 형식을 확인하는 유효성 검사기
-    @validator('user_phone')
+    @field_validator('user_phone', mode='before')
     def check_phone(cls, v):
         phone = v
         if '-' not in v or len(phone) != 13:
@@ -35,7 +42,7 @@ class CreateUserInfo(BaseDTO):
         return phone
     
     # 비밀번호 유효성을 검사하는 함수
-    @validator('user_password')
+    @field_validator('user_password', mode='before')
     def validate_password(cls, v):
         if len(v) < 8:
             raise HTTPException(status_code=422, detail="비밀번호는 8자리 이상 영문과 숫자를 포함하여 작성해 주세요.")

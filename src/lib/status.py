@@ -5,6 +5,7 @@ HTTP 상태코드 및 메시지 커스터마이징
 class ER:
     """ 에러 상태 코드 및 메시지 정의 """
     INVALID_REQUEST = (400, '잘못된 요청입니다.')
+    INVALID_TOKEN = (400, '토큰이 유효하지 않습니다.')
     UNAUTHORIZED = (401, '인증되지 않았습니다.')
     FORBIDDEN = (403, '접근이 금지되었습니다.')
     NOT_FOUND = (404, '해당 리소스를 찾을 수 없습니다.')

@@ -4,6 +4,7 @@ RDB 세션 모듈 : 데이터베이스 연결 및 세션 설정
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from src.lib.tools import RDBTools
 from src.core import settings
 
 
@@ -24,6 +25,8 @@ AsyncSessionLocal = sessionmaker(
     class_=AsyncSession,
     expire_on_commit=False
 )
+
+rdb = RDBTools(DATABASE_URL)
 
 # 데이터베이스 세션 생성
 async def get_db():

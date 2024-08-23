@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings
+from decouple import config
 import logging
 import logging.config
 
@@ -33,9 +34,8 @@ class JWTSettings(BaseSettings):
     JWT_SECRET_ACCESS_KEY: SecretStr = SecretStr(os.getenv("JWT_SECRET_ACCESS_KEY"))
     JWT_SECRET_REFRESH_KEY: SecretStr= SecretStr(os.getenv("JWT_SECRET_REFRESH_KEY"))
     JWT_ACCESS_TOKEN_EXPIRE_MIN: int = 60*24 # 24시간
+    JWT_REFRESH_TOKEN_EXPIRE_MINUTES: int = 60*24*3 # 3일
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")
-    # JWT_INV_ACCESS_EXPIRE_MIN: int = 1440
-    # JWT_SESSION_EXPIRE_MIN: int = 30
 
 class Settings:
     general: GeneralSettings = GeneralSettings()    
