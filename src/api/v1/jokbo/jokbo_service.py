@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 import logging
-from api.v1.jokbo import jokbo_dao
+from src.api.v1.jokbo import jokbo_dao
 from typing import Optional
 
 logger = logging.getLogger(__name__)

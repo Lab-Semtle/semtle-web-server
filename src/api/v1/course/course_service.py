@@ -1,8 +1,8 @@
 # 모듈 호출
-from api.v1.course.course_dto import CourseGrade
-from api.v1.course import course_dao
+from src.api.v1.course.course_dto import CourseGrade
+from src.api.v1.course import course_dao
 from fastapi import Request
-from core.security import verify_access_token
+from src.core.security import verify_access_token
 
 # 사용되지 않는 모듈은 삭제될 예정입니다.
 from sqlalchemy.ext.asyncio import AsyncSession

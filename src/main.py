@@ -6,7 +6,7 @@ from src.core.cors import setup_cors
 from src.core.event import app_lifespan
 from src.core.error import setup_error_handling
 from src.api.v1 import router as v1_router
-from src.core.config import setup_logging
+from src.core import setup_logging
 
 
 setup_logging()  # 로깅 설정

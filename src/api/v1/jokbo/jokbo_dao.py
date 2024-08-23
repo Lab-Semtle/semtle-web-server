@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import Optional
-from var.models import FileRecord
+from src.var.models import FileRecord
 
 async def insert_file(db: AsyncSession, filename: str, contents: bytes) -> None:
     file_record = FileRecord(filename=filename, content=contents)

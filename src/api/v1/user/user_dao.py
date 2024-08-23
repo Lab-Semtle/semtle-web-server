@@ -1,13 +1,13 @@
 from sqlalchemy import Result, ScalarResult, select, update, insert, delete
 from sqlalchemy.orm import joinedload, query
-from var.models import User
-from api.v1.user.user_dto import UpdateUserInfo, ReadUserInfo
-from var.session import get_db
+from src.var.models import User
+from src.api.v1.user.user_dto import UpdateUserInfo, ReadUserInfo
+from src.var.session import get_db
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from passlib.context import CryptContext
-from core.status import Status, SU, ER
+from src.core.status import Status, SU, ER
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

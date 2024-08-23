@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional, Annotated
 from fastapi import Depends, Form, Path
-from var.dto import BaseDTO
+from src.var.dto import BaseDTO
 from pydantic import Field
 
 class CourseGrade(BaseDTO):

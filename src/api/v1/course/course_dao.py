@@ -1,7 +1,7 @@
 from sqlalchemy import Result, ScalarResult, select, update, insert, delete
 from sqlalchemy.orm import joinedload, query
-from var.models import Star, Professor
-from var.session import get_db
+from src.var.models import Star, Professor
+from src.var.session import get_db
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -1,20 +1,20 @@
 # 기본적으로 추가
 from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, Response, Request, HTTPException
-from core.type import ResultType
-from core.status import Status, SU, ER
+from src.core.type import ResultType
+from src.core.status import Status, SU, ER
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import logging
 
 # (db 세션 관련)이후 삭제 예정
 from sqlalchemy.ext.asyncio import AsyncSession
-from var.session import get_db
+from src.var.session import get_db
 
 # 호출할 모듈 추가
-from api.v1.login import login_service
-from core import security
-from api.v1.login.login_dto import CreateUserInfo
-from core.security import JWTBearer
+from src.api.v1.login import login_service
+from src.core import security
+from src.api.v1.login.login_dto import CreateUserInfo
+from src.core.security import JWTBearer
 
 from jose import jwt
 from decouple import config

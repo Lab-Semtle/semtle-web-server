@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import Optional, Annotated
 from fastapi import Depends, Form, Path, HTTPException
 from pydantic import EmailStr, validator
-from var.dto import BaseDTO
+from src.var.dto import BaseDTO
 
 # 유저 정보를 읽기 위한 DTO
 class ReadUserInfo(BaseDTO):
