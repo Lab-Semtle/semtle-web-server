@@ -10,8 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
 from src.api.v1.Free_Board_Comment.Free_Board_Comment_dto import UpdateComment, ReadComment, CreateComment
-from src.var.models import Free_Board_Comment
-from src.var.session import get_db
+from src.database.models import Free_Board_Comment
+from src.database.session import get_db
 
 
 # Read

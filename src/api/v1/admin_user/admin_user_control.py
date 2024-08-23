@@ -5,7 +5,7 @@ from typing import Annotated, Optional, List
 from pydantic import EmailStr
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.core.status import Status, SU, ER
+from src.lib.status import Status, SU, ER
 from src.api.v1.admin_user.admin_user_dto import (
     ReadUserInfo,
     ReadFilterUser,
@@ -13,7 +13,7 @@ from src.api.v1.admin_user.admin_user_dto import (
     InfoUserGrade
 )
 from src.api.v1.admin_user import admin_user_service
-from src.var.session import get_db
+from src.database.session import get_db
 import logging
 
 # OTP 검증 로직 임시

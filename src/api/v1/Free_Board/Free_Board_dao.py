@@ -10,8 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
 from src.api.v1.Free_Board.Free_Board_dto import UpdateBoard, ReadBoard, CreateBoard
-from src.var.models import Free_Board
-from src.var.session import get_db
+from src.database.models import Free_Board
+from src.database.session import get_db
 
 
 # Read

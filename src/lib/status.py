@@ -21,6 +21,7 @@ class SU:
 class Status:
     """
     HTTP 응답 상태 코드와 메시지를 문서화
+    - api 작성 시 responses에서 사용
     - `docs` 메서드를 사용하여 상태 코드와 설명을 반환
     """
     @staticmethod

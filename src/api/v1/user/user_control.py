@@ -1,18 +1,18 @@
 # 기본적으로 추가
 from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, Request
-from src.core.type import ResultType
-from src.core.status import Status, SU, ER
+from src.lib.type import ResultType
+from src.lib.status import Status, SU, ER
 import logging
 
 # (db 세션 관련)이후 삭제 예정
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.var.session import get_db
+from src.database.session import get_db
 
 # 호출할 모듈 추가
 from src.api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
 from src.api.v1.user import user_service
-from src.core.security import JWTBearer
+from src.lib.security import JWTBearer
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/user", tags=["user"])

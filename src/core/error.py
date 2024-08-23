@@ -5,7 +5,7 @@ import traceback
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
-from src.core.status import ER
+from src.lib.status import ER
 import logging
 
 logger = logging.getLogger(__name__)

@@ -5,13 +5,13 @@ API 개발 시 참고 : 프론트엔드에서 http 엔드포인트를 통해 호
 from typing import Annotated
 from typing import Optional
 from fastapi import APIRouter, Depends
-from src.core.type import ResultType
-from src.core.status import Status, SU, ER
+from src.lib.type import ResultType
+from src.lib.status import Status, SU, ER
 import logging
 
 # (db 세션 관련)이후 삭제 예정, 개발을 위해 일단 임시로 추가
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.var.session import get_db
+from src.database.session import get_db
 
 # 호출할 모듈 추가
 from src.api.v1.Free_Board_Comment.Free_Board_Comment_dto import UpdateComment, ReadComment, CreateComment

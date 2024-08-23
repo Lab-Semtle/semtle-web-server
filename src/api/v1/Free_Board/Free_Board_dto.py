@@ -6,7 +6,7 @@ from typing import Optional, Annotated, List
 from datetime import datetime, timezone
 from fastapi import Depends, Form, Path
 from pydantic import Field
-from src.var.dto import BaseDTO
+from src.lib.dto import BaseDTO
 
 
 

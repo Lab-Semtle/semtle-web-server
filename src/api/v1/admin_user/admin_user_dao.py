@@ -1,7 +1,7 @@
 from sqlalchemy import Result, ScalarResult, select, update, insert, delete
 from sqlalchemy.orm import joinedload, query, selectinload
-from src.var.models import User, Grade
-from src.var.session import get_db
+from src.database.models import User, Grade
+from src.database.session import get_db
 from fastapi import Depends
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession

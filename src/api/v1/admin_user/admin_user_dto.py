@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from fastapi import Depends, Form, Path, Query
 from pydantic import Field, EmailStr
 from enum import Enum
-from src.var.dto import BaseDTO
+from src.lib.dto import BaseDTO
 
 
 class InfoUserRole(str, Enum):

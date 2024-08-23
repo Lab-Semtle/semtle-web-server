@@ -3,8 +3,8 @@ FastAPI 웹 애플리케이션 생명주기 이벤트 처리
 """
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from src.var.session import AsyncEngine
-from src.var.models import Base
+from src.database.session import AsyncEngine
+from src.database.models import Base
 from sqlalchemy import text, inspect
 import logging
 

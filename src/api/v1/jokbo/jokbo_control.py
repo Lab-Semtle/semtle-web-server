@@ -1,11 +1,11 @@
 from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Query, Response
-from src.core.status import Status, SU, ER
+from src.lib.status import Status, SU, ER
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.var.session import get_db
+from src.database.session import get_db
 from src.api.v1.jokbo import jokbo_service
-from src.core.security import JWTBearer
+from src.lib.security import JWTBearer
 from fastapi.responses import StreamingResponse
 from urllib.parse import quote, unquote
 from io import BytesIO
