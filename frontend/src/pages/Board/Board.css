@@ -1,0 +1,80 @@
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .pagination-container button {
+    margin: 0 5px;
+    padding: 0.625rem;
+    background-color: rgb(186, 216, 250);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .pagination-container button.active {
+    font-weight: bold;
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+  }
+  
+  .pagination-container button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .create-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .create-button-container button {
+    padding: 0.625rem 1.25rem;
+    background-color: rgb(186, 216, 250);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .create-button-container button a {
+    text-decoration: none;
+    color: black;
+  }
+  
+  .create-button-container button a:hover {
+    text-decoration: none;
+    color: black;
+  }
+  
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  .form-group input {
+    padding: 0.625rem;
+    width: 100%;
+    outline: none;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+  }
+  
+  .form-group textarea {
+    height: 300px;
+    width: 100%;
+    resize: none;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+  }
+  
+  .form-button button {
+    margin-left: 1rem;
+    background-color: rgb(186, 216, 250);
+    border: none;
+    border-radius: 10px;
+  }
+  

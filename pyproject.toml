@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "semtle-web-dev"
+name = "semtle-web-server"
 version = "0.1.0"
 description = ""
-authors = ["taehwan heo <htth815@gmail.com>"]
+authors = []
 readme = "README.md"
 
 [tool.poetry.dependencies]
