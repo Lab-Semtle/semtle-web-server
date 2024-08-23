@@ -12,7 +12,7 @@ from typing import Optional
 
 from src.api.v1.exam_sharing_board_comment import exam_sharing_board_comment_dao
 from src.api.v1.exam_sharing_board.exam_sharing_board_dto import ReadBoard, ReadBoardlist
-from src.var.models import Exam_Sharing_Board
+from src.database.models_hongsi import Exam_Sharing_Board
 
 BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/exam_sharing_board/')

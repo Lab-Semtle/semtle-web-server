@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
 from src.api.v1.free_board_comment.free_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
-from src.var.models import Free_Board_Comment
+from src.database.models_hongsi import Free_Board_Comment
 
 
 # Read

@@ -11,7 +11,7 @@ import os
 import secrets
 
 from src.api.v1.study_board_comment.study_board_comment_dto import UpdateComment, ReadComment, CreateComment, ReadCommentlist
-from src.var.models import Study_Board_Comment
+from src.database.models_hongsi import Study_Board_Comment
 from src.var.session import get_db
 
 BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/')

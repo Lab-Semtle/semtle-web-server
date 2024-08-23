@@ -1,11 +1,8 @@
-"""
-보안, 의존성 관련 로직
-"""
 from jose import jwt, JWTError
 from datetime import timedelta, datetime
 from decouple import config
 from fastapi import HTTPException, status, Request
-from src.lib.status import Status, SU, ER
+from core.status import Status, SU, ER
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 SECRET_ACCESS_KEY = config("SECRET_ACCESS_KEY")

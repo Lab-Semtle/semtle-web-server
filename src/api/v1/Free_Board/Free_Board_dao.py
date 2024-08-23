@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 
 from src.api.v1.free_board_comment import free_board_comment_dao
 from src.api.v1.free_board.free_board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
-from src.var.models import Free_Board
+from src.database.models_hongsi import Free_Board
 
 
 # Read List
