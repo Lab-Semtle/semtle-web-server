@@ -1,11 +1,6 @@
 """
 메인 서버 모듈
 """
-# from fastapi import FastAPI
-# from src.core.cors import setup_cors
-# from src.core.event import app_lifespan
-# from src.core.error import setup_error_handling
-# from src.api.v1 import router as v1_router
 from src.core import setup_logging
 from src.core import cors, error, event
 from src.core.router import SemtleAPI
