@@ -15,28 +15,5 @@ class User(Base):
     user_email = Column(String(30), nullable=False)
     user_phone = Column(String(15), nullable=False)
     user_birth = Column(Integer, nullable=True)
+    user_verify = Column(Boolean, default=False)
     create_date = Column(DateTime(timezone=True))
-
-class Star(Base):
-    __tablename__ = "star"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_email = Column(String, nullable=False)
-    course_id = Column(Integer, nullable=False)
-    count_star = Column(Integer, nullable = False)
-    course_comment = Column(String(300), nullable=False)
-    count_like = Column(Integer, nullable=True, default=0)
-
-class Professor(Base):
-    __tablename__ = "professor"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    professor = Column(String, nullable=False)
-    course = Column(String, nullable=False)
-
-class FileRecord(Base):
-    __tablename__ = 'file_records'
-
-    id = Column(Integer, primary_key=True, index=True)
-    filename = Column(String, unique=True, index=True)
-    content = Column(LargeBinary)

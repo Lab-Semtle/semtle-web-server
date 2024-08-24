@@ -1,6 +1,6 @@
 # 기본적으로 추가
 from typing import Annotated, Optional
-from fastapi import APIRouter, Depends, Response, Request
+from fastapi import APIRouter, Depends, Response, Request, Query
 from core.type import ResultType
 from core.status import Status, SU, ER
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -13,7 +13,7 @@ from var.session import get_db
 # 호출할 모듈 추가
 from api.v1.login import login_service
 from core import security
-from api.v1.login.login_dto import CreateUserInfo
+from api.v1.login.login_dto import CreateUserInfo, VerifyEmailRequest
 from core.security import JWTBearer
 
 from jose import jwt
@@ -67,10 +67,12 @@ async def post_signup(login_info: Optional[CreateUserInfo], db: AsyncSession = D
     if login_info and await login_service.is_user(login_info.user_id, login_info.user_name, login_info.user_email, login_info.user_phone, db):
         logger.warning("이미 존재하는 유저.")
         return ER.DUPLICATE_RECORD
+    await login_service.send_confirmation_email(login_info.user_email)
 
     # 회원가입 처리
     await login_service.post_signup(login_info, db)
     logger.info("회원가입 성공.")
+
     return SU.CREATED
 
 @router.get(
@@ -122,3 +124,21 @@ async def get_token(request: Request):
     ac = security.verify_access_token(access_token)
     rf = security.verify_refresh_token(refresh_token)
     return {"access_token": ac, "refresh_token": rf}
+
+
+@router.get(
+    "/verify",
+    summary="이메일 인증",
+    description="- 이메일 인증",
+    responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
+)
+async def verify_email(
+    code: str = Query(..., description="인증 코드"),
+    user_email: str = Query(..., description="사용자 이메일"),
+    db: AsyncSession = Depends(get_db)
+):
+    res = await login_service.verify_email(code, user_email, db)
+    if not res:
+        return ER.INVALID_REQUEST
+    return SU.SUCCESS
+
