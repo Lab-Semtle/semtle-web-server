@@ -21,27 +21,44 @@ async def get_study_board_comment(db: AsyncSession, study_board_no: int, skip: i
 
 
 # Create
-async def create_study_board_comment(study_board_no: int, study_board_comment_info: Optional[CreateComment], db: AsyncSession) -> None:
-    await study_board_comment_dao.create_study_board_comment(study_board_no, study_board_comment_info, db)
+async def create_study_board_comment(study_board_no: int, study_board_comment_info: Optional[CreateComment], db: AsyncSession) -> int:
+    study_board_comment_no = await study_board_comment_dao.create_study_board_comment(study_board_no, study_board_comment_info, db)
+    return study_board_comment_no
 
 
-# Create
-async def upload_create_study_board_comment(study_board_no: int, content: str, file_name: list[UploadFile], db: AsyncSession) -> None:
-    await study_board_comment_dao.upload_create_study_board_comment(study_board_no, content, file_name, db)
+# # Create
+# async def upload_create_study_board_comment(study_board_no: int, content: str, file_name: list[UploadFile], db: AsyncSession) -> None:
+#     await study_board_comment_dao.upload_create_study_board_comment(study_board_no, content, file_name, db)
     
 
-# Update
-async def update_study_board_comment(study_board_no: int ,study_board_comment_no: int, study_board_comment_info: Optional[CreateComment], db: AsyncSession) -> None:
-    await study_board_comment_dao.delete_image_study_board_comment(study_board_no, study_board_comment_no, db)
-    await study_board_comment_dao.update_study_board_comment(study_board_no, study_board_comment_no, study_board_comment_info, db)
+# Create
+async def upload_file_study_board_comment(study_board_comment_no: int, file_name: Optional[list[UploadFile]], db: AsyncSession) -> None:
+    await study_board_comment_dao.upload_file_study_board_comment(study_board_comment_no, file_name, db)
 
 
 # Update
-async def upload_update_study_board_comment(study_board_no: int ,study_board_comment_no: int, content: str, file_name: list[UploadFile], db: AsyncSession) -> None:
-    await study_board_comment_dao.delete_image_study_board_comment(study_board_no, study_board_comment_no, db)
-    await study_board_comment_dao.upload_update_study_board_comment(study_board_no, study_board_comment_no, content, file_name, db)
+async def update_study_board_comment(study_board_comment_no: int, study_board_comment_info: Optional[CreateComment], db: AsyncSession, select: bool) -> None:
+    if not select: # defalt: 기존 이미지 삭제
+        await study_board_comment_dao.delete_image_study_board_comment(study_board_comment_no, db)
+    await study_board_comment_dao.update_study_board_comment(study_board_comment_no, study_board_comment_info, db)
+
+
+# Update
+async def upload_update_file_study_board_comment(study_board_comment_no: int, file_name: list[UploadFile], db: AsyncSession, select: bool) -> None:
+    if not select: # defalt: 기존 이미지 삭제
+        await study_board_comment_dao.delete_image_study_board_comment(study_board_comment_no, db) # 기존에 저장된 이미지 삭제
+        await study_board_comment_dao.upload_file_study_board_comment(study_board_comment_no, file_name, db)
+    else:
+        await study_board_comment_dao.upload_file_add_study_board_comment(study_board_comment_no, file_name, db)
+
+
+# # Update
+# async def upload_update_study_board_comment(study_board_no: int ,study_board_comment_no: int, content: str, file_name: list[UploadFile], db: AsyncSession) -> None:
+#     await study_board_comment_dao.delete_image_study_board_comment(study_board_no, study_board_comment_no, db)
+#     await study_board_comment_dao.upload_update_study_board_comment(study_board_no, study_board_comment_no, content, file_name, db)
     
 
 # Delete
-async def delete_study_board_comment(study_board_no: int, study_board_comment_no: int, db: AsyncSession) -> None:
-    await study_board_comment_dao.delete_study_board_comment(study_board_no, study_board_comment_no, db)
+async def delete_study_board_comment(study_board_comment_no: int, db: AsyncSession) -> None:
+    await study_board_comment_dao.delete_image_study_board_comment(study_board_comment_no, db)
+    await study_board_comment_dao.delete_study_board_comment(study_board_comment_no, db)

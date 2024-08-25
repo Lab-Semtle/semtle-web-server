@@ -6,7 +6,7 @@ from typing import Optional, Annotated, List
 from datetime import datetime
 from fastapi import Form
 from pydantic import Field, validator
-from src.var.dto import BaseDTO
+from src.lib.dto import BaseDTO
 
 
 

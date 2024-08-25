@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 
-def setup_cors(app: FastAPI):
+def use(app: FastAPI):
     """ FastAPI 애플리케이션에 CORS 미들웨어를 설정 """
     app.add_middleware(
         CORSMiddleware,

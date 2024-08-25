@@ -6,7 +6,7 @@ from typing import Optional, Annotated, List
 from datetime import datetime
 from fastapi import Form
 from pydantic import Field
-from src.var.dto import BaseDTO
+from src.lib.dto import BaseDTO
 
 
 # - 개발하려는 API의 목적에 맞게 클래스 작성

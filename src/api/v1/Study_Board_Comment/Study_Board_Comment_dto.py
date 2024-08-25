@@ -6,7 +6,7 @@ from typing import Optional, Annotated, List
 from datetime import datetime, timezone
 from fastapi import Depends, Form, Path
 from pydantic import Field, validator
-from src.var.dto import BaseDTO
+from src.lib.dto import BaseDTO
 
 
 # - 개발하려는 API의 목적에 맞게 클래스 작성
@@ -35,6 +35,7 @@ class ReadComment(BaseDTO):
 
     class Config:
         from_attributes = True
+
 
 class UpdateComment(BaseDTO):
     Content: Annotated[Optional[str] | None, Form(description="스터디 게시판 게시물 댓글 내용")]
