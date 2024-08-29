@@ -13,7 +13,7 @@ from var.session import get_db
 # 호출할 모듈 추가
 from api.v1.login import login_service
 from core import security
-from api.v1.login.login_dto import CreateUserInfo, VerifyEmailRequest
+from api.v1.login.login_dto import CreateUserInfo
 from core.security import JWTBearer
 
 from jose import jwt
@@ -60,15 +60,16 @@ async def post_login(response: Response, login_form: OAuth2PasswordRequestForm =
     description="- 회원가입 기능만 구현, JWT도 해야함, 생년월일 유효성 검사 코드 X",
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD),
 )
-async def post_signup(login_info: Optional[CreateUserInfo], db: AsyncSession = Depends(get_db)):
+async def post_signup(login_info: Optional[CreateUserInfo], code: str, db: AsyncSession = Depends(get_db)):
     logger.info("----------회원가입----------")
     
     # 사용자 존재 여부 확인
-    if login_info and await login_service.is_user(login_info.user_id, login_info.user_name, login_info.user_email, login_info.user_phone, db):
+    if login_info and await login_service.is_user(login_info.user_id, login_info.user_name, login_info.user_email, code, db):
         logger.warning("이미 존재하는 유저.")
         return ER.DUPLICATE_RECORD
-    await login_service.send_confirmation_email(login_info.user_email)
-
+    if not await login_service.verify_email(code):
+        logger.warning("이메일 인증 실패")
+        return ER.INVALID_REQUEST
     # 회원가입 처리
     await login_service.post_signup(login_info, db)
     logger.info("회원가입 성공.")
@@ -127,18 +128,24 @@ async def get_token(request: Request):
 
 
 @router.get(
-    "/verify",
-    summary="이메일 인증",
-    description="- 이메일 인증",
+    "/send",
+    summary="이메일 전송",
+    description="- 이메일 전송",
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def verify_email(
-    code: str = Query(..., description="인증 코드"),
-    user_email: str = Query(..., description="사용자 이메일"),
-    db: AsyncSession = Depends(get_db)
+    user_email: str = Query(..., description="사용자 이메일")
 ):
-    res = await login_service.verify_email(code, user_email, db)
-    if not res:
-        return ER.INVALID_REQUEST
+    await login_service.send_confirmation_email(user_email)
     return SU.SUCCESS
+
+@router.get(
+    "/code",
+    summary="코드 확인",
+    description="- 코드확인",
+    responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
+)
+async def code():
+    res = await login_service.code()
+    return res
 

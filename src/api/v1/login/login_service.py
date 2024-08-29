@@ -39,7 +39,7 @@ async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> None:
     await login_dao.post_signup(login_info, db)
 
 async def send_confirmation_email(user_email: str):
-    global random_string
+    global random_string 
     random_string = generate_random_string()
     message = EmailMessage()
     message["From"] = "LabSebtle@gmail.com"
@@ -53,16 +53,20 @@ async def send_confirmation_email(user_email: str):
             hostname="smtp.gmail.com",
             port=587,
             start_tls=True,
-            username="",
-            password="",
+            username="bakjy0312@gmail.com",
+            password="jvpa rjxg seet dzbd",
         )
         logger.info(f"Confirmation email sent to {user_email}")
     except Exception as e:
         logger.error(f"Failed to send confirmation email to {user_email}: {e}")
 
-async def verify_email(code, user_email, db: AsyncSession):
+async def verify_email(code):
+    global random_string
     if random_string == code:
-        await login_dao.verify_email(user_email, db)
         return True
     else:
         return False
+
+async def code():
+    global random_string
+    return random_string

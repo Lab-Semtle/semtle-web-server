@@ -71,12 +71,3 @@ async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str
     # 사용자가 존재하는지 확인
     user_exists = result.scalars().first() is not None
     return user_exists
-
-async def verify_email(user_email, db: AsyncSession):
-    stmt = (
-        update(User)
-        .where(User.user_email == user_email)
-        .values(user_verify=True)
-    )
-    await db.execute(stmt)
-    await db.commit()

@@ -12,7 +12,7 @@ class CreateUserInfo(BaseDTO):
     user_email: Annotated[EmailStr, Field(description="유저 이메일")]
     user_phone: Annotated[str, Field(description="유저 전화번호")]
     user_birth: Annotated[int, Field(description="유저 생년월일")]
-    
+
     # 가입 일자를 자동으로 현재 시간으로 설정
     create_date: Annotated[datetime, Depends(lambda: datetime.now(timezone.utc))] = Field(
         default_factory=lambda: datetime.now(timezone.utc), 
@@ -44,7 +44,3 @@ class CreateUserInfo(BaseDTO):
         if not any(char.isalpha() for char in v):
             raise HTTPException(status_code=422, detail="비밀번호는 8자리 이상 영문과 숫자를 포함하여 작성해 주세요.")
         return v
-
-class VerifyEmailRequest(BaseDTO):
-    code: str
-    user_email: str

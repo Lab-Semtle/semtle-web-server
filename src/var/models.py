@@ -15,5 +15,4 @@ class User(Base):
     user_email = Column(String(30), nullable=False)
     user_phone = Column(String(15), nullable=False)
     user_birth = Column(Integer, nullable=True)
-    user_verify = Column(Boolean, default=False)
     create_date = Column(DateTime(timezone=True))
