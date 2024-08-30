@@ -6,8 +6,6 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from cryptography.fernet import Fernet
 from decouple import config
-from src.lib.type import ResultType
-from src.lib.status import Status, SU, ER
 from src.database.session import rdb
 
 FERNET_KEY = config("FERNET_KEY").encode()
