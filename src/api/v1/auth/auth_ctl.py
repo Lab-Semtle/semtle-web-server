@@ -1,138 +1,155 @@
-# 기본적으로 추가
-"""
-계정 관련 API
-- 회원가입
-- 로그인
-- 로그아웃
-- 토큰 발급
-- 토큰 재발급
-"""
-'''
-API 수정 시 참고
-- 명확하게 하기 위해, import 경로 src 부터 작성하기
-- Contrl에서 DB 세션 관련 파라미터 삭제
-- API 반환 형식 ResultType으로 감싸기
-- 더 이상 디버깅 할 필요 없는 API의 로깅 제거 (서비스 도중 꼭 필요하다면 유지)
-'''
-from typing import Annotated, Optional
-from fastapi import APIRouter, Depends, Response, Request
-from datetime import timedelta
-from jose import jwt
+from typing import Optional
+from fastapi import APIRouter, Depends, Response, Request, Query, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from src.lib.type import ResultType # 경로
-from src.lib.status import Status, SU, ER
-from src.lib import security
-from src.lib.security import JWTBearer
-from src.core import settings
-from src.api.v1.auth import auth_svc
-from src.api.v1.auth.auth_dto import CreateUserInfo
+from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import timedelta
+from decouple import config
 import logging
+
+from core.status import Status, SU, ER
+from var.session import get_db
+from api.v1_hongsi.login import login_service
+from core.security import JWTBearer, create_access_token, create_refresh_token, verify_access_token, verify_refresh_token
+from api.v1_hongsi.login.login_dto import CreateUserInfo
+
+# 환경 변수에서 토큰 만료 시간 설정
+ACCESS_TOKEN_EXPIRE_MINUTES = float(config("ACCESS_TOKEN_EXPIRE_MINUTES"))
+REFRESH_TOKEN_EXPIRE_MINUTES = float(config("REFRESH_TOKEN_EXPIRE_MINUTES"))
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/login", tags=["login"])
 
-ACCESS_TOKEN_EXPIRE_MINUTES = float(settings.jwt.JWT_ACCESS_TOKEN_EXPIRE_MIN)
-REFRESH_TOKEN_EXPIRE_MINUTES = float(settings.jwt.JWT_REFRESH_TOKEN_EXPIRE_MINUTES)
-
-
-# 회원가입 엔드포인트
-@router.post(
-    "/{signup}",
-    summary     = "회원가입",
-    description = "- 회원가입 기능만 구현, JWT도 해야함, 생년월일 유효성 검사 코드 X",
-    responses   = Status.docs(SU.CREATED, ER.DUPLICATE_RECORD),
-)
-async def signup(user_info: Optional[CreateUserInfo]): # 1. DB 세션 관련 파라미터 삭제
-    # 사용자 존재 여부 확인
-    if user_info and await auth_svc.is_user( 
-        user_info.user_id, 
-        user_info.user_name, 
-        user_info.user_email, 
-        user_info.user_phone
-    ):
-        logger.warning("이미 존재하는 유저.")
-        return ResultType(status='error', message=ER.DUPLICATE_RECORD[1]) # 2. API 봔환 형식 ResultType로 감싸기
-
-    # 회원가입 처리
-    await auth_svc.post_signup(user_info) # 3. 다른 메서드 호출 시에도 DB 세션 파라미터 삭제
-    logger.info("회원가입 성공.")
-    return ResultType(status='success', message=SU.CREATED[1])
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # 로그인 엔드포인트
 @router.post(
-    "/",
+    "/login",
     summary="로그인",
-    description="- 로그인 기능만 구현, JWT도 해야함",
+    description="사용자 인증 후 JWT 토큰을 발급합니다.",
     responses=Status.docs(SU.SUCCESS, ER.UNAUTHORIZED)
 )
-async def login(response: Response, login_form: OAuth2PasswordRequestForm = Depends()):
+async def post_login(
+    response: Response,
+    login_form: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_db)
+):
+    logger.info("----------로그인----------")
     # 사용자 인증 확인
-    verify = await auth_svc.verify(login_form.username, login_form.password)
+    verify = await login_service.verify(login_form.username, login_form.password, db)
     if not verify:
         logger.warning("로그인 실패: 잘못된 사용자명 또는 비밀번호")
-        return ResultType(status='error', message=ER.UNAUTHORIZED[1])
+        return ER.UNAUTHORIZED
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     refresh_token_expires = timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
-    access_token =await security.create_access_token(data={"sub": login_form.username}, expires_delta=access_token_expires)
-    refresh_token =await security.create_refresh_token(data={"sub": login_form.username}, expires_delta=refresh_token_expires)
+    access_token = await create_access_token(data={"sub": login_form.username}, expires_delta=access_token_expires)
+    refresh_token = await create_refresh_token(data={"sub": login_form.username}, expires_delta=refresh_token_expires)
     
     # 쿠키에 저장
     response.set_cookie(key="access_token", value=access_token, expires=access_token_expires, httponly=True)
     response.set_cookie(key="refresh_token", value=refresh_token, expires=refresh_token_expires, httponly=True)
     logger.info("로그인 성공")
-    return ResultType(status='success', message=SU.SUCCESS[1])
+    return SU.SUCCESS
 
+# 회원가입 엔드포인트
+@router.post(
+    "/signup",
+    summary="회원가입",
+    description="새 사용자 계정을 생성합니다.",
+    responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD),
+)
+async def post_signup(
+    login_info: Optional[CreateUserInfo],
+    code: str,
+    db: AsyncSession = Depends(get_db)
+):
+    logger.info("----------회원가입----------")
+    
+    # 사용자 존재 여부 확인
+    if login_info and await login_service.is_user(login_info.user_id, login_info.user_name, login_info.user_email, code, db):
+        logger.warning("이미 존재하는 유저.")
+        return ER.DUPLICATE_RECORD
+    if not await login_service.verify_email(code):
+        logger.warning("이메일 인증 실패")
+        return ER.INVALID_REQUEST
 
+    # 회원가입 처리
+    await login_service.post_signup(login_info, db)
+    logger.info("회원가입 성공.")
+    return SU.CREATED
+
+# 로그아웃 엔드포인트
 @router.get(
-    "/",
+    "/logout",
     summary="로그아웃",
-    description="- 로그아웃",
+    description="사용자의 인증 쿠키를 삭제하여 로그아웃합니다.",
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
     dependencies=[Depends(JWTBearer())]
 )
-async def logout(response: Response, request: Request):
+async def get_logout(response: Response):
     # 쿠키 삭제
     response.delete_cookie(key="access_token")
     response.delete_cookie(key="refresh_token")
-    return ResultType(status='success', message=SU.SUCCESS[1])
+    return SU.SUCCESS
 
-
+# 리프레시 토큰을 이용해 새로운 접근 토큰을 발급하는 엔드포인트
 @router.get(
     "/refresh",
-    summary="토큰 재발급",
-    description="- refresh 토큰을 이용해 access 토큰 재발급",
+    summary="Access 토큰 재발급",
+    description="Refresh 토큰을 사용하여 새로운 Access 토큰을 발급합니다.",
     responses=Status.docs(SU.CREATED, ER.INVALID_REQUEST),
 )
-async def get_refresh_token(request: Request, response: Response):
+async def refresh_token(request: Request, response: Response):
     try:
         refresh_token = request.cookies.get("refresh_token")
         if not refresh_token:
-            return ResultType(status='error', message=ER.INVALID_TOKEN[1])
-    
+            raise HTTPException(status_code=400, detail="리프레시 토큰이 없습니다")
+        
         # 리프레시 토큰 검증
-        refresh_data =  security.verify_refresh_token(refresh_token)
-        # 리프레시 토큰에서 사용자 정보 추출
+        refresh_data = verify_refresh_token(refresh_token)
         user_data = {"sub": refresh_data.get("sub")}
+        
         # 새로운 접근 토큰 생성
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        new_access_token = await security.create_access_token(data=user_data, expires_delta=access_token_expires)
+        new_access_token = await create_access_token(data=user_data, expires_delta=access_token_expires)
         response.set_cookie(key="access_token", value=new_access_token, httponly=True, expires=access_token_expires)
-        return ResultType(status='success', message=SU.CREATED[1])
-    except:
-        return ResultType(status='error', message=ER.INVALID_REQUEST[1])
-    
-    
+        return SU.CREATED
+    except Exception as e:
+        logger.error(f"토큰 재발급 중 오류 발생: {e}")
+        return ER.INVALID_REQUEST
+
+# 토큰 검증 엔드포인트
 @router.get(
     "/token",
-    summary="토큰 발급",
-    description="- 새로운 access 토큰 발급",
+    summary="토큰 상태 확인",
+    description="Access 및 Refresh 토큰의 상태를 확인합니다.",
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def get_token(request: Request):
     access_token = request.cookies.get("access_token")
     refresh_token = request.cookies.get("refresh_token")
-    ac = security.verify_access_token(access_token)
-    rf = security.verify_refresh_token(refresh_token)
-    return ResultType(status='success', message=SU.SUCCESS[1], detail={"access_token": ac, "refresh_token": rf})
+    ac = verify_access_token(access_token)
+    rf = verify_refresh_token(refresh_token)
+    return {"access_token": ac, "refresh_token": rf}
+
+# 이메일 전송 엔드포인트
+@router.get(
+    "/send",
+    summary="이메일 전송",
+    description="사용자에게 인증 이메일을 전송합니다.",
+    responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
+)
+async def verify_email(user_email: str = Query(..., description="사용자 이메일")):
+    await login_service.send_confirmation_email(user_email)
+    return SU.SUCCESS
+
+# 코드 확인 엔드포인트
+@router.get(
+    "/code",
+    summary="코드 확인",
+    description="이메일 인증 코드를 확인합니다.",
+    responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
+)
+async def code():
+    res = await login_service.code()
+    return res
