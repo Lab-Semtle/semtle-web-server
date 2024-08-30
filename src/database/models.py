@@ -6,8 +6,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
-Base = declarative_base()
 
+Base = declarative_base()
 
 '''
 회원
@@ -22,7 +22,6 @@ Base = declarative_base()
     
 #     user = relationship("User", back_populates="grade")
     
-
 class User(Base):
     """ 유저 테이블 (매니저,일반회원 포함) """
     __tablename__ = "users"
@@ -42,7 +41,6 @@ class User(Base):
     # user_activate = Column(Boolean, default=False, nullable=False)       # 아치셈틀 인증 여부
     
     # grade = relationship("Grade", back_populates="user")
-
  
 '''
 게시판

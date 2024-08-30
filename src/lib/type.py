@@ -5,6 +5,7 @@ API 반환 형식 정의
 """
 from src.lib.dto import BaseDTO
 
+
 class ResultType(BaseDTO):
     status: str  # 응답 상태('sussess'/ 'error')
     message: str # 응답 메세지

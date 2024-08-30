@@ -5,8 +5,9 @@ from jose import jwt, JWTError
 from datetime import timedelta, datetime
 from decouple import config
 from fastapi import HTTPException, status, Request
-from core.status import Status, SU, ER
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from src.lib.status import Status, SU, ER
+
 
 SECRET_ACCESS_KEY = config("SECRET_ACCESS_KEY")
 SECRET_REFRESH_KEY = config("SECRET_REFRESH_KEY")

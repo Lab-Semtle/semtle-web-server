@@ -1,11 +1,13 @@
-from functools import wraps
-from pathlib import Path
+"""
+FastAPI 확장 모듈
+"""
 from typing import Any, Callable, Optional
 from fastapi import APIRouter, FastAPI
-import logging
+from pathlib import Path
 import importlib
-
-logger = logging.getLogger(__name__)
+from functools import wraps
+import logging
+_logger = logging.getLogger(__name__)
 
 
 """
@@ -30,9 +32,8 @@ class SemtleAPI(FastAPI):
         """ 외부 확장 모듈 사용 """
         extension_module.use(self, *args, **kwargs)
     
-
 """
-라우터 확장 모듈
+라우터 설정
 """
 class RouterManager:
     def __init__(self, app: FastAPI, base_path: str):
@@ -49,14 +50,14 @@ class RouterManager:
 
         module_name = '.'.join(reversed(paths))
         module_name = f"{self.base_path.replace('/', '.')}.{module_name}"
-        logger.info(f"=>> 파일 경로로부터 라우터 이름 생성 : {module_name}")
+        _logger.info(f"=>> 파일 경로로부터 라우터 이름 생성 : {module_name}")
         return module_name
 
     def _load_module(self, module_name: str, attr_name: str) -> Optional[APIRouter]:
         """ 모듈 동적 임포트 및 로드 """
-        logger.info(f"=>> 라우터 로드 중 -> module_name : {module_name}, attr_name : {attr_name}")
+        _logger.info(f"=>> 라우터 로드 중 -> module_name : {module_name}, attr_name : {attr_name}")
         module = importlib.import_module(module_name)
-        logger.info(f"라우터 로드 성공: {module_name}")
+        _logger.info(f"라우터 로드 성공: {module_name}")
         return getattr(module, attr_name, None)
 
 
@@ -65,9 +66,9 @@ class RouterManager:
         api_router = APIRouter()
         for path in Path(self.base_path).glob("**/*_ctl.py"):
             module_name = self._get_module_name(path)
-            logger.info(f"로드 중: {module_name}")
+            _logger.info(f"로드 중: {module_name}")
             router = self._load_module(module_name, "router")
             if router:
                 api_router.include_router(router)
         self.app.include_router(api_router)
-        logger.info("모든 라우터가 성공적으로 추가되었습니다.")
+        _logger.info("모든 라우터가 성공적으로 추가되었습니다.")

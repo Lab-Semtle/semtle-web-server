@@ -7,13 +7,12 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from src.lib.status import ER
 import logging
-
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def log_error(err: Exception):
     """ 예외 정보를 로깅 """
-    logger.error(f"Error: {traceback.format_exc()}")
+    _logger.error(f"Error: {traceback.format_exc()}")
 
 
 def use(app: FastAPI):

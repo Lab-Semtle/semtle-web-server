@@ -1,15 +1,13 @@
 """
 데이터베이스 세션 관리 도구 모음
 """
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from typing import AsyncIterable, Callable, Any
 from contextlib import asynccontextmanager
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from functools import wraps
 from src.database.models import Base
 import logging
-
-logging.basicConfig(level=logging.INFO)
 _logger = logging.getLogger(__name__)
 
 
