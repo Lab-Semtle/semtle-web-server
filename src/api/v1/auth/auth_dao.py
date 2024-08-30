@@ -1,10 +1,11 @@
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from cryptography.fernet import Fernet
-from src.api.v1_hongsi.login.login_dto import CreateUserInfo
+from src.api.v1.auth.auth_dto import CreateUserInfo
 from src.database.models import User
 from decouple import config
 from src.database.session import rdb
+
 
 FERNET_KEY = config("FERNET_KEY").encode()
 fernet = Fernet(FERNET_KEY)
@@ -44,6 +45,7 @@ async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> None:
         stmt = insert(User).values(**user_data)
         await db.execute(stmt)
     except Exception as e:
+        ...
 
 @rdb.dao()
 async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str, db: AsyncSession) -> bool:

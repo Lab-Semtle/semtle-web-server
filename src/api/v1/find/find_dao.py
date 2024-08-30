@@ -6,6 +6,7 @@ from cryptography.fernet import Fernet
 from decouple import config
 from src.database.session import rdb
 
+
 FERNET_KEY = config("FERNET_KEY")
 fernet = Fernet(FERNET_KEY)
 

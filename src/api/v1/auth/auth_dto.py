@@ -4,6 +4,7 @@ from fastapi import Depends, Form, Path, HTTPException
 from pydantic import Field, EmailStr, field_validator
 from src.lib.dto import BaseDTO
 
+
 # 사용자 생성 정보 데이터 전송 객체 (DTO)
 class CreateUserInfo(BaseDTO):
     user_id: Annotated[str, Field(description="유저 아이디")]

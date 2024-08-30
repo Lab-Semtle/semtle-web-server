@@ -1,13 +1,13 @@
-from src.api.v1_hongsi.login import login_dao
-from src.api.v1_hongsi.login.login_dto import CreateUserInfo
+from src.api.v1.auth import login_dao
+from src.api.v1.auth.auth_dto import CreateUserInfo
 import aiosmtplib
 from email.message import EmailMessage
 import random
 import string
 from decouple import config
 
-random_string = ""
 
+random_string = ""
 USERNAME = config("username")
 PASSWARD = config("password")
 
@@ -58,6 +58,7 @@ async def send_confirmation_email(user_email: str) -> None:
             password = PASSWARD,
         )
     except Exception as e:
+        ...
 
 async def verify_email(code) -> bool:
     '''

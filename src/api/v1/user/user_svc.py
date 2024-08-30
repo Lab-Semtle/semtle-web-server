@@ -1,7 +1,8 @@
-from src.api.v1_hongsi.user.user_dto import ReadUserInfo, UpdateUserInfo
-from src.api.v1_hongsi.user import user_dao
+from src.api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
+from src.api.v1.user import user_dao
 from fastapi import Request
 from src.lib.security import verify_access_token
+
 
 async def get_users() -> list[ReadUserInfo]:
     '''
