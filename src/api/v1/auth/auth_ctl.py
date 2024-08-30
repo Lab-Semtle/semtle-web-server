@@ -1,3 +1,6 @@
+"""
+계정 권한 API
+"""
 from typing import Optional
 from fastapi import APIRouter, Depends, Response, Request, Query, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer

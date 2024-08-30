@@ -1,30 +1,19 @@
 """
-API 개발 시 참고 : 프론트엔드에서 http 엔드포인트를 통해 호출되는 메서드
+자유 게시판 API 
 """
 # 기본적으로 추가
 from typing import Optional
 from fastapi import APIRouter, Depends
 from src.lib.status import Status, SU, ER
 from src.lib.security import JWTBearer
+from src.api.v1.board_free.free_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
+from src.api.v1.board_free import free_svc
 import logging
 
-# (db 세션 관련)이후 삭제 예정, 개발을 위해 일단 임시로 추가
-from sqlalchemy.ext.asyncio import AsyncSession
-from src.database.session import get_db
 
-# 호출할 모듈 추가
-from src.api.v1_ewha.free_board.free_board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
-from src.api.v1_ewha.free_board import free_board_svc
-
-
-# 로깅 및 라우터 객체 생성 - 기본적으로 추가
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/free_board", tags=["free_board"])
 
-# 라우터 추가 시 현재는 src.api.v1.__init__.py에 생성하려는 라우터 추가해줘야 함.(수정 예정)
-
-
-# Read List
 @router.get(
     "/get_list",
     summary="자유 게시판 게시물 전체 조회",
@@ -32,17 +21,14 @@ router = APIRouter(prefix="/free_board", tags=["free_board"])
     response_model=ReadBoardlist,
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
-# 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def get_free_board_list(db: AsyncSession = Depends(get_db), page: int = 0):
-    # 개발 중 logging 사용하고 싶을 때 이 코드 추가
+async def get_free_board_list(page: int = 0):
     logger.info("----------자유 게시판 전체 목록 조회----------")
-    total, free_board_info = await free_board_svc.get_free_board_list(db, skip=page)
+    total, free_board_info = await free_svc.get_free_board_list(skip=page)
     return {
         'total': total,
         'Board_info': free_board_info
     }
 
-# Read
 @router.get(
     "/get",
     summary="자유 게시판 특정 게시물 조회",
@@ -50,15 +36,11 @@ async def get_free_board_list(db: AsyncSession = Depends(get_db), page: int = 0)
     response_model=ReadBoard,
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
-# 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def get_free_board(db: AsyncSession = Depends(get_db), free_board_no: int = 0):
-    # 개발 중 logging 사용하고 싶을 때 이 코드 추가
+async def get_free_board(free_board_no: int = 0):
     logger.info("----------자유 게시판 특정 게시물 조회----------")
-    free_board_info = await free_board_svc.get_free_board(db, free_board_no)
+    free_board_info = await free_svc.get_free_board(free_board_no)
     return free_board_info
 
-
-# Create
 @router.post(
     "/",
     summary="자유 게시판 신규 게시물 생성",
@@ -68,14 +50,11 @@ async def get_free_board(db: AsyncSession = Depends(get_db), free_board_no: int 
 )
 async def create_free_board(
     free_board_info: Optional[CreateBoard],
-    db: AsyncSession = Depends(get_db)
 ):
     logger.info("----------자유 게시판 신규 게시물 생성----------")
-    await free_board_svc.create_free_board(free_board_info, db)
+    await free_svc.create_free_board(free_board_info)
     return SU.CREATED
 
-
-# Update
 @router.put(
     "/",
     summary="자유 게시판 기존 게시물 수정",
@@ -85,14 +64,11 @@ async def create_free_board(
 async def update_free_board(
     free_board_no: int,  # JWT 토큰에서 id 가져오는 방식으로 변경, 이건 임시조치
     free_board_info: Optional[UpdateBoard],
-    db: AsyncSession = Depends(get_db)
 ):
     logger.info("----------자유 게시판 기존 게시물 수정----------")
-    await free_board_svc.update_free_board(free_board_no, free_board_info, db)
+    await free_svc.update_free_board(free_board_no, free_board_info)
     return SU.SUCCESS
 
-
-# Delete
 @router.delete(
     "/",
     summary="자유 게시판 게시물 삭제",
@@ -101,13 +77,10 @@ async def update_free_board(
 )
 async def delete_free_board(
     free_board_no: int,
-    db: AsyncSession = Depends(get_db) # JWT 토큰에서 id 가져오는 방식으로 변경, 임시조치
 ):
-    await free_board_svc.delete_free_board(free_board_no, db)
+    await free_svc.delete_free_board(free_board_no)
     return SU.SUCCESS
 
-
-# sort Title
 @router.get(
     "/sort_title",
     summary="자유 게시판 게시물 제목 정렬",
@@ -115,11 +88,9 @@ async def delete_free_board(
     response_model=ReadBoardlist,
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
-# 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def sort_free_board(db: AsyncSession = Depends(get_db), page: int = 0, select: int = 0):
-    # 개발 중 logging 사용하고 싶을 때 이 코드 추가
+async def sort_free_board(page: int = 0, select: int = 0):
     logger.info("----------자유 게시판 제목 가나다순 정렬----------")
-    total, free_board_info = await free_board_svc.sort_free_board(db, skip=page, select=select)
+    total, free_board_info = await free_svc.sort_free_board(skip=page, select=select)
     return {
         'total': total,
         'Board_info': free_board_info

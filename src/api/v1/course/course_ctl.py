@@ -1,20 +1,15 @@
 # 기본적으로 추가
 from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, Request
-from core.type import ResultType
-from core.status import Status, SU, ER
-import logging
-
-# (db 세션 관련)이후 삭제 예정
-from sqlalchemy.ext.asyncio import AsyncSession
-from var.session import get_db
-
-# 호출할 모듈 추가
+from src.lib.type import ResultType
+from src.lib.status import Status, SU, ER
 from api.v1.course.course_dto import CourseGrade
-from src.api.v1_hongsi.course import course_svc
+from src.api.v1.course import course_svc
 from src.lib.security import JWTBearer
-
+import logging
 logger = logging.getLogger(__name__)
+
+
 router = APIRouter(prefix="/course", tags=["course"])
 
 @router.post(
@@ -24,9 +19,9 @@ router = APIRouter(prefix="/course", tags=["course"])
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
     dependencies=[Depends(JWTBearer())],
 )
-async def course_grade(couse_id: int, star: int, comment: str, request: Request, db: AsyncSession = Depends(get_db)):
+async def course_grade(couse_id: int, star: int, comment: str, request: Request):
     logger.info("----------별점 및 강의평----------")
-    await course_svc.course_grade(couse_id, star, comment, request, db)
+    await course_svc.course_grade(couse_id, star, comment, request)
     return SU.SUCCESS
 
 @router.post(
@@ -36,9 +31,9 @@ async def course_grade(couse_id: int, star: int, comment: str, request: Request,
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
     dependencies=[Depends(JWTBearer())],
 )
-async def add_like(id: int, db: AsyncSession = Depends(get_db)):
+async def add_like(id: int):
     logger.info("----------좋아요----------")
-    await course_svc.add_like(id, db)
+    await course_svc.add_like(id)
     return SU.SUCCESS
 
 @router.post(
@@ -48,9 +43,9 @@ async def add_like(id: int, db: AsyncSession = Depends(get_db)):
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
     # dependencies=[Depends(JWTBearer())],
 )
-async def add(professor: str, course: str, db: AsyncSession = Depends(get_db)):
+async def add(professor: str, course: str):
     logger.info("----------강의 추가----------")
-    await course_svc.add(professor, course, db)
+    await course_svc.add(professor, course)
     return SU.SUCCESS
 
 @router.get(
@@ -59,8 +54,8 @@ async def add(professor: str, course: str, db: AsyncSession = Depends(get_db)):
     description="- 강의 목록 리스트 반환, 등록된 유저가 없는 경우 `[]` 반환",
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND),
 )
-async def get_course(db: AsyncSession = Depends(get_db)):
+async def get_course():
     logger.info("----------전체 유저 정보 목록 조회----------")
-    course_info = await course_svc.get_course(db)
+    course_info = await course_svc.get_course()
     return course_info
 
