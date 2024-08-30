@@ -6,8 +6,8 @@ from fastapi import UploadFile, File
 from typing import Optional
 
 # 호출할 모듈 추가
-from src.api.v1.study_board_comment.study_board_comment_dto import UpdateComment, ReadComment, CreateComment, ReadCommentlist
-from src.api.v1.study_board_comment import study_board_comment_dao
+from src.api.v1_ewha.study_board_comment.study_board_comment_dto import UpdateComment, ReadComment, CreateComment, ReadCommentlist
+from src.api.v1_ewha.study_board_comment import study_board_comment_dao
 
 # 이후 삭제 예정, 일단 기본 추가
 from sqlalchemy.ext.asyncio import AsyncSession

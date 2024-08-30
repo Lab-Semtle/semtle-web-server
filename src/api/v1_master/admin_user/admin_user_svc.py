@@ -1,7 +1,7 @@
 from typing import List, Optional
-from src.api.v1.admin_user import admin_user_dao
+from src.api.v1_master.admin_user import admin_user_dao
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.api.v1.admin_user.admin_user_dto import (
+from src.api.v1_master.admin_user.admin_user_dto import (
     ReadUserInfo,
     ReadFilterUser,
 )

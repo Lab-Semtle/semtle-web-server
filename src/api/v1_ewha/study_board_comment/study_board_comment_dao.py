@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 import os
 import secrets
 
-from src.api.v1.study_board_comment.study_board_comment_dto import UpdateComment, ReadComment, CreateComment, ReadCommentlist
+from src.api.v1_ewha.study_board_comment.study_board_comment_dto import UpdateComment, ReadComment, CreateComment, ReadCommentlist
 from src.database.models import Study_Board_Comment
 from src.database.session import get_db
 

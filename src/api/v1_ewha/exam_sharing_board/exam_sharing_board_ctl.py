@@ -14,8 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.session import get_db
 
 # 호출할 모듈 추가
-from src.api.v1.exam_sharing_board.exam_sharing_board_dto import ReadBoard, ReadBoardlist, CreateBoard, UpdateBoard
-from src.api.v1.exam_sharing_board import exam_sharing_board_svc
+from src.api.v1_ewha.exam_sharing_board.exam_sharing_board_dto import ReadBoard, ReadBoardlist, CreateBoard, UpdateBoard
+from src.api.v1_ewha.exam_sharing_board import exam_sharing_board_svc
 
 BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/exam_sharing_board/')

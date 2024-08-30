@@ -1,6 +1,6 @@
 # 모듈 호출
-from api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
-from api.v1.user import user_dao
+from api.v1_master.user.user_dto import ReadUserInfo, UpdateUserInfo
+from api.v1_master.user import user_dao
 from fastapi import Request
 from src.lib.security import verify_access_token
 

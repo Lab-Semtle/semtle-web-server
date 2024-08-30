@@ -1,7 +1,7 @@
 from sqlalchemy import Result, ScalarResult, select, update, insert, delete
 from sqlalchemy.orm import joinedload, query
 from src.database.models import User
-from src.api.v1.login.login_dto import CreateUserInfo
+from src.api.v1_hongsi.login.login_dto import CreateUserInfo
 from src.database.session import get_db
 from fastapi import Depends
 from sqlalchemy.orm import Session

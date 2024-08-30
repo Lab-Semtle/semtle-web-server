@@ -4,16 +4,16 @@ API 개발 시 참고 : 프론트엔드에서 http 엔드포인트를 통해 호
 # 기본적으로 추가
 from typing import Optional
 from fastapi import APIRouter, Depends
-from src.lib.status import Status, SU, ER
+from src.core.status import Status, SU, ER
 import logging
 
 # (db 세션 관련)이후 삭제 예정, 개발을 위해 일단 임시로 추가
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.database.session import get_db
+from src.var.session import get_db
 
 # 호출할 모듈 추가
-from src.api.v1.free_board_comment.free_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
-from src.api.v1.free_board_comment import free_board_comment_svc
+from src.api.v1_master.free_board_comment.free_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
+from src.api.v1_master.free_board_comment import free_board_comment_svc
 
 
 # 로깅 및 라우터 객체 생성 - 기본적으로 추가

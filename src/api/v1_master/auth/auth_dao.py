@@ -9,7 +9,7 @@ API 수정 시 참고
 from sqlalchemy import Result, ScalarResult, select, update, insert, delete
 from sqlalchemy.orm import joinedload, query
 from src.database.models import User
-from src.api.v1.auth.auth_dto import CreateUserInfo
+from src.api.v1_master.auth.auth_dto import CreateUserInfo
 from src.database.session import rdb
 from sqlalchemy.ext.asyncio import AsyncSession
 from passlib.context import CryptContext

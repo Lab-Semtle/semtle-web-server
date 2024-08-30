@@ -24,8 +24,8 @@ from src.lib.status import Status, SU, ER
 from src.lib import security
 from src.lib.security import JWTBearer
 from src.core import settings
-from src.api.v1.auth import auth_svc
-from src.api.v1.auth.auth_dto import CreateUserInfo
+from src.api.v1_master.auth import auth_svc
+from src.api.v1_master.auth.auth_dto import CreateUserInfo
 import logging
 
 logger = logging.getLogger(__name__)

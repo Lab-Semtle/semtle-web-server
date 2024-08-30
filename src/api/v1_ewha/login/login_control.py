@@ -11,8 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.session import get_db
 
 # 호출할 모듈 추가
-from src.api.v1.login import login_service
-from src.api.v1.login.login_dto import CreateUserInfo
+from src.api.v1_hongsi.login import login_service
+from src.api.v1_hongsi.login.login_dto import CreateUserInfo
 from src.lib import security
 from src.lib.security import JWTBearer
 

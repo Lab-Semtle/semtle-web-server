@@ -1,6 +1,6 @@
 # 호출할 모듈 추가
-from src.api.v1.login import login_dao
-from src.api.v1.login.login_dto import CreateUserInfo
+from src.api.v1_hongsi.login import login_dao
+from src.api.v1_hongsi.login.login_dto import CreateUserInfo
 
 # (db 세션 관련)이후 삭제 예정
 from sqlalchemy.ext.asyncio import AsyncSession

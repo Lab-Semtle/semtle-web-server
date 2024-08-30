@@ -6,8 +6,8 @@ from sqlalchemy import select, update, insert, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
-from src.api.v1.free_board_comment import free_board_comment_dao
-from src.api.v1.free_board.free_board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
+from src.api.v1_ewha.free_board_comment import free_board_comment_dao
+from src.api.v1_ewha.free_board.free_board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
 from src.database.models import Free_Board
 
 

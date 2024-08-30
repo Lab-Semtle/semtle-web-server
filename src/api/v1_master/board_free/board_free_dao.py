@@ -6,17 +6,13 @@ from sqlalchemy import select, update, insert, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
-from src.api.v1.free_board_comment import free_board_comment_dao
-from src.api.v1.free_board.free_board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
-<<<<<<<< HEAD:src/api/v1_master/board_free/board_free_dao.py
+from src.api.v1_master.free_board_comment import free_board_comment_dao
+from src.api.v1_master.free_board.free_board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
 from src.database.models_hongsi import Free_Board
-========
-from src.database.models import Free_Board
->>>>>>>> dev_e-wha:src/api/v1/free_board/free_board_dao.py
 
 
 # Read List
-async def get_free_board_list(db: AsyncSession, skip: int) -> tuple[int, list[ReadBoardlist]]:
+async def get_free_board_list(db: AsyncSession, skip: int = 0) -> tuple[int, list[ReadBoardlist]]:
     result = await db.execute(select(Free_Board).order_by(Free_Board.Board_no.desc()).offset(skip*10).limit(10))
     free_board_info = result.scalars().all()
     total = await db.execute(select(func.count(Free_Board.Board_no)))
@@ -35,23 +31,23 @@ async def create_free_board(free_board_info: CreateBoard, db: AsyncSession):
     create_values = free_board_info.dict()
     create_values['Create_date'] = datetime.now(timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None)
     await db.execute(insert(Free_Board).values(create_values))
-
+    await db.commit()
     
     
 # Update
 async def update_free_board(free_board_no: int, free_board_info: UpdateBoard, db: AsyncSession) -> None:
     await db.execute(update(Free_Board).filter(Free_Board.Board_no == free_board_no).values(free_board_info.dict()))
-
+    await db.commit()
     
 
 # Delete
 async def delete_free_board(free_board_no: int, db: AsyncSession) -> None:
     await free_board_comment_dao.all_delete_free_board_comment(free_board_no, db)
     await db.execute(delete(Free_Board).filter(Free_Board.Board_no == free_board_no))
-
+    await db.commit()
 
 #sort
-async def sort_free_board(db: AsyncSession, skip: int, sel: int) -> tuple[int, list[ReadBoardlist]]:
+async def sort_free_board(db: AsyncSession, skip: int = 0, sel: int = 0) -> tuple[int, list[ReadBoardlist]]:
     if sel == 0:
         result = await db.execute(select(Free_Board).order_by(Free_Board.Board_no.desc()).offset(skip*10).limit(10))
     elif sel == 1:

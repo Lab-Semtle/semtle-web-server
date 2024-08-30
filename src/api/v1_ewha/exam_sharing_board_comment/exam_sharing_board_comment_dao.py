@@ -6,7 +6,7 @@ from sqlalchemy import select, update, insert, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
-from src.api.v1.exam_sharing_board_comment.exam_sharing_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
+from src.api.v1_ewha.exam_sharing_board_comment.exam_sharing_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
 from src.database.models import Exam_Sharing_Board_Comment
 
 

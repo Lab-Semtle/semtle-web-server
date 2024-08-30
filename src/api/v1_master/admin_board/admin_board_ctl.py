@@ -8,7 +8,7 @@ from src.lib.status import Status, SU, ER
 # from src.api.v1.admin_board.admin_board_dto import (
     
 # ) 
-from src.api.v1.admin_board import admin_board_svc
+from src.api.v1_master.admin_board import admin_board_svc
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.session import get_db
 import logging

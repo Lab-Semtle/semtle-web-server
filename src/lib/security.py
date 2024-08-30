@@ -62,6 +62,7 @@ def verify_refresh_token(token: str):
 	except JWTError:
 		ER.FORBIDDEN
 
+
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
         super(JWTBearer, self).__init__(auto_error=auto_error)
@@ -88,3 +89,9 @@ class JWTBearer(HTTPBearer):
             isTokenValid = True
 
         return isTokenValid
+
+    async def get_user(self, request: Request):
+        access_token = request.cookies.get("access_token")
+        data = verify_access_token(access_token)
+        data = data.get('sub')
+        return data

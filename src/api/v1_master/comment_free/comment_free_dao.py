@@ -6,12 +6,8 @@ from sqlalchemy import select, update, insert, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
-from src.api.v1.free_board_comment.free_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
-<<<<<<<< HEAD:src/api/v1_master/comment_free/comment_free_dao.py
+from src.api.v1_master.free_board_comment.free_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
 from src.database.models_hongsi import Free_Board_Comment
-========
-from src.database.models import Free_Board_Comment
->>>>>>>> dev_e-wha:src/api/v1/free_board_comment/free_board_comment_dao.py
 
 
 # Read

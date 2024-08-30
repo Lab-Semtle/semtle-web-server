@@ -11,7 +11,7 @@ from var.session import get_db
 
 # 호출할 모듈 추가
 from api.v1.course.course_dto import CourseGrade
-from src.api.v1.course import course_svc
+from src.api.v1_hongsi.course import course_svc
 from src.lib.security import JWTBearer
 
 logger = logging.getLogger(__name__)

@@ -10,8 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from var.session import get_db
 
 # 호출할 모듈 추가
-from api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
-from src.api.v1.user import user_svc
+from api.v1_master.user.user_dto import ReadUserInfo, UpdateUserInfo
+from src.api.v1_master.user import user_svc
 from src.lib.security import JWTBearer
 
 logger = logging.getLogger(__name__)

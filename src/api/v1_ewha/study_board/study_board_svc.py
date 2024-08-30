@@ -5,9 +5,9 @@ from fastapi import UploadFile
 from typing import Optional
 
 # 호출할 모듈 추가
-from src.api.v1.study_board.study_board_dto import ReadBoard, ReadBoardlist, CreateBoard, UpdateBoard
-from src.api.v1.study_board import study_board_dao
-from src.api.v1.study_board_comment import study_board_comment_dao
+from src.api.v1_ewha.study_board.study_board_dto import ReadBoard, ReadBoardlist, CreateBoard, UpdateBoard
+from src.api.v1_ewha.study_board import study_board_dao
+from src.api.v1_ewha.study_board_comment import study_board_comment_dao
 
 # 이후 삭제 예정, 일단 기본 추가
 from sqlalchemy.ext.asyncio import AsyncSession

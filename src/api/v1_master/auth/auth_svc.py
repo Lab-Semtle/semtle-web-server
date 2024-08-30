@@ -4,8 +4,8 @@ API 수정 시 참고
 - 각 함수 db 세션 관련 파라미터 삭제
 - 필요 없는 주석 제거, 각 함수마다 "작은따옴표 3개"로 함수 기능 설명 간단히 작성
 '''
-from src.api.v1.auth import auth_dao
-from src.api.v1.auth.auth_dto import CreateUserInfo
+from src.api.v1_master.auth import auth_dao
+from src.api.v1_master.auth.auth_dto import CreateUserInfo
 
 
 async def verify(user_email: str, user_password: str) -> bool:

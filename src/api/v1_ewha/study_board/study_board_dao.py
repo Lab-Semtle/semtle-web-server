@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 from typing import Optional
 
-from src.api.v1.study_board.study_board_dto import ReadBoard, ReadBoardlist, CreateBoard
+from src.api.v1_ewha.study_board.study_board_dto import ReadBoard, ReadBoardlist, CreateBoard
 from src.database.models import Study_Board
 
 BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/ ')

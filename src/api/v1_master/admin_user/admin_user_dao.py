@@ -5,7 +5,7 @@ from src.database.session import get_db
 from fastapi import Depends
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.api.v1.admin_user.admin_user_dto import (
+from src.api.v1_master.admin_user.admin_user_dto import (
     ReadUserInfo,
     ReadFilterUser
 )

@@ -13,8 +13,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.session import get_db
 
 # 호출할 모듈 추가
-from src.api.v1.free_board.free_board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
-from src.api.v1.free_board import free_board_svc
+from src.api.v1_ewha.free_board.free_board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
+from src.api.v1_ewha.free_board import free_board_svc
 
 
 # 로깅 및 라우터 객체 생성 - 기본적으로 추가
