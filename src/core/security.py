@@ -90,7 +90,7 @@ class JWTBearer(HTTPBearer):
 
         return isTokenValid
 
-    async def get_user(request: Request):
+    async def get_user(self, request: Request):
         access_token = request.cookies.get("access_token")
         data = verify_access_token(access_token)
         data = data.get('sub')

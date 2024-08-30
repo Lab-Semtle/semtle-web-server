@@ -1,44 +1,54 @@
-# 호출할 모듈 추가
 from api.v1.login import login_dao
 from api.v1.login.login_dto import CreateUserInfo
 import aiosmtplib
 from email.message import EmailMessage
 import random
 import string
-
-# (db 세션 관련)이후 삭제 예정
 from sqlalchemy.ext.asyncio import AsyncSession
-
 import logging
+from decouple import config
 
 logger = logging.getLogger(__name__)
 
 random_string = ""
 
-def generate_random_string(length=6):
+USERNAME = config("username")
+PASSWARD = config("password")
+
+# 랜덤 문자열 생성
+def generate_random_string(length=6) -> str:
+    """
+    주어진 길이의 랜덤 문자열을 생성합니다.
+    영문 대소문자와 숫자를 포함합니다.
+    """
     characters = string.ascii_letters + string.digits
-    random_string = ''.join(random.choice(characters) for _ in range(length))
-    return random_string
+    return ''.join(random.choice(characters) for _ in range(length))
 
-
-# 사용자를 인증하는 서비스 함수
+# 사용자 인증 서비스 함수
 async def verify(user_email: str, user_password: str, db: AsyncSession) -> bool:
-    # 데이터 접근 객체(DAO)를 사용하여 사용자 인증 확인
-    verify = await login_dao.verify(user_email, user_password, db)
-    return verify
+    """
+    주어진 이메일과 비밀번호로 사용자를 인증합니다.
+    """
+    return await login_dao.verify(user_email, user_password, db)
 
-# 사용자가 존재하는지 확인하는 서비스 함수
+# 사용자 존재 여부 확인 서비스 함수
 async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str, db: AsyncSession) -> bool:
-    # 데이터 접근 객체(DAO)를 사용하여 사용자 존재 여부 확인
-    is_user = await login_dao.is_user(user_id, user_name, user_email, user_phone, db)
-    return is_user
+    """
+    주어진 사용자 정보로 사용자가 존재하는지 확인합니다.
+    """
+    return await login_dao.is_user(user_id, user_name, user_email, user_phone, db)
 
-# 사용자를 생성하는 서비스 함수
+# 사용자 생성 서비스 함수
 async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> None:
-    # 데이터 접근 객체(DAO)를 사용하여 사용자 생성
+    """
+    새로운 사용자를 생성합니다.
+    """
     await login_dao.post_signup(login_info, db)
 
-async def send_confirmation_email(user_email: str):
+async def send_confirmation_email(user_email: str) -> None:
+    """
+    사용자에게 인증 이메일을 전송합니다.
+    """
     global random_string 
     random_string = generate_random_string()
     message = EmailMessage()
@@ -50,23 +60,31 @@ async def send_confirmation_email(user_email: str):
     try:
         await aiosmtplib.send(
             message,
-            hostname="smtp.gmail.com",
-            port=587,
-            start_tls=True,
-            username="bakjy0312@gmail.com",
-            password="jvpa rjxg seet dzbd",
+            hostname = "smtp.gmail.com",
+            port = 587,
+            start_tls = True,
+            username = USERNAME,
+            password = PASSWARD,
         )
-        logger.info(f"Confirmation email sent to {user_email}")
+        logger.info(f"{user_email}으로 이메일 전송 완료.")
     except Exception as e:
-        logger.error(f"Failed to send confirmation email to {user_email}: {e}")
+        logger.error(f"{user_email}으로 이메일 전송 실패 : {e}")
 
-async def verify_email(code):
+# 이메일 인증 코드 검증 서비스 함수
+async def verify_email(code) -> bool:
+    """
+    사용자가 입력한 코드와 저장된 코드를 비교하여 일치 여부를 반환합니다.
+    """
     global random_string
     if random_string == code:
         return True
     else:
         return False
 
-async def code():
+# 최근 생성된 코드 반환
+async def code() -> str:
+    """
+    최근 생성된 인증 코드를 반환합니다.
+    """
     global random_string
     return random_string

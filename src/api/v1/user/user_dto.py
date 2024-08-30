@@ -16,6 +16,7 @@ class ReadUserInfo(BaseDTO):
 class UpdateUserInfo(BaseDTO):
     present_user_password: Annotated[str, Form(description="유저 현재 비밀번호")]
     future_user_password: Annotated[str, Form(description="유저 신규 비밀번호")]
+    user_id: Annotated[str, Form(description="유저 아이디")]
     user_name: Annotated[str, Form(description="유저 이름")]
     user_email: Annotated[str, Form(description="유저 이메일")]
     user_phone: Annotated[str, Form(description="유저 전화번호")]

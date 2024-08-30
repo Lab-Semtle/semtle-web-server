@@ -25,10 +25,7 @@ async def delete_user(user_id: str, db: AsyncSession) -> None:
     await user_dao.delete_user(user_id, db)
 
 # 사용자 정보를 업데이트하는 함수
-async def update_user(request: Request, user_info: UpdateUserInfo, db: AsyncSession) -> None:
-    access_token = request.cookies.get("access_token")
-    data = verify_access_token(access_token)
-    data = data.get('sub')
+async def update_user(user_id, user_info: UpdateUserInfo, db: AsyncSession) -> None:
     # 사용자 정보를 업데이트합니다.
-    res = await user_dao.update_user(data, user_info, db)
+    res = await user_dao.update_user(user_id, user_info, db)
     return res

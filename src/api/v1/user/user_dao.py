@@ -9,6 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.status import Status, SU, ER
 from cryptography.fernet import Fernet
 from decouple import config
+import logging
+
+logger = logging.getLogger(__name__)
 
 FERNET_KEY = config("FERNET_KEY").encode()  # 여기에 실제 키를 설정하세요.
 fernet = Fernet(FERNET_KEY)
@@ -24,7 +27,7 @@ async def get_users(db: AsyncSession) -> list[User]:
 # 특정 유저 정보를 조회하는 함수
 async def get_user(user_id: str, db: AsyncSession) -> list[User]:
     # 특정 유저 아이디에 해당하는 유저 정보를 선택하는 쿼리 생성
-    stmt = select(User).where(User.user_id == user_id)
+    stmt = select(User).where(User.user_email == user_id)
     # 쿼리를 실행
     result = await db.execute(stmt)
     # 결과에서 해당 유저 정보를 가져옴
@@ -34,16 +37,16 @@ async def get_user(user_id: str, db: AsyncSession) -> list[User]:
 # 특정 유저를 삭제하는 함수
 async def delete_user(user_id: str, db: AsyncSession) -> None:
     # 특정 유저 아이디에 해당하는 유저를 삭제하는 쿼리 생성
-    stmt = delete(User).where(User.user_id == user_id)
+    stmt = delete(User).where(User.user_email == user_id)
     # 쿼리를 실행
     await db.execute(stmt)
     # 트랜잭션 커밋
     await db.commit()
 
-async def update_user(data: str, user_info: UpdateUserInfo, db: AsyncSession) -> bool:
+async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession) -> bool:
     try:
         # 데이터베이스에서 사용자의 현재 비밀번호를 조회
-        query = select(User).where(User.user_email == data)
+        query = select(User).where(User.user_email == user_id)
         result = await db.execute(query)
         user = result.scalar_one_or_none()
 
@@ -64,7 +67,7 @@ async def update_user(data: str, user_info: UpdateUserInfo, db: AsyncSession) ->
                     user_info_dict['user_password'] = encrypted_new_password
 
                     # 업데이트 쿼리 생성
-                    stmt = update(User).where(User.user_email == data).values(**user_info_dict)
+                    stmt = update(User).where(User.user_email == user_id).values(**user_info_dict)
                     
                     # 업데이트 쿼리 실행
                     await db.execute(stmt)
