@@ -11,11 +11,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from src.api.v1.study_board.study_board_dto import ReadBoard, ReadBoardlist, CreateBoard
-<<<<<<<< HEAD:src/api/v1_master/board_study/board_study_dao.py
-from src.database.models_hongsi import Study_Board
-========
 from src.database.models import Study_Board
->>>>>>>> dev_e-wha:src/api/v1/study_board/study_board_dao.py
 
 BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/ ')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/study_board/')

@@ -10,14 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 from typing import Optional
 
-<<<<<<< HEAD:src/api/v1_master/board_exam/board_exam_dao.py
-from src.api.v1.exam_sharing_board_comment import exam_sharing_board_comment_dao
-from src.api.v1.exam_sharing_board.exam_sharing_board_dto import ReadBoard, ReadBoardlist
-from src.database.models_hongsi import Exam_Sharing_Board
-=======
 from src.api.v1.exam_sharing_board.exam_sharing_board_dto import ReadBoard, ReadBoardlist, CreateBoard
 from src.database.models import Exam_Sharing_Board
->>>>>>> dev_e-wha:src/api/v1/exam_sharing_board/exam_sharing_board_dao.py
 
 BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/exam_sharing_board/')

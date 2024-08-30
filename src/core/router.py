@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 from fastapi import APIRouter, FastAPI
 import logging
+import importlib
 
 logger = logging.getLogger(__name__)
 
@@ -41,27 +42,21 @@ class RouterManager:
     def _get_module_name(self, path: Path) -> str:
         ''' 파일 경로로부터 모듈 이름 생성('src/api/auth/auth_control.py' -> 'src.api.auth.auth_control') '''
         paths = []
-        if path.name != '__init__.py':
-            paths.append(path.stem)
-        while True:
-            path = path.parent
-            if not path or not path.is_dir():
-                break
-
-            inits = [f for f in path.iterdir() if f.name == '__init__.py']
-            if not inits:
-                break
-
-            paths.append(path.stem)
+        while path != Path(self.base_path):
+            if path.name != '__init__.py':
+                paths.append(path.stem)
+            path = path.parent 
 
         module_name = '.'.join(reversed(paths))
+        module_name = f"{self.base_path.replace('/', '.')}.{module_name}"
         logger.info(f"=>> 파일 경로로부터 라우터 이름 생성 : {module_name}")
         return module_name
 
     def _load_module(self, module_name: str, attr_name: str) -> Optional[APIRouter]:
         """ 모듈 동적 임포트 및 로드 """
         logger.info(f"=>> 라우터 로드 중 -> module_name : {module_name}, attr_name : {attr_name}")
-        module = __import__(module_name, fromlist=[attr_name])
+        module = importlib.import_module(module_name)
+        logger.info(f"라우터 로드 성공: {module_name}")
         return getattr(module, attr_name, None)
 
 
