@@ -1,3 +1,6 @@
+"""
+JWT 보안 인증 모듈
+"""
 from jose import jwt, JWTError
 from datetime import timedelta, datetime
 from decouple import config

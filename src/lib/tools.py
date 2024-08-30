@@ -57,7 +57,6 @@ class RDBTools:
         :transactional: 트랜잭션 사용 여부
         :session_var_name: 세션을 주입할 변수 이름
         '''
-
         def dao_decorator(original_function: Callable[..., Any]):
             ''' DAO 데코레이터 '''
             @wraps(original_function)
