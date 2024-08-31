@@ -11,7 +11,7 @@ class CreateUserInfo(BaseDTO):
     user_name: Annotated[str, Field(description="유저 이름")]
     user_email: Annotated[EmailStr, Field(description="유저 이메일")]
     user_phone: Annotated[str, Field(description="유저 전화번호")]
-    user_birth: Annotated[int, Field(description="유저 생년월일")]
+    user_birth: Annotated[str, Field(description="유저 생년월일")]
 
     # 가입 일자를 자동으로 현재 시간으로 설정
     create_date: Annotated[datetime, Depends(lambda: datetime.now(timezone.utc))] = Field(

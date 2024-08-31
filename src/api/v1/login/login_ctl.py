@@ -5,7 +5,7 @@ from datetime import timedelta
 from decouple import config
 from src.lib.type import ResultType
 from src.lib.status import Status, SU, ER
-from src.api.v1.login import login_service
+from src.api.v1.login import login_svc
 from src.lib.security import JWTBearer, create_access_token, create_refresh_token, verify_access_token, verify_refresh_token
 from src.api.v1.login.login_dto import CreateUserInfo
 
@@ -31,7 +31,7 @@ async def post_login(
     login_form: OAuth2PasswordRequestForm = Depends()
 ):
     # 사용자 인증 확인
-    verify = await login_service.verify(login_form.username, login_form.password)
+    verify = await login_svc.verify(login_form.username, login_form.password)
     if not verify:
         return ResultType(status='error', message=ER.UNAUTHORIZED[1])
     
@@ -59,14 +59,18 @@ async def post_signup(
     code: str
 ):
     # 사용자 존재 여부 확인
-    if login_info and await login_service.is_user(login_info.user_id, login_info.user_name, login_info.user_email, code):
+    if login_info and await login_svc.is_user(login_info.user_id, login_info.user_name, login_info.user_email, code):
         return ResultType(status='error', message=ER.DUPLICATE_RECORD[1])
-    if not await login_service.verify_email(code):
+    if not await login_svc.verify_email(code):
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
     # 회원가입 처리
-    await login_service.post_signup(login_info)
-    return ResultType(status='success', message=SU.CREATED[1])
+    await login_svc.post_signup(login_info)
+    if res:
+        return ResultType(status='success', message=SU.CREATED[1])
+    else:
+        return ResultType(status='error', message=ER.INVALID_REQUEST[1])
+
 
 '''
 로그아웃 엔드포인트
@@ -137,7 +141,7 @@ async def get_token(request: Request):
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def verify_email(user_email: str = Query(..., description="사용자 이메일")):
-    await login_service.send_confirmation_email(user_email)
+    await login_svc.send_confirmation_email(user_email)
     return ResultType(status='success', message=SU.SUCCESS[1])
 
 '''
@@ -150,5 +154,5 @@ async def verify_email(user_email: str = Query(..., description="사용자 이�
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def code():
-    res = await login_service.code()
+    res = await login_svc.code()
     return ResultType(status='success', message=SU.SUCCESS[1], detail={"code": res})

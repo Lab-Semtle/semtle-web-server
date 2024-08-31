@@ -5,7 +5,7 @@ from src.lib.type import ResultType
 from src.lib.status import Status, SU, ER
 from src.lib.security import JWTBearer
 from src.api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
-from src.api.v1.user import user_service
+from src.api.v1.user import user_svc
 
 router = APIRouter(prefix="/user", tags=["user"])
 
@@ -21,7 +21,7 @@ router = APIRouter(prefix="/user", tags=["user"])
     dependencies=[Depends(JWTBearer())],
 )
 async def get_users():
-    users_info = await user_service.get_users()
+    users_info = await user_svc.get_users()
     return ResultType(status='success', message=SU.SUCCESS[1], detail=users_info)
 
 '''
@@ -36,7 +36,7 @@ async def get_users():
     dependencies=[Depends(JWTBearer())],
 )
 async def get_user(user_id: Annotated[str,Depends(JWTBearer().get_user)]):
-    user_info = await user_service.get_user(user_id)
+    user_info = await user_svc.get_user(user_id)
     return ResultType(status='success', message=SU.SUCCESS[1], detail=user_info)
 
 '''
@@ -50,7 +50,7 @@ async def get_user(user_id: Annotated[str,Depends(JWTBearer().get_user)]):
     dependencies=[Depends(JWTBearer())],
 )
 async def update_user(user_id: Annotated[str,Depends(JWTBearer().get_user)], user_info: UpdateUserInfo):
-    res = await user_service.update_user(user_id, user_info)
+    res = await user_svc.update_user(user_id, user_info)
     if res:
         return ResultType(status='success', message=SU.ACCEPTED[1])
     else:
@@ -67,5 +67,5 @@ async def update_user(user_id: Annotated[str,Depends(JWTBearer().get_user)], use
     dependencies=[Depends(JWTBearer())],
 )
 async def delete_user(user_id: Annotated[str,Depends(JWTBearer().get_user)]):
-    await user_service.delete_user(user_id)
+    await user_svc.delete_user(user_id)
     return ResultType(status='success', message=SU.SUCCESS[1])

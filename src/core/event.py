@@ -11,19 +11,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@asynccontextmanager
-async def use(app: FastAPI):
-    """
-    애플리케이션 주요 생명주기 이벤트를 관리하는 함수
-    - FastAPI 애플리케이션 인스턴스에 대한 이벤트 핸들러 등록
-    - 특정 이벤트 발생 시 해당 함수 호출
-    """
-    # 시작 이벤트 처리
-    logger.info("애플리케이션 서버를 시작합니다...")
-    await rdb.create_tables()  # 데이터베이스 스키마 생성
-
-    yield  # 여기에서 FastAPI가 요청 처리를 시작
-
-    # 종료 이벤트 처리
-    logger.info("애플리케이션 서버를 종료합니다...")
-    await rdb.dispose_engine() # 리소스 정리: 데이터베이스 연결 해제
+def use(app: FastAPI):
+    """ 이벤트 확장 모듈 """
+    
+    @app.on_event("startup")
+    async def startup_event():
+        '''
+        서버 시작 이벤트 처리 함수
+        '''
+        logger.info('=>> 서버 시작 이벤트 호출')
+        await rdb.create_tables()
+        
+    
+    @app.on_event("shutdown")
+    async def shutdown_event():
+        '''
+        서버 종료 이벤트 처리 함수
+        '''
+        logger.info('=>> 서버 종료 이벤트 실행')
+        await rdb.dispose_engine()

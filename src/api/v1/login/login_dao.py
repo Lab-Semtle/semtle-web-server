@@ -43,7 +43,9 @@ async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> None:
         user_data['user_password'] = encrypted_password
         stmt = insert(User).values(**user_data)
         await db.execute(stmt)
+        return True
     except Exception as e:
+        return False
 
 @rdb.dao()
 async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str, db: AsyncSession) -> bool:

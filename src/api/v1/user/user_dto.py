@@ -10,7 +10,7 @@ class ReadUserInfo(BaseDTO):
     user_name: Annotated[Optional[str], Form(description="유저 이름")]
     user_email: Annotated[Optional[str], Form(description="유저 이메일")]
     user_phone: Annotated[Optional[str], Form(description="유저 전화번호")]
-    user_birth: Annotated[Optional[int], Form(description="유저 생년월일")]
+    user_birth: Annotated[Optional[str], Form(description="유저 생년월일")]
 
 # 유저 정보를 업데이트하기 위한 DTO
 class UpdateUserInfo(BaseDTO):
@@ -20,7 +20,7 @@ class UpdateUserInfo(BaseDTO):
     user_name: Annotated[str, Form(description="유저 이름")]
     user_email: Annotated[str, Form(description="유저 이메일")]
     user_phone: Annotated[str, Form(description="유저 전화번호")]
-    user_birth: Annotated[int, Form(description="유저 생년월일")]
+    user_birth: Annotated[str, Form(description="유저 생년월일")]
 
     # 필수 필드가 빈 문자열이나 공백이 아닌지 확인하는 유효성 검사기
     @field_validator('user_email', 'user_name', 'user_phone', 'present_user_password','future_user_password')

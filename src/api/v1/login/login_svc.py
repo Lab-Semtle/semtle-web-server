@@ -34,7 +34,7 @@ async def post_signup(login_info: CreateUserInfo) -> None:
     '''
     새로운 사용자를 생성하는 함수
     '''
-    await login_dao.post_signup(login_info)
+    return await login_dao.post_signup(login_info)
 
 async def send_confirmation_email(user_email: str) -> None:
     '''
@@ -58,6 +58,7 @@ async def send_confirmation_email(user_email: str) -> None:
             password = PASSWARD,
         )
     except Exception as e:
+        return e
 
 async def verify_email(code) -> bool:
     '''

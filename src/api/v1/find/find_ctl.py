@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from src.lib.type import ResultType
 from src.lib.status import Status, SU, ER
-from src.api.v1.find.find_service import find_password, find_email_
+from src.api.v1.find.find_svc import find_password, find_email_
 
 router = APIRouter(prefix="/find", tags=["find"])
 
