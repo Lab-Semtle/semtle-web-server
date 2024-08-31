@@ -44,6 +44,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+frontend/
 .Python
 build/
 develop-eggs/

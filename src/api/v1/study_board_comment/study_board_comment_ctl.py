@@ -9,9 +9,6 @@ from src.lib.status import Status, SU, ER
 import logging
 import os
 
-# (db 세션 관련)이후 삭제 예정, 개발을 위해 일단 임시로 추가
-from sqlalchemy.ext.asyncio import AsyncSession
-from src.database.session import get_db
 
 # 호출할 모듈 추가
 from src.api.v1.study_board_comment.study_board_comment_dto import UpdateComment, ReadComment, CreateComment, ReadCommentlist
@@ -38,10 +35,10 @@ router = APIRouter(prefix="/study_board_comment", tags=["study_board_comment"])
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def get_study_board_comment(study_board_no: int, page: int = 0, db: AsyncSession = Depends(get_db)):
+async def get_study_board_comment(study_board_no: int, page: int = 0):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------스터디 게시판 게시물 댓글 전체 조회----------")
-    total, study_board_comment_info = await study_board_comment_svc.get_study_board_comment(db, study_board_no, skip=page)
+    total, study_board_comment_info = await study_board_comment_svc.get_study_board_comment(study_board_no, skip=page)
     return {
         'total': total,
         'Board_info': study_board_comment_info
@@ -57,7 +54,7 @@ async def get_study_board_comment(study_board_no: int, page: int = 0, db: AsyncS
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def get_Images_study_board_commet(db: AsyncSession = Depends(get_db), file_name: str = ""):
+async def get_Images_study_board_commet(file_name: str = ""):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------스터디 게시판 특정 게시물 댓글 이미지 조회----------")
     return FileResponse(''.join([STATIC_DIR,file_name]))
@@ -73,11 +70,10 @@ async def get_Images_study_board_commet(db: AsyncSession = Depends(get_db), file
 )
 async def create_study_board_comment(
     study_board_no: int,
-    study_board_comment_info: Optional[CreateComment],
-    db: AsyncSession = Depends(get_db)
+    study_board_comment_info: Optional[CreateComment]
 ):
     logger.info("----------스터디 게시판 신규 게시물 생성----------")
-    study_board_comment_no = await study_board_comment_svc.create_study_board_comment(study_board_no, study_board_comment_info, db)
+    study_board_comment_no = await study_board_comment_svc.create_study_board_comment(study_board_no, study_board_comment_info)
     return { "status": SU.CREATED, "Study_Board_Comment_No": study_board_comment_no}
 
 
@@ -96,7 +92,7 @@ async def create_study_board_comment(
 #     db: AsyncSession = Depends(get_db)
 # ):
 #     logger.info("----------스터디 게시판 게시물 신규 댓글(파일 포함) 생성----------")
-#     await study_board_comment_svc.upload_create_study_board_comment(study_board_no, content, file_name, db)
+#     await study_board_comment_svc.upload_create_study_board_comment(study_board_no, content, file_name)
 #     return SU.CREATED
 
 
@@ -110,11 +106,10 @@ async def create_study_board_comment(
 )
 async def upload_file_study_board_comment(
     study_board_comment_no: int,
-    file_name: list[UploadFile] = File(...),
-    db: AsyncSession = Depends(get_db)
+    file_name: list[UploadFile] = File(...)
 ):
     logger.info("----------스터디 게시판 신규 게시물 이미지 생성----------")
-    await study_board_comment_svc.upload_file_study_board_comment(study_board_comment_no, file_name, db)
+    await study_board_comment_svc.upload_file_study_board_comment(study_board_comment_no, file_name)
     return SU.CREATED
 
 
@@ -128,11 +123,10 @@ async def upload_file_study_board_comment(
 async def update_study_board_comment(
     study_board_comment_no: int,
     study_board_comment_info: Optional[CreateComment],
-    db: AsyncSession = Depends(get_db),
     select: bool = False
 ):
     logger.info("----------스터디 게시판 기존 게시물 수정----------")
-    await study_board_comment_svc.update_study_board_comment(study_board_comment_no, study_board_comment_info, db, select=select)
+    await study_board_comment_svc.update_study_board_comment(study_board_comment_no, study_board_comment_info, select=select)
     return SU.SUCCESS
 
 
@@ -151,7 +145,7 @@ async def update_study_board_comment(
 #     db: AsyncSession = Depends(get_db)
 # ):
 #     logger.info("----------스터디 게시판 게시물 기존 댓글(파일 포함) 수정----------")
-#     await study_board_comment_svc.upload_update_study_board_comment(study_board_no, study_board_comment_no, content, file_name, db)
+#     await study_board_comment_svc.upload_update_study_board_comment(study_board_no, study_board_comment_no, content, file_name)
 #     return SU.SUCCESS
 
 
@@ -166,11 +160,10 @@ async def update_study_board_comment(
 async def upload_update_file_study_board_comment(
     study_board_comment_no: int,
     file_name: list[UploadFile] = File(...),
-    db: AsyncSession = Depends(get_db),
     select: bool = False
 ):
     logger.info("----------스터디 게시판 기존 게시물 이미지 수정----------")
-    await study_board_comment_svc.upload_update_file_study_board_comment(study_board_comment_no, file_name, db, select=select)
+    await study_board_comment_svc.upload_update_file_study_board_comment(study_board_comment_no, file_name, select=select)
     return SU.SUCCESS
 
 
@@ -182,8 +175,7 @@ async def upload_update_file_study_board_comment(
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD),
 )
 async def delete_study_board_comment(
-    study_board_comment_no: int, # JWT 토큰에서 id 가져오는 방식으로 변경, 임시조치
-    db: AsyncSession = Depends(get_db)
+    study_board_comment_no: int # JWT 토큰에서 id 가져오는 방식으로 변경, 임시조치
 ):
-    await study_board_comment_svc.delete_study_board_comment(study_board_comment_no, db)
+    await study_board_comment_svc.delete_study_board_comment(study_board_comment_no)
     return SU.SUCCESS

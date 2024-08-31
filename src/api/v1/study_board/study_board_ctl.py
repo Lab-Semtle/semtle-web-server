@@ -9,9 +9,6 @@ from src.lib.status import Status, SU, ER
 import logging
 import os
 
-# (db 세션 관련)이후 삭제 예정, 개발을 위해 일단 임시로 추가
-from sqlalchemy.ext.asyncio import AsyncSession
-from src.database.session import get_db
 
 # 호출할 모듈 추가
 from src.api.v1.study_board.study_board_dto import ReadBoard, ReadBoardlist, CreateBoard, UpdateBoard
@@ -31,17 +28,17 @@ router = APIRouter(prefix="/study_board", tags=["study_board"])
 
 # Read List
 @router.get(
-    "/get list",
+    "/get_list",
     summary="스터디 게시판 게시물 전체 조회",
     description="- 스터디 게시판 게시물 전체 리스트 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def get_study_board_list(db: AsyncSession = Depends(get_db), page: int = 0):
+async def get_study_board_list(page: int = 0):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------스터디 게시판 전체 목록 조회----------")
-    total, study_board_info = await study_board_svc.get_study_board_list(db, skip=page)
+    total, study_board_info = await study_board_svc.get_study_board_list(skip=page)
     return {
         'total': total,
         'Board_info': study_board_info
@@ -56,10 +53,10 @@ async def get_study_board_list(db: AsyncSession = Depends(get_db), page: int = 0
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def get_study_board(db: AsyncSession = Depends(get_db), study_board_no: int = 0):
+async def get_study_board(study_board_no: int = 0):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------스터디 게시판 특정 게시물 조회----------")
-    study_board_info = await study_board_svc.get_study_board(db, study_board_no)
+    study_board_info = await study_board_svc.get_study_board(study_board_no)
     return study_board_info
 
 # Image 
@@ -71,7 +68,7 @@ async def get_study_board(db: AsyncSession = Depends(get_db), study_board_no: in
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def get_Images_study_board(db: AsyncSession = Depends(get_db), file_name: str = ""):
+async def get_Images_study_board(file_name: str = ""):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------스터디 게시판 특정 게시물 이미지 조회----------")
     return FileResponse(''.join([STATIC_DIR,file_name]))
@@ -86,11 +83,10 @@ async def get_Images_study_board(db: AsyncSession = Depends(get_db), file_name: 
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def create_study_board(
-    study_board_info: Optional[CreateBoard],
-    db: AsyncSession = Depends(get_db)
+    study_board_info: Optional[CreateBoard]
 ):
     logger.info("----------스터디 게시판 신규 게시물 생성----------")
-    study_board_no = await study_board_svc.create_study_board(study_board_info, db)
+    study_board_no = await study_board_svc.create_study_board(study_board_info)
     return { "status": SU.CREATED, "Study_Board_No": study_board_no}
 
 
@@ -109,7 +105,7 @@ async def create_study_board(
 #     db: AsyncSession = Depends(get_db)
 # ):
 #     logger.info("----------스터디 게시판 신규 게시물(파일 포함) 생성----------")
-#     await study_board_svc.upload_create_study_board(title, content, file_name, db)
+#     await study_board_svc.upload_create_study_board(title, content, file_name)
 #     return SU.CREATED
 
 # Create
@@ -122,11 +118,10 @@ async def create_study_board(
 )
 async def upload_file_study_board(
     study_board_no: int,
-    file_name: list[UploadFile] = File(...),
-    db: AsyncSession = Depends(get_db)
+    file_name: list[UploadFile] = File(...)
 ):
     logger.info("----------스터디 게시판 신규 게시물 이미지 생성----------")
-    await study_board_svc.upload_file_study_board(study_board_no, file_name, db)
+    await study_board_svc.upload_file_study_board(study_board_no, file_name)
     return SU.CREATED
 
 
@@ -140,11 +135,10 @@ async def upload_file_study_board(
 async def update_study_board(
     study_board_no: int,
     study_board_info: Optional[UpdateBoard],
-    db: AsyncSession = Depends(get_db),
     select: bool = False
 ):
     logger.info("----------스터디 게시판 기존 게시물 수정----------")
-    await study_board_svc.update_study_board(study_board_no, study_board_info, db, select=select)
+    await study_board_svc.update_study_board(study_board_no, study_board_info, select=select)
     return SU.SUCCESS
 
 
@@ -163,7 +157,7 @@ async def update_study_board(
 #     db: AsyncSession = Depends(get_db)
 # ):
 #     logger.info("----------스터디 게시판 기존 게시물(파일 포함) 수정----------")
-#     await study_board_svc.upload_update_study_board(study_board_no, title, content, file_name, db)
+#     await study_board_svc.upload_update_study_board(study_board_no, title, content, file_name)
 #     return SU.SUCCESS
 
 # Update
@@ -177,11 +171,10 @@ async def update_study_board(
 async def upload_update_file_study_board(
     study_board_no: int,
     file_name: list[UploadFile] = File(...),
-    db: AsyncSession = Depends(get_db),
     select: bool = False
 ):
     logger.info("----------스터디 게시판 기존 게시물 이미지 수정----------")
-    await study_board_svc.upload_update_file_study_board(study_board_no, file_name, db, select=select)
+    await study_board_svc.upload_update_file_study_board(study_board_no, file_name, select=select)
     return SU.SUCCESS
 
 
@@ -193,10 +186,9 @@ async def upload_update_file_study_board(
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD),
 )
 async def delete_study_board(
-    study_board_no: int, # JWT 토큰에서 id 가져오는 방식으로 변경, 임시조치
-    db: AsyncSession = Depends(get_db)
+    study_board_no: int # JWT 토큰에서 id 가져오는 방식으로 변경, 임시조치
 ):
-    await study_board_svc.delete_study_board(study_board_no, db)
+    await study_board_svc.delete_study_board(study_board_no)
     return SU.SUCCESS
 
 
@@ -209,10 +201,10 @@ async def delete_study_board(
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def sort_study_board(db: AsyncSession = Depends(get_db), page: int = 0, select: int = 0):
+async def sort_study_board(page: int = 0, select: int = 0):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------스터디 게시판 제목 가나다순 정렬----------")
-    total, study_board_info = await study_board_svc.sort_study_board(db, skip=page, select=select)
+    total, study_board_info = await study_board_svc.sort_study_board(skip=page, select=select)
     return {
         'total': total,
         'Board_info': study_board_info

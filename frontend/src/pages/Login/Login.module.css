@@ -11,7 +11,7 @@
 
   background-color: #f0f0f0;
 
-  overflow: hidden;
+  overflow: auto;
 
   display: flex;
   flex-direction: column;
@@ -75,10 +75,10 @@
   background-color: #9e30f4;
   border-radius: 64px;
   color: white;
-  position: absolute;
-  top: 450px;
+  position: relative;
   left: 25px;
   cursor: pointer;
+  margin-bottom: 20px;
 }
 
 .bottomButton:disabled {
@@ -88,7 +88,7 @@
 
 .memberWrap {
   margin: 0 auto;
-  padding: 0 0 200px;
+  padding: 0 0 40px;
 }
 
 .memberWrap th {

@@ -7,6 +7,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.database.session import rdb
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -23,6 +24,7 @@ async def verify(user_email: str, user_password: str, db: AsyncSession) -> bool:
         return False     # 아이디가 존재하지 않을 경우
 
 # 사용자를 생성하여 데이터베이스에 저장하는 함수
+@rdb.dao(transactional=True)
 async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> None:
     # 비밀번호를 해시화
     hashed_password = pwd_context.hash(login_info.user_password)
@@ -35,9 +37,9 @@ async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> None:
     # 데이터베이스에 명령문 실행
     await db.execute(stmt)
     # 트랜잭션 커밋
-    await db.commit()
 
 # 사용자가 존재하는지 확인하는 함수
+@rdb.dao()
 async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str, db: AsyncSession) -> bool:
     # 사용자 정보를 조회하는 선택 명령문 생성
     stmt = select(User).where(

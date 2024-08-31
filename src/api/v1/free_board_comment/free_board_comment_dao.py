@@ -6,12 +6,14 @@ from sqlalchemy import select, update, insert, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
+from src.database.session import rdb
 from src.api.v1.free_board_comment.free_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
 from src.database.models import Free_Board_Comment
 
 
 # Read
-async def get_free_board_comment(db: AsyncSession, free_board_no: int, skip: int = 0) -> tuple[int, list[ReadCommentlist]]:
+@rdb.dao()
+async def get_free_board_comment(free_board_no: int, skip: int, db: AsyncSession) -> tuple[int, list[ReadCommentlist]]:
     result = await db.execute(select(Free_Board_Comment).filter(Free_Board_Comment.Board_no == free_board_no).order_by(Free_Board_Comment.Board_no.desc()).offset(skip*10).limit(10))
     free_board_comment_info = result.scalars().all()
     total = await db.execute(select(func.count(Free_Board_Comment.Board_no)))
@@ -20,6 +22,7 @@ async def get_free_board_comment(db: AsyncSession, free_board_no: int, skip: int
 
 
 # Create
+@rdb.dao(transactional=True)
 async def create_free_board_comment(free_board_no: int, free_board_comment_info: CreateComment, db: AsyncSession):
     create_values = {
     "Board_no": free_board_no,
@@ -32,18 +35,21 @@ async def create_free_board_comment(free_board_no: int, free_board_comment_info:
     
     
 # Update
+@rdb.dao(transactional=True)
 async def update_free_board_comment(free_board_no: int, free_board_comment_no: int, free_board_comment_info: UpdateComment, db: AsyncSession) -> None:
     await db.execute(update(Free_Board_Comment).filter(Free_Board_Comment.Board_no == free_board_no).filter(Free_Board_Comment.Comment_no == free_board_comment_no).values(free_board_comment_info.dict()))
     await db.commit()
     
 
 # Delete
+@rdb.dao(transactional=True)
 async def delete_free_board_comment(free_board_no: int, free_board_comment_no: int, db: AsyncSession) -> None:
     await db.execute(delete(Free_Board_Comment).filter(Free_Board_Comment.Board_no == free_board_no).filter(Free_Board_Comment.Comment_no == free_board_comment_no))
     await db.commit()
 
 
 # Delete
+@rdb.dao(transactional=True)
 async def all_delete_free_board_comment(free_board_no: int, db: AsyncSession) -> None:
     await db.execute(delete(Free_Board_Comment).filter(Free_Board_Comment.Board_no == free_board_no))
     await db.commit()

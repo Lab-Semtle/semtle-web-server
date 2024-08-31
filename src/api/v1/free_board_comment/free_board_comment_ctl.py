@@ -7,9 +7,6 @@ from fastapi import APIRouter, Depends
 from src.lib.status import Status, SU, ER
 import logging
 
-# (db 세션 관련)이후 삭제 예정, 개발을 위해 일단 임시로 추가
-from sqlalchemy.ext.asyncio import AsyncSession
-from src.database.session import get_db
 
 # 호출할 모듈 추가
 from src.api.v1.free_board_comment.free_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
@@ -32,10 +29,10 @@ router = APIRouter(prefix="/free_board_comment", tags=["free_board_comment"])
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
-async def get_free_board_comment(free_board_no: int, page: int = 0, db: AsyncSession = Depends(get_db)):
+async def get_free_board_comment(free_board_no: int, page: int = 0):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------자유 게시판 게시물 댓글 전체 조회----------")
-    total, free_board_comment_info = await free_board_comment_svc.get_free_board_comment(db, free_board_no, skip=page)
+    total, free_board_comment_info = await free_board_comment_svc.get_free_board_comment(free_board_no, skip=page)
     return {
         'total': total,
         'Board_info': free_board_comment_info
@@ -52,11 +49,10 @@ async def get_free_board_comment(free_board_no: int, page: int = 0, db: AsyncSes
 )
 async def create_free_board_comment(
     free_board_no: int,
-    free_board_comment: Optional[CreateComment],
-    db: AsyncSession = Depends(get_db)
+    free_board_comment: Optional[CreateComment]
 ):
     logger.info("----------자유 게시판 게시물 신규 댓글 생성----------")
-    await free_board_comment_svc.create_free_board_comment(free_board_no, free_board_comment, db)
+    await free_board_comment_svc.create_free_board_comment(free_board_no, free_board_comment)
     return SU.CREATED
 
 
@@ -70,11 +66,10 @@ async def create_free_board_comment(
 async def update_free_board_comment(
     free_board_no: int,
     free_board_comment_no: int,  # JWT 토큰에서 id 가져오는 방식으로 변경, 이건 임시조치
-    free_board_comment_info: Optional[UpdateComment],
-    db: AsyncSession = Depends(get_db)
+    free_board_comment_info: Optional[UpdateComment]
 ):
     logger.info("----------자유 게시판 게시물 기존 댓글 수정----------")
-    await free_board_comment_svc.update_free_board_comment(free_board_no, free_board_comment_no, free_board_comment_info, db)
+    await free_board_comment_svc.update_free_board_comment(free_board_no, free_board_comment_no, free_board_comment_info)
     return SU.SUCCESS
 
 
@@ -87,8 +82,7 @@ async def update_free_board_comment(
 )
 async def delete_free_board_comment(
     free_board_no: int,
-    free_board_comment_no: int, # JWT 토큰에서 id 가져오는 방식으로 변경, 임시조치
-    db: AsyncSession = Depends(get_db)
+    free_board_comment_no: int # JWT 토큰에서 id 가져오는 방식으로 변경, 임시조치
 ):
-    await free_board_comment_svc.delete_free_board_comment(free_board_no, free_board_comment_no, db)
+    await free_board_comment_svc.delete_free_board_comment(free_board_no, free_board_comment_no)
     return SU.SUCCESS

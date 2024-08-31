@@ -19,7 +19,7 @@ export default function Login() {
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
-    //정규표현식.
+    //정규표현식
     const regex =
       /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
     if (regex.test(email)) {
@@ -32,37 +32,12 @@ export default function Login() {
     setPw(e.target.value);
     //정규표현식2
     const regex =
-      /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+])(?!.*[^a-zA-z0-9$`~!@$!%*#^?&\\(\\)\-_=+]).{8,20}$/;
+      /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+])(?!.*[^a-zA-z0-9$`~!@$!%*#^?&\\(\\)\-_=+]).{7,20}$/;
 
     if (regex.test(pw)) {
       setPwValid(true);
     } else {
       setPwValid(false);
-    }
-  };
-
-  const onClickConfirmButton = () => {
-    axios
-      .post("url", {
-        email: email,
-        pw: pw,
-      })
-      .then((res) => {
-        // console.log(res.data);
-      });
-
-    // axios
-    //   .get("https://my-json-server.typicode.com/typicode/demo/posts")
-    //   .then(function (res) {
-    //     //console.log(res);
-    //     console.log(res.data[0]);
-    //   });
-
-    //res.data.return 값에 따른다.
-    if (email === User.email && pw === User.pw) {
-      alert("로그인 성공");
-    } else {
-      alert("등록되지 않은 회원입니다.");
     }
   };
 
@@ -75,9 +50,30 @@ export default function Login() {
     setNotAllow(true);
   }, [emailValid, pwValid]);
 
+  const onClickConfirmButton = () => {
+    const loginData = new URLSearchParams();
+        loginData.append('username', email);
+        loginData.append('password', pw);
+
+        axios.post('http://localhost:8000/login/login', loginData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(response => {
+            console.log("test")
+            console.log('로그인 성공:', response.data);
+            console.log(document.cookie);
+            window.location.href = "/"
+        })
+        .catch(error => {
+            console.error('로그인 실패:', error.response ? error.response.data : error.message);
+        });
+  };
+
   return (
     <>
-      <Navbarboot></Navbarboot>
+      <Navbarboot />
       <div className={style.page}>
         <div className={style.titleWrap}>
           이메일과 비밀번호를
@@ -92,7 +88,10 @@ export default function Login() {
               className={style.input}
               placeholder="test@gmail.com"
               value={email}
-              onChange={handleEmail}
+              onInput={handleEmail}
+              onKeyDown={(e) => {
+                if (e.key === " ") e.preventDefault();
+              }}
             />
           </div>
           <div className={style.errorMessageWrap}>
@@ -109,7 +108,10 @@ export default function Login() {
               className={style.input}
               placeholder="********"
               value={pw}
-              onChange={handlePw}
+              onInput={handlePw}
+              onKeyDown={(e) => {
+                if (e.key === " ") e.preventDefault();
+              }}
             />
           </div>
           <div className={style.errorMessageWrap}>
@@ -123,13 +125,13 @@ export default function Login() {
           <table>
             <tr>
               <th>
-                <Link to="/idFInd">아이디 찾기</Link>
+                <Link to="/IdFInd">아이디 찾기</Link>
               </th>
               <th>
-                <Link to="/pwFind">비밀번호 찾기</Link>
+                <Link to="/PwFind">비밀번호 찾기</Link>
               </th>
               <th>
-                <Link to="/Membership">회원가입</Link>
+                <Link to="/Agree">회원가입</Link>
               </th>
             </tr>
           </table>

@@ -10,16 +10,17 @@ from datetime import datetime, timezone
 import os
 import secrets
 
+from src.database.session import rdb
 from src.api.v1.study_board_comment.study_board_comment_dto import UpdateComment, ReadComment, CreateComment, ReadCommentlist
 from src.database.models import Study_Board_Comment
-from src.database.session import get_db
 
 BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/study_board_comment/')
 SERVER_IMG_DIR = os.path.join('http://localhost:8000/', 'images/study_board_comment/')
 
 # Read
-async def get_study_board_comment(db: AsyncSession, study_board_no: int, skip: int = 0) -> tuple[int, list[ReadCommentlist]]:
+@rdb.dao()
+async def get_study_board_comment(study_board_no: int, skip: int, db: AsyncSession) -> tuple[int, list[ReadCommentlist]]:
     result = await db.execute(select(Study_Board_Comment).filter(Study_Board_Comment.Board_no == study_board_no).order_by(Study_Board_Comment.Board_no.desc()).offset(skip*10).limit(10))
     comment_info = result.scalars().all()
     total = await db.execute(select(func.count(Study_Board_Comment.Board_no)))
@@ -28,6 +29,7 @@ async def get_study_board_comment(db: AsyncSession, study_board_no: int, skip: i
 
 
 # Create
+@rdb.dao(transactional=True)
 async def create_study_board_comment(study_board_no: int, study_board_comment_info: Optional[CreateComment], db: AsyncSession):
     create_values = {
     "Board_no": study_board_no,
@@ -64,6 +66,7 @@ async def create_study_board_comment(study_board_no: int, study_board_comment_in
 
 
 # Create
+@rdb.dao(transactional=True)
 async def upload_file_study_board_comment(study_board_comment_no: int, file_name: Optional[list[UploadFile]], db: AsyncSession) -> None:
     image_paths=[]
     if file_name:
@@ -83,6 +86,7 @@ async def upload_file_study_board_comment(study_board_comment_no: int, file_name
     
 
 # Update
+@rdb.dao(transactional=True)
 async def update_study_board_comment(study_board_comment_no: int, study_board_comment_info: Optional[CreateComment], db: AsyncSession):
     await db.execute(update(Study_Board_Comment).filter(Study_Board_Comment.Comment_no == study_board_comment_no).values(study_board_comment_info.dict()))
     await db.commit()
@@ -110,6 +114,7 @@ async def update_study_board_comment(study_board_comment_no: int, study_board_co
 
 
 # Update
+@rdb.dao(transactional=True)
 async def upload_file_add_study_board_comment(study_board_comment_no: int, file_name: Optional[list[UploadFile]], db: AsyncSession) -> None:
     result = await db.execute(select(Study_Board_Comment.Image_paths).filter(Study_Board_Comment.Comment_no == study_board_comment_no))
     image_paths = result.scalar_one_or_none()  
@@ -135,12 +140,14 @@ async def upload_file_add_study_board_comment(study_board_comment_no: int, file_
     await db.commit()
 
 # Delete
+@rdb.dao(transactional=True)
 async def delete_study_board_comment(study_board_comment_no: int, db: AsyncSession) -> None:
     await db.execute(delete(Study_Board_Comment).filter(Study_Board_Comment.Comment_no == study_board_comment_no))
     await db.commit()
 
 
 # Delete all
+@rdb.dao(transactional=True)
 async def all_delete_study_board_comment(study_board_no: int, db: AsyncSession) -> None:
     result = await db.execute(select(Study_Board_Comment.Image_paths).filter(Study_Board_Comment.Board_no == study_board_no))
     comment_image_path_list = result.scalars().all()
@@ -157,6 +164,7 @@ async def all_delete_study_board_comment(study_board_no: int, db: AsyncSession) 
 
 
 # Delte Image
+@rdb.dao(transactional=True)
 async def delete_image_study_board_comment(study_board_comment_no: int, db: AsyncSession) -> None:
     result = await db.execute(select(Study_Board_Comment.Image_paths).filter(Study_Board_Comment.Comment_no == study_board_comment_no))
     image_paths = result.scalar_one_or_none()

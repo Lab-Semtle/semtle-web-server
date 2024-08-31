@@ -1,26 +1,34 @@
+
 import React, { useState, useEffect } from 'react';
-import Navbarboot from '../../components/Header/Navbarboot';
-import './CommonTable.css';
 import axios from 'axios';
+import Navbarboot from '../../components/Header/Navbarboot';
 import { Link } from 'react-router-dom';
-import './Board.css'; // 스타일을 위한 CSS 파일 임포트
+import { ApiURL } from '../../ApiURL/ApiURL';
+import './Boardlist.css';
+import Dropdownbutton from '../../components/Button/Dropdownbutton';
+import PaginationBasic from '../../components/Header/PaginationBasic';
+import { ListGroup } from 'react-bootstrap';
 
 const CommonTableRow = ({ children }) => {
   return (
-    <tr className="common-table-row">
-      {children}
-    </tr>
-  );
-};
 
+    <tr className="common-table-row" >
+      {
+        children
+      }
+    </tr>
+
+  )
+}
 const CommonTableColumn = ({ children }) => {
   return (
     <td className="common-table-column">
-      {children}
+      {
+        children
+      }
     </td>
-  );
-};
-
+  )
+}
 const CommonTable = (props) => {
   const { headersName, children } = props;
 
@@ -28,86 +36,93 @@ const CommonTable = (props) => {
     <table className="common-table">
       <thead>
         <tr>
-          {headersName.map((item, index) => (
-            <td className="common-table-header-column" key={index}>{item}</td>
-          ))}
+          {
+            headersName.map((item, index) => {
+              return (
+                <th className="common-table-header-column" key={index}>{item}</th>
+              )
+            })
+          }
         </tr>
       </thead>
       <tbody>
-        {children}
+
+        {
+          children
+        }
+
       </tbody>
     </table>
-  );
-};
-
-function App() {
-  const [boardData, setBoardData] = useState([]);
-  const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
-
-  const fetchData = async (page) => {
-    try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/v1/Free_Board/Get?page=${page}&size=${itemsPerPage}`);
-      setBoardData(response.data.Board_info);
-      setPageCount(Math.ceil(response.data.total / itemsPerPage));
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData(currentPage);
-  }, [currentPage]);
-
-  const handlePageClick = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handlePreviousClick = () => {
-    if (currentPage > 0) {
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
-  };
-
-  const handleNextClick = () => {
-    if (currentPage < pageCount - 1) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
-  };
-
-  const getDisplayedPages = () => {
-    const startPage = Math.floor(currentPage / 10) * 10;
-    return [...Array(10).keys()].map(i => startPage + i).filter(i => i < pageCount);
-  };
-
-  return (
-    <>
-      <Navbarboot />
-      <CommonTable headersName={['글번호', '제목', '등록일', '조회수']}>
-        {boardData.length > 0 ? boardData.map((item, index) => (
-          <CommonTableRow key={index}>
-            <CommonTableColumn>{item.Board_no}</CommonTableColumn>
-            <CommonTableColumn><Link to={`/Boardview/${index}`}>{item.Title}</Link></CommonTableColumn>
-            <CommonTableColumn>{item.Create_date}</CommonTableColumn>
-            <CommonTableColumn>{item.Views}</CommonTableColumn>
-          </CommonTableRow>
-        )) : <tr><td colSpan="4">No data available</td></tr>}
-      </CommonTable>
-      <div className="pagination-container">
-        <button onClick={handlePreviousClick} disabled={currentPage === 0}>Previous</button>
-        {getDisplayedPages().map((page) => (
-          <button key={page} onClick={() => handlePageClick(page)} disabled={page === currentPage} className={page === currentPage ? 'active' : ''}>
-            {page + 1}
-          </button>
-        ))}
-        <button onClick={handleNextClick} disabled={currentPage >= pageCount - 1}>Next</button>
-      </div>
-      <div className="create-button-container">
-        <button><Link to="/Boardcreate">게시물 쓰기</Link></button>
-      </div>
-    </>
-  );
+  )
 }
 
-export default App;
+const Boardlist = props => {
+
+  const [boardList, setBoardList] = useState([]);
+  const getBoardList = async (currentPage, postsPerPage) => {
+    const resp = await axios.get(`${ApiURL.Boardlist_get_list}`,{
+      params:{
+        page: currentPage
+      }
+    }); // 2) 게시글 목록 데이터에 할당
+    console.log('요청 URL:', resp.config.url); // 요청을 보낸 URL
+    console.log(resp.data);
+    console.log(resp.data.Board_info);
+    setBoardList(resp); // 3) boardList 변수에 할당
+    setPosts(resp.data.Board_info);
+    
+  }
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);//현 페이지 인덱스
+  const [postsPerPage, setPostsPerPage] = useState(10);//
+  const [rankmenu, setRankmenu] = useState(1);
+  console.log(currentPage);
+
+  useEffect(() => {
+    getBoardList(currentPage, postsPerPage); // 1) 게시글 목록 조회 함수 호출
+
+  }, [currentPage, postsPerPage]);
+
+
+
+ 
+  const indexOfLast = currentPage * postsPerPage;//게시글 인덱스 끝
+  const indexOfFirst = indexOfLast - postsPerPage;//게시글 인덱스 마지막
+
+  
+  
+
+  //useEffect(() => {setBoardList(postList);}, [ ])
+  return (
+    <>
+      <Navbarboot></Navbarboot>
+      <div className='flex-body'>
+      <span className="study-title">자유게시판</span>
+      <div className='Dropbutton'><Dropdownbutton postlist={posts} menurank={setRankmenu}></Dropdownbutton></div>
+      <div className='boardlist-table'>
+        <CommonTable headersName={['제목', '내용', '등록일', '조회수']}>
+          {
+            posts ? posts.map((item, index) => {
+              return (
+                <CommonTableRow key={index} >
+                  <CommonTableColumn><Link to={`/Boardview/${item.Board_no}`}>{item.Title}</Link></CommonTableColumn>
+                  <CommonTableColumn><Link to={`/Boardview/${item.Board_no}`}>{item.Content}</Link></CommonTableColumn>
+                  <CommonTableColumn><Link to={`/Boardview/${item.Board_no}`}>{item.Create_date}</Link></CommonTableColumn>
+                  <CommonTableColumn><Link to={`/Boardview/${item.Board_no}`}>{item.Views}</Link></CommonTableColumn>
+                </CommonTableRow>
+              )
+            }) : ''
+          }
+        </CommonTable>
+      </div>
+      <div className='boardcreate-button'><Link to="/Boardcreate"><button>게시물 쓰기</button></Link></div>
+      <div className="pagination-basic"><PaginationBasic postsPerPage={postsPerPage} totalPosts={posts.length} paginate={setCurrentPage} currentPagPage={currentPage+1}></PaginationBasic></div>
+      </div>
+    </>
+  )
+}
+
+export default Boardlist;
+
+

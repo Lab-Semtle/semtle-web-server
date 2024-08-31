@@ -1,101 +1,134 @@
-.page {
-  position: absolute;
-  top: 0;
-  bottom: 0;
+:root {
+  --primary-color: #333333;
+  --secondary-color: #666666;
+  --background-color: #ffffff;
+  --input-background: #f5f5f5;
+  --text-color: #333333;
+  --card-background: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #333333;
+    --text-color: #f5f5f5;
+    --card-background: #444444;
+    --input-background: #555555;
+    --shadow-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* 메인 컨텐츠 스타일 */
+.maincontent .focusImage {
+  width: 100%;
+  height: 50vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.maincontent .focusImage img {
   width: 100%;
   height: 100%;
-  background-color: #ffffff;
-  overflow: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
 }
 
-.contentWrap {
-  width: 100%;
+.maincontent .focusImage:hover img {
+  transform: scale(1.05);
+}
+
+.maincontent .contentWrap {
   max-width: 1200px;
-  padding: 20px;
-  box-sizing: border-box;
-  align-items: center;
-  margin: 0 auto;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
-.contentWrap {
-  width: 100%;
-  max-width: 1200px;
-  padding: 20px;
-  box-sizing: border-box;
+.maincontent .titleWrap {
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
-.focusImage {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  align-items: center;
-  max-width: 100%; /* 부모 요소의 너비를 초과하지 않도록 설정 */
-  overflow: hidden; /* 부모 요소를 초과하는 내용 숨기기 */
-  flex-shrink: 0; /* 요소가 줄어들지 않도록 설정 */
-}
-
-.focusImage img {
-  max-width: 100%; /* 이미지가 부모 요소의 너비를 초과하지 않도록 설정 */
-  height: auto; /* 이미지의 비율을 유지하면서 높이를 자동으로 조정 */
-  width: auto; /* 필요할 경우 width: 100%를 사용하여 너비를 제한할 수도 있습니다. */
-}
-
-.titleWrap {
-  width: 100%;
-  margin-bottom: 40px;
-}
-
-.titleWrap table {
+.maincontent .titleWrap table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.titleWrap th {
-  padding: 10px;
-  border: 0;
-  text-align: center;
-  transition: background-color 0.5s ease, color 0.5s ease;
+.maincontent .titleWrap th {
+  padding: 1rem;
+  background-color: var(--input-background);
+  color: var(--text-color);
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: background-color 0.3s;
 }
 
-.titleWrap th:hover {
-  background-color: #d3d3d3; /* 회색으로 변경 */
+.maincontent .titleWrap th:hover {
+  background-color: var(--secondary-color);
+  color: var(--background-color);
 }
 
-.cellsWrap {
-  padding: 10px;
-  border: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+.maincontent .cellsWrap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
 }
 
-.cells {
-  background-color: #f9f9f9;
+.maincontent .cells {
+  background-color: var(--card-background);
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 10px;
-  padding: 20px;
-  width: calc(50% - 40px);
-  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: 0 4px 6px var(--shadow-color);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.maincontent .cells:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px var(--shadow-color);
+}
+
+.maincontent .cells img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.maincontent .cellintroduce {
+  padding: 1rem;
+  font-weight: bold;
   text-align: center;
-  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-.cells img {
-  max-width: 100%;
-  border-radius: 10px;
-  margin-bottom: 10px;
+.maincontent a {
+  display: inline-block;
+  margin-top: 2rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s;
 }
 
-.cells:hover {
-  background-color: #d3d3d3;
+.maincontent a:hover {
+  color: var(--secondary-color);
 }
 
-.cellintroduce {
-  font-size: 16px;
-  color: #333;
+@media (max-width: 768px) {
+  .maincontent .titleWrap th {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .maincontent .cellsWrap {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+.footer{
+  align-items: center;
+  margin: auto;
+
 }
