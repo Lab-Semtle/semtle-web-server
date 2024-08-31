@@ -45,6 +45,7 @@ async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> None:
         stmt = insert(User).values(**user_data)
         await db.execute(stmt)
         return True
+        return True
     except Exception as e:
         logger.error(f"데이터베이스에 사용자 생성 중 오류 발생: {e}")
         await db.rollback()  # 트랜잭션 롤백
