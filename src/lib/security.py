@@ -5,9 +5,9 @@ from fastapi import HTTPException, status, Request
 from core.status import Status, SU, ER
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-SECRET_ACCESS_KEY = config("SECRET_ACCESS_KEY")
-SECRET_REFRESH_KEY = config("SECRET_REFRESH_KEY")
-ALGORITHM = config("ALGORITHM")
+SECRET_ACCESS_KEY = config("JWT_SECRET_ACCESS_KEY")
+SECRET_REFRESH_KEY = config("JWT_SECRET_REFRESH_KEY")
+ALGORITHM = config("JWT_ALGORITHM")
 
 async def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()

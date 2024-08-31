@@ -14,7 +14,7 @@ async def find_password(email: str, phone: str) -> Optional[str]:
         else:
             return None
     except Exception as e:
-        raise
+        return None
 
 async def find_email_(phone: str) -> Optional[str]:
     '''
@@ -29,4 +29,4 @@ async def find_email_(phone: str) -> Optional[str]:
         else:
             return None
     except Exception as e:
-        raise
+        return None

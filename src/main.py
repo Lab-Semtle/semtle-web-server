@@ -1,27 +1,34 @@
 """
 메인 서버 모듈
 """
-from fastapi import FastAPI
-from core.cors import setup_cors
-from core.event import app_lifespan
-from core.error import setup_error_handling
-from api.v1 import router as v1_router
+from src.core import setup_logging
+from src.core import cors, error, event
+from src.core.router import SemtleAPI
+import logging
 
-from var.session import engine, Base
+setup_logging()  # 로깅 설정
+logger = logging.getLogger(__name__)
 
 
-app = FastAPI(
-    title="Semtle-Web-Server",
+app = SemtleAPI(
+    title="Semtle API Server",
+    description="Semtle 공식 웹페이지",
     version="0.1",
-    description="API 서버",
-    lifespan=app_lifespan  # 생명주기 이벤트 설정
+    docs_url="/docs",  # 개발 중에는 문서 활성화
+    redoc_url="/redoc",  # 개발 중에는 ReDoc 활성화
+    # disable_api_doc=True  # True로 설정하면 API 문서 비활성화
 )
 
-# CORS 설정
-setup_cors(app)
+# 라우터 매니저를 사용하여 라우터 로드
+app.use_router_manager(base_path="./src/api/v1")
 
-# 에러 핸들링 설정 (미작성)
-setup_error_handling(app)
+# 필요한 확장 모듈 사용
+app.use(cors) # CORS 설정 모듈 사용 예시
+app.use(error)  # 에러 핸들링 모듈 사용 예시
+app.use(event)  # 이벤트 핸들링 모듈 사용 예시
 
-# API v1 라우터 추가
-app.include_router(v1_router, prefix="/api/v1")
+logger.info('=>> 서버 시작 중...')
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8080, reload=True)

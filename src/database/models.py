@@ -4,8 +4,19 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Float, JSON, ForeignKey, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
+
+class Grade(Base):
+    ''' 유저 등급 정보 테이블 '''
+    __tablename__ = "grades"
+    
+    grade_id = Column(Integer, primary_key=True, index=True)     # 등급 식별자
+    grade_grade = Column(String(5), unique=True, nullable=False) # 등급 이름
+    grade_desc = Column(Text, nullable=True)                     # 등급 권한 설명
+    
+    user = relationship("User", back_populates="grade")
 
 class User(Base):
     ''' 유저 테이블 (매니저,일반회원 포함) '''

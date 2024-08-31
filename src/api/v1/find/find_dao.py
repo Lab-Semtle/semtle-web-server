@@ -25,7 +25,7 @@ async def get_user_by_email_and_phone(db: AsyncSession, email: str, phone: str) 
             user.user_password = decrypted_password
         except Exception as e:
             # 복호화 오류 처리
-            return e
+            return None
     return user
 
 @rdb.dao()
