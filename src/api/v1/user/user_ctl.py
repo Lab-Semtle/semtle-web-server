@@ -1,14 +1,11 @@
-"""
-유저 API
-"""
 from typing import Annotated
 from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.lib.type import ResultType
 from src.lib.status import Status, SU, ER
 from src.lib.security import JWTBearer
 from src.api.v1.user.user_dto import ReadUserInfo, UpdateUserInfo
 from src.api.v1.user import user_svc
-
 
 router = APIRouter(prefix="/user", tags=["user"])
 

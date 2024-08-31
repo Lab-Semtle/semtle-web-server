@@ -3,7 +3,6 @@ from src.api.v1.user import user_dao
 from fastapi import Request
 from src.lib.security import verify_access_token
 
-
 async def get_users() -> list[ReadUserInfo]:
     '''
     사용자 정보를 가져오는 함수

@@ -1,15 +1,15 @@
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from cryptography.fernet import Fernet
-from src.api.v1.auth.auth_dto import CreateUserInfo
+from src.api.v1.login.login_dto import CreateUserInfo
 from src.database.models import User
-# from decouple import config
-from src.core import settings
+from decouple import config
 from src.database.session import rdb
+import logging
+logger = logging.getLogger(__name__)
 
-
-FERNET_KEY = settings.general.FERNET_KEY  
-fernet = Fernet(FERNET_KEY.encode())
+FERNET_KEY = config("FERNET_KEY").encode()
+fernet = Fernet(FERNET_KEY)
 
 @rdb.dao()
 async def verify(user_email: str, user_password: str, db: AsyncSession) -> bool:
@@ -40,13 +40,15 @@ async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> None:
     try:
         # 비밀번호를 암호화
         encrypted_password = fernet.encrypt(login_info.user_password.encode()).decode()
-
         user_data = login_info.model_dump()
         user_data['user_password'] = encrypted_password
         stmt = insert(User).values(**user_data)
         await db.execute(stmt)
+        return True
     except Exception as e:
-        ...
+        logger.error(f"데이터베이스에 사용자 생성 중 오류 발생: {e}")
+        await db.rollback()  # 트랜잭션 롤백
+        return False
 
 @rdb.dao()
 async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str, db: AsyncSession) -> bool:

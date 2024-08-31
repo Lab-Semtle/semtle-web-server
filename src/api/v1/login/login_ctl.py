@@ -1,17 +1,16 @@
-"""
-계정 권한 API
-"""
 from typing import Optional
 from fastapi import APIRouter, Depends, Response, Request, Query, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import timedelta
-# from decouple import config
+from decouple import config
 from src.lib.type import ResultType
 from src.lib.status import Status, SU, ER
-from src.api.v1.auth import auth_svc
+from src.api.v1.login import login_svc
 from src.lib.security import JWTBearer, create_access_token, create_refresh_token, verify_access_token, verify_refresh_token
-from src.api.v1.auth.auth_dto import CreateUserInfo
+from src.api.v1.login.login_dto import CreateUserInfo
 from src.core import settings
+import logging
+logger = logging.getLogger(__name__)
 
 
 # 환경 변수에서 토큰 만료 시간 설정
@@ -19,7 +18,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = settings.jwt.JWT_ACCESS_TOKEN_EXPIRE_MIN
 REFRESH_TOKEN_EXPIRE_MINUTES = settings.jwt.JWT_REFRESH_TOKEN_EXPIRE_MINUTES
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-router = APIRouter(prefix="/login", tags=["auth"])
+router = APIRouter(prefix="/login", tags=["login"])
 
 '''
 로그인 엔드포인트
@@ -35,7 +34,7 @@ async def post_login(
     login_form: OAuth2PasswordRequestForm = Depends()
 ):
     # 사용자 인증 확인
-    verify = await auth_svc.verify(login_form.username, login_form.password)
+    verify = await login_svc.verify(login_form.username, login_form.password)
     if not verify:
         return ResultType(status='error', message=ER.UNAUTHORIZED[1])
     
@@ -63,14 +62,21 @@ async def post_signup(
     code: str
 ):
     # 사용자 존재 여부 확인
-    if login_info and await auth_svc.is_user(login_info.user_id, login_info.user_name, login_info.user_email, code):
+    if login_info and await login_svc.is_user(login_info.user_id, login_info.user_name, login_info.user_email, code):
+        logger.info('사용자가 이미 존재합니다.')
         return ResultType(status='error', message=ER.DUPLICATE_RECORD[1])
-    if not await auth_svc.verify_email(code):
+    if not await login_svc.verify_email(code):
+        logger.info('인증되지 않은 이메일 입니다.')
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
-    # 회원가입 처리
-    await auth_svc.post_signup(login_info)
-    return ResultType(status='success', message=SU.CREATED[1])
+    logger.info(f'사용자 입력 값 : {login_info}')
+    res = await login_svc.post_signup(login_info)
+    logger.info(f'API 반환 값 : {res}')
+    if res:
+        return ResultType(status='success', message=SU.CREATED[1])
+    else:
+        return ResultType(status='error', message=ER.INVALID_REQUEST[1])
+
 
 '''
 로그아웃 엔드포인트
@@ -141,7 +147,9 @@ async def get_token(request: Request):
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def verify_email(user_email: str = Query(..., description="사용자 이메일")):
-    await auth_svc.send_confirmation_email(user_email)
+    print('========이메일 테스트========')
+    logger.info('========이메일 테스트========')
+    await login_svc.send_confirmation_email(user_email)
     return ResultType(status='success', message=SU.SUCCESS[1])
 
 '''
@@ -154,5 +162,5 @@ async def verify_email(user_email: str = Query(..., description="사용자 이�
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def code():
-    res = await auth_svc.code()
+    res = await login_svc.code()
     return ResultType(status='success', message=SU.SUCCESS[1], detail={"code": res})

@@ -1,11 +1,12 @@
-from src.api.v1.auth import auth_dao
-from src.api.v1.auth.auth_dto import CreateUserInfo
+from src.api.v1.login import login_dao
+from src.api.v1.login.login_dto import CreateUserInfo
 import aiosmtplib
 from email.message import EmailMessage
 import random
 import string
-# from decouple import config
 from src.core import settings
+import logging
+logger = logging.getLogger(__name__)
 
 
 random_string = ""
@@ -23,19 +24,21 @@ async def verify(user_email: str, user_password: str) -> bool:
     '''
     주어진 이메일과 비밀번호로 사용자를 인증하는 함수
     '''
-    return await auth_dao.verify(user_email, user_password)
+    return await login_dao.verify(user_email, user_password)
 
 async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str) -> bool:
+    logger.info('is_user 호출 확인')
     '''
     주어진 사용자 정보로 사용자가 존재하는지 확인하는 함수
     '''
-    return await auth_dao.is_user(user_id, user_name, user_email, user_phone)
+    return await login_dao.is_user(user_id, user_name, user_email, user_phone)
 
 async def post_signup(login_info: CreateUserInfo) -> None:
     '''
     새로운 사용자를 생성하는 함수
     '''
-    await auth_dao.post_signup(login_info)
+    logger.info(f'service 호출 성공 - login_info : {login_info}')
+    return await login_dao.post_signup(login_info)
 
 async def send_confirmation_email(user_email: str) -> None:
     '''
@@ -59,12 +62,13 @@ async def send_confirmation_email(user_email: str) -> None:
             password = PASSWARD,
         )
     except Exception as e:
-        ...
+        return e
 
 async def verify_email(code) -> bool:
     '''
     사용자가 입력한 코드와 저장된 코드를 비교하여 일치 여부를 반환하는 함수
     '''
+    logger.info('verify_email 호출 확인 ')
     global random_string
     if random_string == code:
         return True

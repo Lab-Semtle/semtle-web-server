@@ -6,7 +6,6 @@ from cryptography.fernet import Fernet
 from decouple import config
 from src.database.session import rdb
 
-
 FERNET_KEY = config("FERNET_KEY")
 fernet = Fernet(FERNET_KEY)
 
@@ -26,7 +25,7 @@ async def get_user_by_email_and_phone(db: AsyncSession, email: str, phone: str) 
             user.user_password = decrypted_password
         except Exception as e:
             # 복호화 오류 처리
-            return e
+            return None
     return user
 
 @rdb.dao()
