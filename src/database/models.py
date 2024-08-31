@@ -11,10 +11,10 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "users"
     
-    user_nickname = Column(String(30), primary_key=True, index=True)
+    user_email = Column(String(30), primary_key=True, index=True)
     user_password = Column(String(128), nullable=False)
-    user_name = Column(String(30), unique=True, nullable=False)
-    user_email = Column(String(30), nullable=False)
+    user_name = Column(String(15), unique=True, nullable=False)
+    user_nickname = Column(String(15), nullable=False)
     user_phone = Column(String(15), nullable=False)
     user_birth = Column(Date, nullable=True)
     create_date = Column(DateTime(timezone=True), default=datetime.now)
