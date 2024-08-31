@@ -1,7 +1,7 @@
 """
 데이터베이스 테이블에 매핑될 모델 정의(ORM Model)
 """
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Float, JSON, ForeignKey, LargeBinary
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Float, JSON, ForeignKey, LargeBinary, Date
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 from sqlalchemy.orm import relationship
@@ -17,5 +17,5 @@ class User(Base):
     user_name = Column(String(30), unique=True, nullable=False)       # 유저 이름
     user_email = Column(String(30), nullable=False)                   #유저 이메일
     user_phone = Column(String(30), nullable=False)                   # 유저 전화번호
-    user_birth = Column(String(15), nullable=True)                     # 유저 생년월일
-    create_date = Column(DateTime(timezone=False), default=datetime.now) # 학회 가입 일자
+    user_birth = Column(Date, nullable=True)                     # 유저 생년월일
+    create_date = Column(DateTime(timezone=True), default=datetime.now) # 학회 가입 일자

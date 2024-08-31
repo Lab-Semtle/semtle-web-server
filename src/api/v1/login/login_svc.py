@@ -34,9 +34,10 @@ async def post_signup(login_info: CreateUserInfo) -> None:
     '''
     새로운 사용자를 생성하는 함수
     '''
-    return await login_dao.post_signup(login_info)
+    res = await login_dao.post_signup(login_info)
+    return res
 
-async def send_confirmation_email(user_email: str) -> None:
+async def send_confirmation_email(user_email: str) -> bool:
     '''
     사용자에게 인증 이메일을 전송하는 함수
     '''
@@ -57,8 +58,9 @@ async def send_confirmation_email(user_email: str) -> None:
             username = USERNAME,
             password = PASSWARD,
         )
+        return True
     except Exception as e:
-        return e
+        return False
 
 async def verify_email(code) -> bool:
     '''
@@ -70,9 +72,12 @@ async def verify_email(code) -> bool:
     else:
         return False
 
-async def code() -> str:
+async def code() -> bool:
     '''
     최근 생성된 인증 코드를 반환하는 함수
     '''
-    global random_string
-    return random_string
+    try:
+        global random_string
+        return random_string, True
+    except:
+        return False

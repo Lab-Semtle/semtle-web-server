@@ -31,7 +31,7 @@ async def verify(user_email: str, user_password: str, db: AsyncSession) -> bool:
         return False
 
 @rdb.dao(transactional=True)
-async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> None:
+async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> bool:
     """
     새로운 사용자를 데이터베이스에 생성하는 함수.
     """

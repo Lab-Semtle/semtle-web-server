@@ -24,7 +24,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
     "/login",
     summary="로그인",
     description="사용자 인증 후 JWT 토큰을 발급합니다.",
-    responses=Status.docs(SU.SUCCESS, ER.UNAUTHORIZED)
+    responses=Status.docs(SU.SUCCESS, ER.UNAUTHORIZED, ER.INVALID_REQUEST)
 )
 async def post_login(
     response: Response,
@@ -34,16 +34,20 @@ async def post_login(
     verify = await login_svc.verify(login_form.username, login_form.password)
     if not verify:
         return ResultType(status='error', message=ER.UNAUTHORIZED[1])
-    
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    refresh_token_expires = timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
-    access_token = await create_access_token(data={"sub": login_form.username}, expires_delta=access_token_expires)
-    refresh_token = await create_refresh_token(data={"sub": login_form.username}, expires_delta=refresh_token_expires)
-    
-    # 쿠키에 저장
-    response.set_cookie(key="access_token", value=access_token, expires=access_token_expires, httponly=True)
-    response.set_cookie(key="refresh_token", value=refresh_token, expires=refresh_token_expires, httponly=True)
-    return ResultType(status='success', message=SU.SUCCESS[1])
+    try:
+        #토큰 생성
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        refresh_token_expires = timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
+        access_token = await create_access_token(data={"sub": login_form.username}, expires_delta=access_token_expires)
+        refresh_token = await create_refresh_token(data={"sub": login_form.username}, expires_delta=refresh_token_expires)
+
+        # 쿠키에 저장
+        response.set_cookie(key="access_token", value=access_token, expires=access_token_expires, httponly=True)
+        response.set_cookie(key="refresh_token", value=refresh_token, expires=refresh_token_expires, httponly=True)
+        
+        return ResultType(status='success', message=SU.SUCCESS[1])
+    except:
+        return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
 '''
 회원가입 엔드포인트
@@ -68,8 +72,7 @@ async def post_signup(
     res = await login_svc.post_signup(login_info)
     if res:
         return ResultType(status='success', message=SU.CREATED[1])
-    else:
-        return ResultType(status='error', message=ER.INVALID_REQUEST[1])
+    return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
 
 '''
@@ -84,9 +87,12 @@ async def post_signup(
 )
 async def get_logout(response: Response):
     # 쿠키 삭제
-    response.delete_cookie(key="access_token")
-    response.delete_cookie(key="refresh_token")
-    return ResultType(status='success', message=SU.SUCCESS[1])
+    try:
+        response.delete_cookie(key="access_token")
+        response.delete_cookie(key="refresh_token")
+        return ResultType(status='success', message=SU.SUCCESS[1])
+    except:
+        return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
 '''
 리프레시 토큰을 이용해 새로운 접근 토큰을 발급하는 엔드포인트
@@ -95,13 +101,13 @@ async def get_logout(response: Response):
     "/refresh",
     summary="Access 토큰 재발급",
     description="Refresh 토큰을 사용하여 새로운 Access 토큰을 발급합니다.",
-    responses=Status.docs(SU.CREATED, ER.INVALID_REQUEST),
+    responses=Status.docs(SU.CREATED, ER.INVALID_TOKEN, ER.INVALID_REQUEST),
 )
 async def refresh_token(request: Request, response: Response):
     try:
         refresh_token = request.cookies.get("refresh_token")
         if not refresh_token:
-            raise HTTPException(status_code=400, detail="리프레시 토큰이 없습니다")
+            return ResultType(status='error', message=ER.INVALID_TOKEN[1])
         
         # 리프레시 토큰 검증
         refresh_data = verify_refresh_token(refresh_token)
@@ -125,11 +131,14 @@ async def refresh_token(request: Request, response: Response):
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def get_token(request: Request):
-    access_token = request.cookies.get("access_token")
-    refresh_token = request.cookies.get("refresh_token")
-    ac = verify_access_token(access_token)
-    rf = verify_refresh_token(refresh_token)
-    return ResultType(status='success', message=SU.SUCCESS[1], detail={"access_token": ac, "refresh_token": rf})
+    try:
+        access_token = request.cookies.get("access_token")
+        refresh_token = request.cookies.get("refresh_token")
+        ac = verify_access_token(access_token)
+        rf = verify_refresh_token(refresh_token)
+        return {"access_token": ac, "refresh_token": rf}
+    except:
+        return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
 '''
 이메일 전송 엔드포인트
@@ -141,8 +150,10 @@ async def get_token(request: Request):
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def verify_email(user_email: str = Query(..., description="사용자 이메일")):
-    await login_svc.send_confirmation_email(user_email)
-    return ResultType(status='success', message=SU.SUCCESS[1])
+    res = await login_svc.send_confirmation_email(user_email)
+    if res:
+        return ResultType(status='success', message=SU.SUCCESS[1])
+    return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
 '''
 코드 확인 엔드포인트
@@ -154,5 +165,7 @@ async def verify_email(user_email: str = Query(..., description="사용자 이�
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
 async def code():
-    res = await login_svc.code()
-    return ResultType(status='success', message=SU.SUCCESS[1], detail={"code": res})
+    res,check = await login_svc.code()
+    if check:
+        return ResultType(status='success', message=SU.SUCCESS[1], detail={"code": res})
+    return ResultType(status='error', message=ER.INVALID_REQUEST[1])
