@@ -6,9 +6,11 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from cryptography.fernet import Fernet
 from decouple import config
+from src.core import settings
 from src.database.session import rdb
 
-FERNET_KEY = config("FERNET_KEY").encode()
+
+FERNET_KEY = settings.general.FERNET_KEY.encode()
 fernet = Fernet(FERNET_KEY)
 
 @rdb.dao()
@@ -16,28 +18,37 @@ async def get_users(db: AsyncSession) -> list[User]:
     '''
     모든 유저 정보 가져오는 함수
     '''
-    result = await db.execute(select(User))
-    users_info = result.scalars().all()
-    return users_info
+    try:
+        result = await db.execute(select(User))
+        users_info = result.scalars().all()
+        return users_info
+    except:
+        return False
 
 @rdb.dao()
 async def get_user(user_id: str, db: AsyncSession) -> list[User]:
     '''
     특정 유저 정보를 조회하는 함수
     '''
-    stmt = select(User).where(User.user_email == user_id)
-    result = await db.execute(stmt)
-    user_info = result.scalars().all()
-    return user_info
+    try:
+        stmt = select(User).where(User.user_email == user_id)
+        result = await db.execute(stmt)
+        user_info = result.scalars().all()
+        return user_info
+    except:
+        return False
 
 @rdb.dao(transactional=True)
 async def delete_user(user_id: str, db: AsyncSession) -> None:
     '''
     특정 유저를 삭제하는 함수
     '''
-    stmt = delete(User).where(User.user_email == user_id)
-    await db.execute(stmt)
-    await db.commit()
+    try:
+        stmt = delete(User).where(User.user_email == user_id)
+        await db.execute(stmt)
+        await db.commit()
+    except:
+        return False
 
 @rdb.dao(transactional=True)
 async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession) -> bool:
@@ -61,7 +72,6 @@ async def update_user(user_id: str, user_info: UpdateUserInfo, db: AsyncSession)
                     user_info_dict['user_password'] = encrypted_new_password
                     stmt = update(User).where(User.user_email == user_id).values(**user_info_dict)
                     await db.execute(stmt)
-                    return True
                 else:
                     # 현재 비밀번호가 맞지 않는 경우
                     return False

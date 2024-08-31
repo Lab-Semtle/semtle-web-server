@@ -22,7 +22,9 @@ router = APIRouter(prefix="/user", tags=["user"])
 )
 async def get_users():
     users_info = await user_svc.get_users()
-    return ResultType(status='success', message=SU.SUCCESS[1], detail=users_info)
+    if users_info == False:
+        return ResultType(status='error', message=ER.NOT_FOUND[1])
+    return users_info
 
 '''
 특정 유저 정보 조회 엔드포인트
@@ -37,7 +39,9 @@ async def get_users():
 )
 async def get_user(user_id: Annotated[str,Depends(JWTBearer().get_user)]):
     user_info = await user_svc.get_user(user_id)
-    return ResultType(status='success', message=SU.SUCCESS[1], detail=user_info)
+    if user_info == False:
+        return ResultType(status='error', message=ER.NOT_FOUND[1])
+    return user_info
 
 '''
 유저 정보 수정 엔드포인트
@@ -51,10 +55,9 @@ async def get_user(user_id: Annotated[str,Depends(JWTBearer().get_user)]):
 )
 async def update_user(user_id: Annotated[str,Depends(JWTBearer().get_user)], user_info: UpdateUserInfo):
     res = await user_svc.update_user(user_id, user_info)
-    if res:
-        return ResultType(status='success', message=SU.ACCEPTED[1])
-    else:
+    if res == False:
         return ResultType(status='error', message=ER.NOT_FOUND[1])
+    return ResultType(status='success', message=SU.ACCEPTED[1])
 
 '''
 유저 삭제 엔드포인트
@@ -67,5 +70,7 @@ async def update_user(user_id: Annotated[str,Depends(JWTBearer().get_user)], use
     dependencies=[Depends(JWTBearer())],
 )
 async def delete_user(user_id: Annotated[str,Depends(JWTBearer().get_user)]):
-    await user_svc.delete_user(user_id)
+    res = await user_svc.delete_user(user_id)
+    if res == False:
+        return ResultType(status='error', message=ER.NOT_FOUND[1])
     return ResultType(status='success', message=SU.SUCCESS[1])

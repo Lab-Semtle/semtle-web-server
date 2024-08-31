@@ -13,35 +13,33 @@ Base = declarative_base()
 회원
 '''
 class Grade(Base):
-    ''' 유저 등급 정보 테이블 '''
     __tablename__ = "grades"
     
-    grade_id = Column(Integer, primary_key=True, index=True)     # 등급 식별자
-    grade_grade = Column(String(5), unique=True, nullable=False) # 등급 이름
-    grade_desc = Column(Text, nullable=True)                     # 등급 권한 설명
+    grade_id = Column(Integer, primary_key=True, index=True)
+    grade_grade = Column(String(5), unique=True, nullable=False)
+    grade_desc = Column(Text, nullable=True)
     
-    user = relationship("User", back_populates="grade")
+    user = relationship("User", back_populates="grade") 
 
 class User(Base):
-    ''' 유저 테이블 (매니저,일반회원 포함) '''
-    __tablename__ = "user"
+    __tablename__ = "users"
     
-    user_id = Column(String(128), primary_key=True)                   # 유저 아이디(이메일)
-    user_password = Column(String(128), nullable=False)               # 유저 비밀번호
-    user_name = Column(String(30), unique=True, nullable=False)       # 유저 이름
-    user_email = Column(String(30), nullable=False)                   #유저 이메일
-    user_phone = Column(String(30), nullable=False)                   # 유저 전화번호
-    user_birth = Column(Date, nullable=True)                     # 유저 생년월일
-    create_date = Column(DateTime(timezone=True), default=datetime.now) # 학회 가입 일자
+    user_email = Column(String(128), primary_key=True, index=True)
+    user_password = Column(String(128), nullable=False)
+    user_name = Column(String(128), unique=True, nullable=False)
+    user_nickname = Column(String(128), nullable=False)
+    user_phone = Column(String(30), nullable=False)
+    user_birth = Column(Date, nullable=True)
+    create_date = Column(DateTime(timezone=True), default=datetime.now)
+    user_profile_img_path = Column(Text, nullable=True)
+    user_introduce = Column(Text, nullable=True)
+    user_role = Column(String(128), default="학생", nullable=False)
+    grade_id = Column(Integer, ForeignKey("grades.grade_id"))
+    user_activate = Column(Boolean, default=False, nullable=False)    
     
-    # user_profile_img_path = Column(Text, nullable=True)             # 프로필 이미지 경로
-    # user_nickname = Column(String(30), unique=True, nullable=False) # 유저 활동 닉네임
-    # user_role = Column(String(30), nullable=False)                       # 매니저-일반 구분
-    # grade_id = Column(Integer, ForeignKey("grades.grade_id"))            # 등급 식별자
-    # user_activate = Column(Boolean, default=False, nullable=False)       # 아치셈틀 인증 여부
-    
-    # grade = relationship("Grade", back_populates="user")
- 
+    grade = relationship("Grade", back_populates="user")
+
+
 '''
 게시판
 '''

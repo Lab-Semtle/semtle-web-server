@@ -19,7 +19,8 @@ async def get_user(user_id: str) -> list[ReadUserInfo]:
 
 async def delete_user(user_id: str) -> None:
     '''사용자 정보를 삭제하는 함수'''
-    await user_dao.delete_user(user_id)
+    res = await user_dao.delete_user(user_id)
+    return res
 
 async def update_user(user_id, user_info: UpdateUserInfo) -> None:
     '''사용자 정보를 업데이트하는 함수'''
