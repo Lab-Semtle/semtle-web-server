@@ -21,7 +21,7 @@ Base = declarative_base()
 #     grade_desc = Column(Text, nullable=True)                     # 등급 권한 설명
     
 #     user = relationship("User", back_populates="grade")
-    
+
 class User(Base):
     """ 유저 테이블 (매니저,일반회원 포함) """
     __tablename__ = "users"

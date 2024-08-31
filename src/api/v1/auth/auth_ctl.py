@@ -19,7 +19,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = settings.jwt.JWT_ACCESS_TOKEN_EXPIRE_MIN
 REFRESH_TOKEN_EXPIRE_MINUTES = settings.jwt.JWT_REFRESH_TOKEN_EXPIRE_MINUTES
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-router = APIRouter(prefix="/login", tags=["login"])
+router = APIRouter(prefix="/login", tags=["auth"])
 
 '''
 로그인 엔드포인트
