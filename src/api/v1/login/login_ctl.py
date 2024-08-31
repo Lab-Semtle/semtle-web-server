@@ -63,7 +63,7 @@ async def post_signup(
     code: str
 ):
     # 사용자 존재 여부 확인
-    if login_info and await login_svc.is_user(login_info.user_id, login_info.user_name, login_info.user_email, code):
+    if login_info and await login_svc.is_user(login_info.user_nickname, login_info.user_name, login_info.user_email, login_info.user_phone):
         return ResultType(status='error', message=ER.DUPLICATE_RECORD[1])
     if not await login_svc.verify_email(code):
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])

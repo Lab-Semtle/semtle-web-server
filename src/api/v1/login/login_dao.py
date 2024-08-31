@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from cryptography.fernet import Fernet
 from src.api.v1.login.login_dto import CreateUserInfo
@@ -48,16 +48,18 @@ async def post_signup(login_info: CreateUserInfo, db: AsyncSession) -> bool:
         return False
 
 @rdb.dao()
-async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str, db: AsyncSession) -> bool:
+async def is_user(user_nickname: str, user_name: str, user_email: str, user_phone: str, db: AsyncSession) -> bool:
     """
     주어진 사용자 정보로 사용자가 존재하는지 확인하는 함수
     """
     try:
         stmt = select(User).where(
-            (User.user_id == user_id) |
-            (User.user_name == user_name) |
-            (User.user_email == user_email) |
-            (User.user_phone == user_phone)
+            and_(
+                User.user_nickname == user_nickname,
+                User.user_name == user_name,
+                User.user_email == user_email,
+                User.user_phone == user_phone
+            )
         )
         result = await db.execute(stmt)
         return result.scalars().first() is not None

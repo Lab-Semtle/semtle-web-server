@@ -9,13 +9,28 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 class User(Base):
-    ''' 유저 테이블 (매니저,일반회원 포함) '''
-    __tablename__ = "user"
+    __tablename__ = "users"
     
-    user_id = Column(String(128), primary_key=True)                   # 유저 아이디(이메일)
-    user_password = Column(String(128), nullable=False)               # 유저 비밀번호
-    user_name = Column(String(30), unique=True, nullable=False)       # 유저 이름
-    user_email = Column(String(30), nullable=False)                   #유저 이메일
-    user_phone = Column(String(30), nullable=False)                   # 유저 전화번호
-    user_birth = Column(Date, nullable=True)                     # 유저 생년월일
-    create_date = Column(DateTime(timezone=True), default=datetime.now) # 학회 가입 일자
+    user_nickname = Column(String(30), primary_key=True, index=True)
+    user_password = Column(String(128), nullable=False)
+    user_name = Column(String(30), unique=True, nullable=False)
+    user_email = Column(String(30), nullable=False)
+    user_phone = Column(String(15), nullable=False)
+    user_birth = Column(Date, nullable=True)
+    create_date = Column(DateTime(timezone=True), default=datetime.now)
+    user_profile_img_path = Column(Text, nullable=True)
+    user_introduce = Column(Text, nullable=True)
+    user_role = Column(String(30), default="학생", nullable=False)
+    grade_id = Column(Integer, ForeignKey("grades.grade_id"))
+    user_activate = Column(Boolean, default=False, nullable=False)    
+    
+    grade = relationship("Grade", back_populates="user")
+
+class Grade(Base):
+    __tablename__ = "grades"
+    
+    grade_id = Column(Integer, primary_key=True, index=True)
+    grade_grade = Column(String(5), unique=True, nullable=False)
+    grade_desc = Column(Text, nullable=True)
+    
+    user = relationship("User", back_populates="grade")

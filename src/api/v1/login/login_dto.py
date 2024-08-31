@@ -6,7 +6,7 @@ from src.lib.dto import BaseDTO
 
 # 사용자 생성 정보 데이터 전송 객체 (DTO)
 class CreateUserInfo(BaseDTO):
-    user_id: Annotated[str, Field(description="유저 아이디")]
+    user_nickname: Annotated[str, Field(description="유저 닉네임")]
     user_password: Annotated[str, Field(description="유저 비밀번호")]
     user_name: Annotated[str, Field(description="유저 이름")]
     user_email: Annotated[EmailStr, Field(description="유저 이메일")]
@@ -15,7 +15,7 @@ class CreateUserInfo(BaseDTO):
     create_date: Annotated[datetime, Field(description="가입 일자")]
     
     # 필수 필드가 빈 문자열이나 공백이 아닌지 확인하는 유효성 검사기
-    @field_validator('user_email', 'user_name', 'user_phone', 'user_password')
+    @field_validator('user_nickname', 'user_email', 'user_name', 'user_phone', 'user_password')
     def check_empty(cls, v):
         if not v or v.isspace():
             raise HTTPException(status_code=422, detail="필수 항목을 입력해주세요.")

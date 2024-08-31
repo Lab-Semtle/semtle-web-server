@@ -24,11 +24,11 @@ async def verify(user_email: str, user_password: str) -> bool:
     '''
     return await login_dao.verify(user_email, user_password)
 
-async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str) -> bool:
+async def is_user(user_nickname: str, user_name: str, user_email: str, user_phone: str) -> bool:
     '''
     주어진 사용자 정보로 사용자가 존재하는지 확인하는 함수
     '''
-    return await login_dao.is_user(user_id, user_name, user_email, user_phone)
+    return await login_dao.is_user(user_nickname, user_name, user_email, user_phone)
 
 async def post_signup(login_info: CreateUserInfo) -> None:
     '''
