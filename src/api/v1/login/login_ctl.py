@@ -65,7 +65,7 @@ async def post_signup(
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
     # 회원가입 처리
-    await login_svc.post_signup(login_info)
+    res = await login_svc.post_signup(login_info)
     if res:
         return ResultType(status='success', message=SU.CREATED[1])
     else:
