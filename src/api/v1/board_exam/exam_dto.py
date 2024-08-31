@@ -17,7 +17,7 @@ class ReadBoard(BaseDTO):
     Image_paths : Annotated[Optional[list[str]], Form(description="족보 게시판 게시물 이미지 파일 다중 경로")]
     Views: Annotated[int, Field(description="족보 게시판 게시물 조회수")]
 
-    @field_validator('Image_paths', pre=True)
+    @field_validator('Image_paths', mode='before')
     def split_image_paths(cls, v):
         if isinstance(v, str):
             # 콤마로 구분된 문자열을 리스트로 변환

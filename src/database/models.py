@@ -60,77 +60,77 @@ class FreeBoard(Base):
     """ 자유 게시판 콘텐츠 """
     __tablename__ = "free_board"
     
-    Board_no = Column(Integer, primary_key=True, autoincrement=True)
-    Title = Column(String, nullable=False)
-    Content = Column(String, nullable=False)
-    Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
-    Views = Column(Integer, nullable=False)
+    board_no = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String, nullable=False)
+    content = Column(String, nullable=False)
+    create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
+    views = Column(Integer, nullable=False)
 
-    Free_Board_Comment = relationship("Free_Board_Comment", back_populates="Free_Board", cascade="all, delete-orphan")
+    free_comment = relationship("free_comment", back_populates="free_board", cascade="all, delete-orphan")
 
 class FreeComment(Base):
     """ 자유 게시판 댓글 """
     __tablename__ = "free_comment"
 
-    Comment_no = Column(Integer, primary_key=True, autoincrement=True)
-    Board_no = Column(Integer, ForeignKey("Free_Board.Board_no"))
-    Content = Column(String, nullable=False)
-    Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
-    Likes = Column(Integer, nullable=False)
+    comment_no = Column(Integer, primary_key=True, autoincrement=True)
+    board_no = Column(Integer, ForeignKey("free_board.board_no"))
+    content = Column(String, nullable=False)
+    create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
+    likes = Column(Integer, nullable=False)
 
-    Free_Board = relationship("Free_Board", back_populates="Free_Board_Comment")
+    free_board = relationship("free_board", back_populates="free_comment")
 
 class StudyBoard(Base):
     """ 스터디 모집 게시판 콘텐츠 """
     __tablename__ = "study_board"
     
-    Board_no = Column(Integer, primary_key=True, autoincrement=True)
-    Title = Column(String, nullable=False)
-    Content = Column(String, nullable=False)
-    Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
-    Image_paths = Column(String, nullable=True)
-    Views = Column(Integer, nullable=False)
+    board_no = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String, nullable=False)
+    content = Column(String, nullable=False)
+    create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
+    image_paths = Column(String, nullable=True)
+    views = Column(Integer, nullable=False)
 
-    Study_Board_Comment = relationship("Study_Board_Comment", back_populates="Study_Board", cascade="all, delete-orphan")
+    study_comment = relationship("study_comment", back_populates="study_board", cascade="all, delete-orphan")
 
 class StudyComment(Base):
     """ 스터디 모집 게시판 댓글 """
     __tablename__ = "study_comment"
 
-    Comment_no = Column(Integer, primary_key=True, autoincrement=True)
-    Board_no = Column(Integer, ForeignKey("Study_Board.Board_no"))
-    Content = Column(String, nullable=False)
-    Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
-    Image_paths = Column(String, nullable=True)
-    Likes = Column(Integer, nullable=False)
+    comment_no = Column(Integer, primary_key=True, autoincrement=True)
+    board_no = Column(Integer, ForeignKey("study_board.board_no"))
+    content = Column(String, nullable=False)
+    create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
+    image_paths = Column(String, nullable=True)
+    likes = Column(Integer, nullable=False)
 
-    Study_Board = relationship("Study_Board", back_populates="Study_Board_Comment")
+    study_board = relationship("study_board", back_populates="study_comment")
 
 class ExamBoard(Base):
     """ 족보 공유 게시판 콘텐츠 """
     __tablename__ = "exam_board"
     
-    Board_no = Column(Integer, primary_key=True, autoincrement=True)
-    Title = Column(String, nullable=False)
-    Content = Column(String, nullable=False)
-    Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
-    Image_paths = Column(String, nullable=True)
-    Views = Column(Integer, nullable=False)
+    board_no = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String, nullable=False)
+    content = Column(String, nullable=False)
+    create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
+    image_paths = Column(String, nullable=True)
+    views = Column(Integer, nullable=False)
 
-    Exam_Sharing_Board_Comment = relationship("Exam_Sharing_Board_Comment", back_populates="Exam_Sharing_Board", cascade="all, delete-orphan")
+    exam_comment = relationship("exam_comment", back_populates="exam_board", cascade="all, delete-orphan")
 
 class ExamComment(Base):
     """ 족보 공유 게시판 댓글 """
     __tablename__ = "exam_comment"
 
-    Comment_no = Column(Integer, primary_key=True, autoincrement=True)
-    Board_no = Column(Integer, ForeignKey("Exam_Sharing_Board.Board_no"))
-    Content = Column(String, nullable=False)
-    Create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
-    Image_paths = Column(String, nullable=True)
-    Likes = Column(Integer, nullable=False)
+    comment_no = Column(Integer, primary_key=True, autoincrement=True)
+    board_no = Column(Integer, ForeignKey("exam_board.board_no"))
+    content = Column(String, nullable=False)
+    create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
+    image_paths = Column(String, nullable=True)
+    likes = Column(Integer, nullable=False)
 
-    Exam_Sharing_Board = relationship("Exam_Sharing_Board", back_populates="Exam_Sharing_Board_Comment")
+    exam_board = relationship("exam_board", back_populates="exam_comment")
 
 class Professor(Base):
     """ 교수님 정보 """

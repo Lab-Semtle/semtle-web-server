@@ -18,7 +18,7 @@ app = SemtleAPI(
     # disable_api_doc=True  # 배포 시 False로 변경할 것, True로 설정하면 API 문서 비활성화
 )
 
-app.use_router_manager(base_path="./src/api/v1") # 라우터 로드
+app.use_router_manager(base_path="src/api/v1") # 라우터 로드
 app.use(cors)  # CORS 설정 모듈 사용
 app.use(error) # 에러 핸들링 모듈 사용
 app.use(event) # 이벤트 핸들링 모듈 사용

@@ -1,15 +1,16 @@
-from src.api.v1.auth import login_dao
+from src.api.v1.auth import auth_dao
 from src.api.v1.auth.auth_dto import CreateUserInfo
 import aiosmtplib
 from email.message import EmailMessage
 import random
 import string
-from decouple import config
+# from decouple import config
+from src.core import settings
 
 
 random_string = ""
-USERNAME = config("username")
-PASSWARD = config("password")
+USERNAME = settings.general.SEND_EMAIL_USERNAME
+PASSWARD = settings.general.SEND_EMAIL_PASSWORD
 
 def generate_random_string(length=6) -> str:
     '''
@@ -22,19 +23,19 @@ async def verify(user_email: str, user_password: str) -> bool:
     '''
     주어진 이메일과 비밀번호로 사용자를 인증하는 함수
     '''
-    return await login_dao.verify(user_email, user_password)
+    return await auth_dao.verify(user_email, user_password)
 
 async def is_user(user_id: str, user_name: str, user_email: str, user_phone: str) -> bool:
     '''
     주어진 사용자 정보로 사용자가 존재하는지 확인하는 함수
     '''
-    return await login_dao.is_user(user_id, user_name, user_email, user_phone)
+    return await auth_dao.is_user(user_id, user_name, user_email, user_phone)
 
 async def post_signup(login_info: CreateUserInfo) -> None:
     '''
     새로운 사용자를 생성하는 함수
     '''
-    await login_dao.post_signup(login_info)
+    await auth_dao.post_signup(login_info)
 
 async def send_confirmation_email(user_email: str) -> None:
     '''

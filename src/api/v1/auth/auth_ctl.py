@@ -5,17 +5,18 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Response, Request, Query, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import timedelta
-from decouple import config
+# from decouple import config
 from src.lib.type import ResultType
 from src.lib.status import Status, SU, ER
 from src.api.v1.auth import auth_svc
 from src.lib.security import JWTBearer, create_access_token, create_refresh_token, verify_access_token, verify_refresh_token
 from src.api.v1.auth.auth_dto import CreateUserInfo
+from src.core import settings
 
 
 # 환경 변수에서 토큰 만료 시간 설정
-ACCESS_TOKEN_EXPIRE_MINUTES = float(config("ACCESS_TOKEN_EXPIRE_MINUTES"))
-REFRESH_TOKEN_EXPIRE_MINUTES = float(config("REFRESH_TOKEN_EXPIRE_MINUTES"))
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.jwt.JWT_ACCESS_TOKEN_EXPIRE_MIN
+REFRESH_TOKEN_EXPIRE_MINUTES = settings.jwt.JWT_REFRESH_TOKEN_EXPIRE_MINUTES
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 router = APIRouter(prefix="/login", tags=["login"])

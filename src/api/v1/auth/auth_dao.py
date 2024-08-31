@@ -3,12 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from cryptography.fernet import Fernet
 from src.api.v1.auth.auth_dto import CreateUserInfo
 from src.database.models import User
-from decouple import config
+# from decouple import config
+from src.core import settings
 from src.database.session import rdb
 
 
-FERNET_KEY = config("FERNET_KEY").encode()
-fernet = Fernet(FERNET_KEY)
+FERNET_KEY = settings.general.FERNET_KEY  
+fernet = Fernet(FERNET_KEY.encode())
 
 @rdb.dao()
 async def verify(user_email: str, user_password: str, db: AsyncSession) -> bool:
