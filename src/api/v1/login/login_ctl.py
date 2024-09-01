@@ -125,18 +125,15 @@ async def refresh_token(request: Request, response: Response):
 토큰 검증 엔드포인트
 '''
 @router.get(
-    "/token",
-    summary="토큰 상태 확인",
-    description="Access 및 Refresh 토큰의 상태를 확인합니다.",
+    "/access_token",
+    summary="토큰 가져오기",
+    description="Access 토큰을 가져옵니다.",
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
-async def get_token(request: Request):
+async def get_access_token(request: Request):
     try:
         access_token = request.cookies.get("access_token")
-        refresh_token = request.cookies.get("refresh_token")
-        ac = verify_access_token(access_token)
-        rf = verify_refresh_token(refresh_token)
-        return {"access_token": ac, "refresh_token": rf}
+        return {"access_token": ac}
     except:
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
