@@ -133,7 +133,7 @@ async def refresh_token(request: Request, response: Response):
 async def get_access_token(request: Request):
     try:
         access_token = request.cookies.get("access_token")
-        return {"access_token": ac}
+        return {"access_token": access_token}
     except:
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
