@@ -37,10 +37,19 @@ class JWTSettings(BaseSettings):
     JWT_REFRESH_TOKEN_EXPIRE_MINUTES: int = 60*24*3 # 3일
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")
 
+class EncryptionSettings(BaseSettings):
+    FERNET_KEY: SecretStr = SecretStr(os.getenv("FERNET_KEY"))
+
+class SMTPSettings(BaseSettings):
+    username: SecretStr = SecretStr(os.getenv("username"))
+    password: SecretStr = SecretStr(os.getenv("password"))
+    
 class Settings:
     general: GeneralSettings = GeneralSettings()    
     rdb: RDBSettings = RDBSettings()
     jwt: JWTSettings = JWTSettings()
+    encryption: EncryptionSettings = EncryptionSettings()
+    smtp: SMTPSettings = SMTPSettings()
     
 settings = Settings()
 

@@ -3,10 +3,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from cryptography.fernet import Fernet
 from src.api.v1.login.login_dto import CreateUserInfo
 from src.database.models import User
-from decouple import config
 from src.database.session import rdb
+from src.core import settings
 
-FERNET_KEY = config("FERNET_KEY").encode()
+FERNET_KEY = settings.encryption.FERNET_KEY
 fernet = Fernet(FERNET_KEY)
 
 @rdb.dao()

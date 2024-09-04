@@ -5,8 +5,9 @@ from src.database.models import User
 from cryptography.fernet import Fernet
 from decouple import config
 from src.database.session import rdb
+from src.core import settings
 
-FERNET_KEY = config("FERNET_KEY")
+FERNET_KEY = settings.encryption.FERNET_KEY
 fernet = Fernet(FERNET_KEY)
 
 @rdb.dao()

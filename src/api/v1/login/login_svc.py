@@ -4,12 +4,12 @@ import aiosmtplib
 from email.message import EmailMessage
 import random
 import string
-from decouple import config
+from src.core import settings
 
 random_string = ""
 
-USERNAME = config("username")
-PASSWARD = config("password")
+USERNAME = settings.smtp.username
+PASSWARD = settings.smtp.password
 
 def generate_random_string(length=6) -> str:
     '''

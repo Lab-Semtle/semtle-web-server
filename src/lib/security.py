@@ -1,14 +1,14 @@
 from jose import jwt, JWTError
 from datetime import timedelta, datetime
-from decouple import config
 from fastapi import HTTPException, status, Request
 from src.lib.type import ResultType
 from src.lib.status import Status, SU, ER
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from src.core import settings
 
-SECRET_ACCESS_KEY = config("JWT_SECRET_ACCESS_KEY")
-SECRET_REFRESH_KEY = config("JWT_SECRET_REFRESH_KEY")
-ALGORITHM = config("JWT_ALGORITHM")
+SECRET_ACCESS_KEY = settings.jwt.JWT_SECRET_ACCESS_KEY
+SECRET_REFRESH_KEY = settings.jwt.JWT_SECRET_REFRESH_KEY
+ALGORITHM = settings.jwt.JWT_ALGORITHM
 
 async def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
