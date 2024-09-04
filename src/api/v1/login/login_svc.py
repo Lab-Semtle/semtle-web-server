@@ -8,8 +8,8 @@ from src.core import settings
 
 random_string = ""
 
-USERNAME = settings.smtp.username
-PASSWARD = settings.smtp.password
+USERNAME = settings.general.SEND_EMAIL_USERNAME
+PASSWARD = settings.general.SEND_EMAIL_PASSWORD
 
 def generate_random_string(length=6) -> str:
     '''

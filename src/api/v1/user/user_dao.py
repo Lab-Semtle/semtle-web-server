@@ -8,7 +8,7 @@ from cryptography.fernet import Fernet
 from src.database.session import rdb
 from src.core import settings
 
-FERNET_KEY = settings.encryption.FERNET_KEY
+FERNET_KEY = settings.general.FERNET_KEY
 fernet = Fernet(FERNET_KEY)
 
 @rdb.dao()

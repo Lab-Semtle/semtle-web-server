@@ -44,7 +44,7 @@ async def post_login(
         # 쿠키에 저장
         response.set_cookie(key="access_token", value=access_token, expires=access_token_expires, httponly=True)
         response.set_cookie(key="refresh_token", value=refresh_token, expires=refresh_token_expires, httponly=True)
-        
+
         return ResultType(status='success', message=SU.SUCCESS[1])
     except:
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])

@@ -17,7 +17,10 @@ load_dotenv(dotenv_path=env_path)
 
 class GeneralSettings(BaseSettings):
     DEBUG: bool = True # 로깅 레벨 설정 / True -> DEBUG 모드, False -> INFO 모드
-
+    FERNET_KEY: str = os.getenv("FERNET_KEY")
+    SEND_EMAIL_USERNAME: str = os.getenv("SEND_EMAIL_USERNAME")
+    SEND_EMAIL_PASSWORD: str = os.getenv("SEND_EMAIL_PASSWORD")
+    
 class RDBSettings(BaseSettings):
     DB_PROTOCAL: str = "postgresql+asyncpg"  # asyncpg | psycopg 이지만 psycopg3 사용(비동기가능/벡터DB+RDB)
     DB_USERNAME: str = os.getenv("DB_USERNAME") 
@@ -31,25 +34,16 @@ class RDBSettings(BaseSettings):
         return f"{self.DB_PROTOCAL}://{self.DB_USERNAME}:{self.DB_PASSWORD.get_secret_value()}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
 class JWTSettings(BaseSettings):
-    JWT_SECRET_ACCESS_KEY: SecretStr = SecretStr(os.getenv("JWT_SECRET_ACCESS_KEY"))
-    JWT_SECRET_REFRESH_KEY: SecretStr= SecretStr(os.getenv("JWT_SECRET_REFRESH_KEY"))
-    JWT_ACCESS_TOKEN_EXPIRE_MIN: int = 60*24 # 24시간
-    JWT_REFRESH_TOKEN_EXPIRE_MINUTES: int = 60*24*3 # 3일
+    JWT_SECRET_ACCESS_KEY: str = os.getenv("JWT_SECRET_ACCESS_KEY")
+    JWT_SECRET_REFRESH_KEY: str= os.getenv("JWT_SECRET_REFRESH_KEY")
+    JWT_ACCESS_TOKEN_EXPIRE_MIN: float = float(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES"))
+    JWT_REFRESH_TOKEN_EXPIRE_MINUTES: float = float(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_MINUTES"))
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")
 
-class EncryptionSettings(BaseSettings):
-    FERNET_KEY: SecretStr = SecretStr(os.getenv("FERNET_KEY"))
-
-class SMTPSettings(BaseSettings):
-    username: SecretStr = SecretStr(os.getenv("username"))
-    password: SecretStr = SecretStr(os.getenv("password"))
-    
 class Settings:
     general: GeneralSettings = GeneralSettings()    
     rdb: RDBSettings = RDBSettings()
     jwt: JWTSettings = JWTSettings()
-    encryption: EncryptionSettings = EncryptionSettings()
-    smtp: SMTPSettings = SMTPSettings()
     
 settings = Settings()
 

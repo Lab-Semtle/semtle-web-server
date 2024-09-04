@@ -6,7 +6,7 @@ from src.database.models import User
 from src.database.session import rdb
 from src.core import settings
 
-FERNET_KEY = settings.encryption.FERNET_KEY
+FERNET_KEY = settings.general.FERNET_KEY.encode()
 fernet = Fernet(FERNET_KEY)
 
 @rdb.dao()
