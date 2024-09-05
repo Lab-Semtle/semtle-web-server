@@ -6,8 +6,8 @@ from sqlalchemy import select, update, insert, delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
-from src.api.v1.free_board_comment import free_board_comment_dao
-from src.api.v1.free_board.free_board_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
+from src.api.v1.comment_free import comm_free_dao
+from src.api.v1.board_free.free_dto import UpdateBoard, ReadBoard, CreateBoard, ReadBoardlist
 from src.database.models import Free_Board
 from src.database.session import rdb
 
@@ -48,7 +48,7 @@ async def update_free_board(free_board_no: int, free_board_info: UpdateBoard, db
 # Delete
 @rdb.dao(transactional=True)
 async def delete_free_board(free_board_no: int, db: AsyncSession) -> None:
-    await free_board_comment_dao.all_delete_free_board_comment(free_board_no, db)
+    await comm_free_dao.all_delete_free_board_comment(free_board_no, db)
     await db.execute(delete(Free_Board).filter(Free_Board.Board_no == free_board_no))
 
 

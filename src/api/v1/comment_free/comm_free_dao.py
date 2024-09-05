@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
 from src.database.session import rdb
-from src.api.v1.free_board_comment.free_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
+from src.api.v1.comment_free.comm_free_dto import UpdateComment, CreateComment, ReadCommentlist
 from src.database.models import Free_Board_Comment
 
 
@@ -43,8 +43,8 @@ async def update_free_board_comment(free_board_no: int, free_board_comment_no: i
 
 # Delete
 @rdb.dao(transactional=True)
-async def delete_free_board_comment(free_board_no: int, free_board_comment_no: int, db: AsyncSession) -> None:
-    await db.execute(delete(Free_Board_Comment).filter(Free_Board_Comment.Board_no == free_board_no).filter(Free_Board_Comment.Comment_no == free_board_comment_no))
+async def delete_free_board_comment(free_board_comment_no: int, db: AsyncSession) -> None:
+    await db.execute(delete(Free_Board_Comment).filter(Free_Board_Comment.Comment_no == free_board_comment_no))
     await db.commit()
 
 

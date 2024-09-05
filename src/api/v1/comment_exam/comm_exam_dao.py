@@ -7,13 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
 from src.database.session import rdb
-from src.api.v1.exam_sharing_board_comment.exam_sharing_board_comment_dto import UpdateComment, CreateComment, ReadCommentlist
+from src.api.v1.comment_exam.comm_exam_dto import UpdateComment, CreateComment, ReadCommentlist
 from src.database.models import Exam_Sharing_Board_Comment
 
 
 # Read
 @rdb.dao()
-async def get_exam_sharing_board_comment(db: AsyncSession, exam_sharing_board_no: int, skip: int = 0) -> tuple[int, list[ReadCommentlist]]:
+async def get_exam_sharing_board_comment(exam_sharing_board_no: int, skip: int, db: AsyncSession) -> tuple[int, list[ReadCommentlist]]:
     result = await db.execute(select(Exam_Sharing_Board_Comment).filter(Exam_Sharing_Board_Comment.Board_no == exam_sharing_board_no).order_by(Exam_Sharing_Board_Comment.Board_no.desc()).offset(skip*10).limit(10))
     exam_sharing_board_comment_info = result.scalars().all()
     total = await db.execute(select(func.count(Exam_Sharing_Board_Comment.Board_no)))

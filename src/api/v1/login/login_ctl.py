@@ -92,7 +92,6 @@ async def get_logout(response: Response, request: Request):
     "/refresh",
     summary="access토큰 재발급",
     description="- refresh토큰을 이용해 access토큰 재발급",
-    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.CREATED, ER.INVALID_REQUEST),
 )
 async def refresh_token(request: Request, response: Response):

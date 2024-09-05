@@ -6,13 +6,14 @@ from typing import Optional
 from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import FileResponse
 from src.lib.status import Status, SU, ER
+from src.lib.type import ResultType
 import logging
 import os
 
 
 # 호출할 모듈 추가
-from src.api.v1.study_board.study_board_dto import ReadBoard, ReadBoardlist, CreateBoard, UpdateBoard
-from src.api.v1.study_board import study_board_svc
+from src.api.v1.board_study.study_dto import ReadBoard, ReadBoardlist, CreateBoard, UpdateBoard
+from src.api.v1.board_study import study_svc
 
 BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/study_board/')
@@ -38,7 +39,7 @@ router = APIRouter(prefix="/study_board", tags=["study_board"])
 async def get_study_board_list(page: int = 0):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------스터디 게시판 전체 목록 조회----------")
-    total, study_board_info = await study_board_svc.get_study_board_list(skip=page)
+    total, study_board_info = await study_svc.get_study_board_list(skip=page)
     return {
         'total': total,
         'Board_info': study_board_info
@@ -56,7 +57,7 @@ async def get_study_board_list(page: int = 0):
 async def get_study_board(study_board_no: int = 0):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------스터디 게시판 특정 게시물 조회----------")
-    study_board_info = await study_board_svc.get_study_board(study_board_no)
+    study_board_info = await study_svc.get_study_board(study_board_no)
     return study_board_info
 
 # Image 
@@ -77,7 +78,7 @@ async def get_Images_study_board(file_name: str = ""):
 # Create
 @router.post(
     "/",
-    summary="입력 받은 데이터를 데이터베이스에 추가",
+    summary="스터디 게시판 신규 게시물 생성",
     description="- String-Form / String-Form / Integer-Field",
     # response_model=ResultType, # -> 코드 미완성, 주석처리
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
@@ -86,7 +87,7 @@ async def create_study_board(
     study_board_info: Optional[CreateBoard]
 ):
     logger.info("----------스터디 게시판 신규 게시물 생성----------")
-    study_board_no = await study_board_svc.create_study_board(study_board_info)
+    study_board_no = await study_svc.create_study_board(study_board_info)
     return { "status": SU.CREATED, "Study_Board_No": study_board_no}
 
 
@@ -105,15 +106,15 @@ async def create_study_board(
 #     db: AsyncSession = Depends(get_db)
 # ):
 #     logger.info("----------스터디 게시판 신규 게시물(파일 포함) 생성----------")
-#     await study_board_svc.upload_create_study_board(title, content, file_name)
+#     await study_svc.upload_create_study_board(title, content, file_name)
 #     return SU.CREATED
 
 # Create
 @router.put(
-    "/create upload",
-    summary="입력 받은 이미지을 데이터베이스에 추가",
+    "/create_upload",
+    summary="스터디 게시판 신규 게시물 이미지 생성",
     description="- List[UploadFile]",
-    # response_model=ResultType, # -> 코드 미완성, 주석처리
+    response_model=ResultType,
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def upload_file_study_board(
@@ -121,16 +122,17 @@ async def upload_file_study_board(
     file_name: list[UploadFile] = File(...)
 ):
     logger.info("----------스터디 게시판 신규 게시물 이미지 생성----------")
-    await study_board_svc.upload_file_study_board(study_board_no, file_name)
-    return SU.CREATED
+    await study_svc.upload_file_study_board(study_board_no, file_name)
+    return ResultType(status='success', message=SU.CREATED[1])
 
 
 # Update
 @router.put(
     "/",
-    summary="입력 받은 데이터로 변경 사항 수정",
+    summary="스터디 게시판 기존 게시물 수정",
     description="- no가 일치하는 데이터의 title, content, view 수정",
-    responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD)
+    response_model=ResultType,
+    responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def update_study_board(
     study_board_no: int,
@@ -138,8 +140,8 @@ async def update_study_board(
     select: bool = False
 ):
     logger.info("----------스터디 게시판 기존 게시물 수정----------")
-    await study_board_svc.update_study_board(study_board_no, study_board_info, select=select)
-    return SU.SUCCESS
+    await study_svc.update_study_board(study_board_no, study_board_info, select=select)
+    return ResultType(status='success', message=SU.SUCCESS[1])
 
 
 # # Update
@@ -157,16 +159,16 @@ async def update_study_board(
 #     db: AsyncSession = Depends(get_db)
 # ):
 #     logger.info("----------스터디 게시판 기존 게시물(파일 포함) 수정----------")
-#     await study_board_svc.upload_update_study_board(study_board_no, title, content, file_name)
+#     await study_svc.upload_update_study_board(study_board_no, title, content, file_name)
 #     return SU.SUCCESS
 
 # Update
 @router.put(
-    "/update upload",
-    summary="입력 받은 이미지로 이미지 경로 수정",
+    "/update_upload",
+    summary="스터디 게시판 기존 게시물 이미지 수정",
     description="- List[UploadFile]",
-    # response_model=ResultType, # -> 코드 미완성, 주석처리
-    responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD)
+    response_model=ResultType,
+    responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def upload_update_file_study_board(
     study_board_no: int,
@@ -174,8 +176,8 @@ async def upload_update_file_study_board(
     select: bool = False
 ):
     logger.info("----------스터디 게시판 기존 게시물 이미지 수정----------")
-    await study_board_svc.upload_update_file_study_board(study_board_no, file_name, select=select)
-    return SU.SUCCESS
+    await study_svc.upload_update_file_study_board(study_board_no, file_name, select=select)
+    return ResultType(status='success', message=SU.SUCCESS[1])
 
 
 # Delete
@@ -183,18 +185,19 @@ async def upload_update_file_study_board(
     "/",
     summary="스터디 게시판 게시물 삭제",
     description="- study_board_no가 일치하는 데이터 삭제",
+    response_model=ResultType,
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD),
 )
 async def delete_study_board(
     study_board_no: int # JWT 토큰에서 id 가져오는 방식으로 변경, 임시조치
 ):
-    await study_board_svc.delete_study_board(study_board_no)
-    return SU.SUCCESS
+    await study_svc.delete_study_board(study_board_no)
+    return ResultType(status='success', message=SU.SUCCESS[1])
 
 
 # sort title
 @router.get(
-    "/sort title",
+    "/sort_title",
     summary="스터디 게시판 게시물 제목 정렬",
     description="- 스터디 게시판 게시물 제목을 가나다순으로 정렬하여 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,
@@ -204,7 +207,7 @@ async def delete_study_board(
 async def sort_study_board(page: int = 0, select: int = 0):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
     logger.info("----------스터디 게시판 제목 가나다순 정렬----------")
-    total, study_board_info = await study_board_svc.sort_study_board(skip=page, select=select)
+    total, study_board_info = await study_svc.sort_study_board(skip=page, select=select)
     return {
         'total': total,
         'Board_info': study_board_info
