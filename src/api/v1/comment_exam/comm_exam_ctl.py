@@ -31,7 +31,7 @@ router = APIRouter(prefix="/exam_sharing_board_comment", tags=["exam_sharing_boa
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
 async def get_exam_sharing_board_comment(exam_sharing_board_no: int, page: int = 0):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
-    logger.info("----------족보 게시판 특정 게시물 댓글 조회----------")
+    logger.info("----------족보 공유 게시판 특정 게시물 댓글 조회----------")
     total, exam_sharing_board_comment_info = await comm_exam_svc.get_exam_sharing_board_comment(exam_sharing_board_no, skip=page)
     return {
         'total': total,
@@ -51,7 +51,7 @@ async def create_exam_sharing_board_comment(
     exam_sharing_board_no: int,
     exam_sharing_board_comment: Optional[CreateComment]
 ):
-    logger.info("----------족보 게시판 게시물 신규 댓글 생성----------")
+    logger.info("----------족보 공유 게시판 게시물 신규 댓글 생성----------")
     await comm_exam_svc.create_exam_sharing_board_comment(exam_sharing_board_no, exam_sharing_board_comment)
     return ResultType(status='success', message=SU.CREATED[1])
 
@@ -69,7 +69,7 @@ async def update_exam_sharing_board_comment(
     exam_sharing_board_comment_no: int,  # JWT 토큰에서 id 가져오는 방식으로 변경, 이건 임시조치
     exam_sharing_board_comment_info: Optional[UpdateComment]
 ):
-    logger.info("----------족보 게시판 게시물 기존 댓글 수정----------")
+    logger.info("----------족보 공유 게시판 게시물 기존 댓글 수정----------")
     await comm_exam_svc.update_exam_sharing_board_comment(exam_sharing_board_no, exam_sharing_board_comment_no, exam_sharing_board_comment_info)
     return ResultType(status='success', message=SU.SUCCESS[1])
 
@@ -77,7 +77,7 @@ async def update_exam_sharing_board_comment(
 # Delete
 @router.delete(
     "/",
-    summary="족보 게시판 게시물 댓글 삭제",
+    summary="족보 공유 게시판 게시물 댓글 삭제",
     description="- exam_sharing_board_comment_no가 일치하는 데이터 삭제",
     response_model=ResultType,
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD),
