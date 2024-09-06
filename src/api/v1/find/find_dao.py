@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 from src.database.models import User
 from cryptography.fernet import Fernet
-from decouple import config
 from src.database.session import rdb
 from src.core import settings
 
