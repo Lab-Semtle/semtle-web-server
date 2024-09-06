@@ -12,7 +12,7 @@ from typing import Optional
 
 from src.database.session import rdb
 from src.api.v1.board_study.study_dto import ReadBoard, ReadBoardlist, CreateBoard
-from src.database.models import Study_Board
+from src.database.models import StudyBoard
 
 BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/ ')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/study_board/')
@@ -22,9 +22,9 @@ SERVER_IMG_DIR = os.path.join('http://localhost:8000/', 'images/study_board/')
 # Read list
 @rdb.dao()
 async def get_study_board_list(skip: int, db: AsyncSession) -> tuple[int, list[ReadBoardlist]]:
-    result = await db.execute(select(Study_Board).order_by(Study_Board.Board_no.desc()).offset(skip*10).limit(10))
+    result = await db.execute(select(StudyBoard).order_by(StudyBoard.board_no.desc()).offset(skip*10).limit(10))
     study_board_info = result.scalars().all()
-    total = await db.execute(select(func.count(Study_Board.Board_no)))
+    total = await db.execute(select(func.count(StudyBoard.board_no)))
     total = total.scalar()
     return total, study_board_info
 
@@ -32,7 +32,7 @@ async def get_study_board_list(skip: int, db: AsyncSession) -> tuple[int, list[R
 # Read
 @rdb.dao()
 async def get_study_board(study_board_no: int, db: AsyncSession) -> ReadBoard:
-    result = await db.execute(select(Study_Board).filter(Study_Board.Board_no == study_board_no))
+    result = await db.execute(select(StudyBoard).filter(StudyBoard.board_no == study_board_no))
     study_board_info = result.scalars().first()
     return study_board_info
 
@@ -41,8 +41,8 @@ async def get_study_board(study_board_no: int, db: AsyncSession) -> ReadBoard:
 @rdb.dao(transactional=True)
 async def create_study_board(study_board_info: Optional[CreateBoard], db: AsyncSession) -> int:
     create_values = study_board_info.dict()
-    create_values['Create_date'] = datetime.now(timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None)
-    result = await db.execute(insert(Study_Board).values(create_values).returning(Study_Board.Board_no))
+    create_values['create_date'] = datetime.now(timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None)
+    result = await db.execute(insert(StudyBoard).values(create_values).returning(StudyBoard.board_no))
     await db.commit()
     study_board_no = result.scalar_one()
     return study_board_no
@@ -51,10 +51,10 @@ async def create_study_board(study_board_info: Optional[CreateBoard], db: AsyncS
 # # Create
 # async def upload_create_study_board(title: str, content: str, file_name: Optional[list[UploadFile]], db: AsyncSession) -> None:
 #     create_values = {
-#         "Title": title,
-#         "Content": content,
-#         "Create_date": datetime.now(timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None),
-#         "Views" : 0
+#         "title": title,
+#         "content": content,
+#         "create_date": datetime.now(timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None),
+#         "views" : 0
 #     }
 #     image_paths=[]
 #     if file_name:
@@ -67,8 +67,8 @@ async def create_study_board(study_board_info: Optional[CreateBoard], db: AsyncS
 #                 file_object.write(file.file.read())
 #             image_paths.append(saved_file_name)
 #     if image_paths:
-#         create_values["Image_paths"] = ",".join(image_paths)
-#     await db.execute(insert(Study_Board).values(create_values))
+#         create_values["image_paths"] = ",".join(image_paths)
+#     await db.execute(insert(StudyBoard).values(create_values))
 #     await db.commit()
 
 
@@ -87,22 +87,22 @@ async def upload_file_study_board(study_board_no: int, file_name: Optional[list[
             image_paths.append(saved_file_name)
 
     image_paths = ",".join(image_paths)
-    create_values = {"Image_paths": image_paths}
-    await db.execute(update(Study_Board).filter(Study_Board.Board_no == study_board_no).values(create_values))
+    create_values = {"image_paths": image_paths}
+    await db.execute(update(StudyBoard).filter(StudyBoard.board_no == study_board_no).values(create_values))
     await db.commit()
     
 
 # Update
 @rdb.dao(transactional=True)
 async def update_study_board(study_board_no: int, study_board_info: Optional[CreateBoard], db: AsyncSession):
-    await db.execute(update(Study_Board).filter(Study_Board.Board_no == study_board_no).values(study_board_info.dict()))
+    await db.execute(update(StudyBoard).filter(StudyBoard.board_no == study_board_no).values(study_board_info.dict()))
     await db.commit()
 
 
 # Update
 @rdb.dao(transactional=True)
 async def upload_file_add_study_board(study_board_no: int, file_name: Optional[list[UploadFile]], db: AsyncSession) -> None:
-    result = await db.execute(select(Study_Board.Image_paths).filter(Study_Board.Board_no == study_board_no))
+    result = await db.execute(select(StudyBoard.image_paths).filter(StudyBoard.board_no == study_board_no))
     image_paths = result.scalar_one_or_none()  
 
     if image_paths is None:
@@ -121,51 +121,51 @@ async def upload_file_add_study_board(study_board_no: int, file_name: Optional[l
             image_paths.append(saved_file_name)
     
     image_paths = ",".join(image_paths)
-    create_values = {"Image_paths": image_paths}
-    await db.execute(update(Study_Board).filter(Study_Board.Board_no == study_board_no).values(create_values))
+    create_values = {"image_paths": image_paths}
+    await db.execute(update(StudyBoard).filter(StudyBoard.board_no == study_board_no).values(create_values))
     await db.commit()
 
 
 # Delete
 @rdb.dao(transactional=True)
 async def delete_study_board(study_board_no: int, db: AsyncSession) -> None:
-    await db.execute(delete(Study_Board).filter(Study_Board.Board_no == study_board_no))
+    await db.execute(delete(StudyBoard).filter(StudyBoard.board_no == study_board_no))
     await db.commit()
 
 # Delte Image
 @rdb.dao(transactional=True)
 async def delete_image_study_board(study_board_no: int, db: AsyncSession) -> None:
-    result = await db.execute(select(Study_Board.Image_paths).filter(Study_Board.Board_no == study_board_no))
+    result = await db.execute(select(StudyBoard.image_paths).filter(StudyBoard.board_no == study_board_no))
     image_paths = result.scalar_one_or_none()
     if image_paths:
         image_paths = image_paths.split(',')
         for image_path in image_paths:
             full_path = os.path.join(STATIC_DIR, image_path.strip())
             os.remove(full_path)
-    await db.execute(update(Study_Board).filter(Study_Board.Board_no == study_board_no).values(Image_paths=""))
+    await db.execute(update(StudyBoard).filter(StudyBoard.board_no == study_board_no).values(image_paths=None))
     await db.commit()
 
 #sort
 @rdb.dao()
 async def sort_study_board(skip: int, sel: int, db: AsyncSession) -> tuple[int, list[ReadBoardlist]]:
     if sel == 0:
-        result = await db.execute(select(Study_Board).order_by(Study_Board.Board_no.desc()).offset(skip*10).limit(10))
+        result = await db.execute(select(StudyBoard).order_by(StudyBoard.board_no.desc()).offset(skip*10).limit(10))
     elif sel == 1:
-        result = await db.execute(select(Study_Board).order_by(Study_Board.Board_no.asc()).offset(skip*10).limit(10))
+        result = await db.execute(select(StudyBoard).order_by(StudyBoard.board_no.asc()).offset(skip*10).limit(10))
     elif sel == 2:
-        result = await db.execute(select(Study_Board).order_by(Study_Board.Create_date.desc()).offset(skip*10).limit(10))
+        result = await db.execute(select(StudyBoard).order_by(StudyBoard.create_date.desc()).offset(skip*10).limit(10))
     elif sel == 3:
-        result = await db.execute(select(Study_Board).order_by(Study_Board.Create_date.asc()).offset(skip*10).limit(10))
+        result = await db.execute(select(StudyBoard).order_by(StudyBoard.create_date.asc()).offset(skip*10).limit(10))
     elif sel == 4:
-        result = await db.execute(select(Study_Board).order_by(Study_Board.Title.asc()).offset(skip*10).limit(10))
+        result = await db.execute(select(StudyBoard).order_by(StudyBoard.title.asc()).offset(skip*10).limit(10))
     elif sel == 5:
-        result = await db.execute(select(Study_Board).order_by(Study_Board.Title.desc()).offset(skip*10).limit(10))
+        result = await db.execute(select(StudyBoard).order_by(StudyBoard.title.desc()).offset(skip*10).limit(10))
     elif sel == 6:
-        result = await db.execute(select(Study_Board).order_by(Study_Board.Views.desc()).offset(skip*10).limit(10))
+        result = await db.execute(select(StudyBoard).order_by(StudyBoard.views.desc()).offset(skip*10).limit(10))
     elif sel == 7:
-        result = await db.execute(select(Study_Board).order_by(Study_Board.Views.asc()).offset(skip*10).limit(10))
+        result = await db.execute(select(StudyBoard).order_by(StudyBoard.views.asc()).offset(skip*10).limit(10))
     study_board_info = result.scalars().all()
-    total = await db.execute(select(func.count(Study_Board.Board_no)))
+    total = await db.execute(select(func.count(StudyBoard.board_no)))
     total = total.scalar()
     return total, study_board_info
 

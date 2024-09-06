@@ -18,18 +18,18 @@ from src.lib.dto import BaseDTO
 
 
 class ReadComment(BaseDTO):
-    Board_no: Annotated[int, Field(description="자유 게시판 게시물 번호")]
-    Comment_no: Annotated[int, Field(description="자유 게시판 게시물 댓글 번호")]
-    Content: Annotated[Optional[str] | None, Form(description="자유 게시판 게시물 댓글 내용")]
-    Create_date: Annotated[datetime, Field(description="댓글 작성 일자")] = Field(
+    board_no: Annotated[int, Field(description="자유 게시판 게시물 번호")]
+    comment_no: Annotated[int, Field(description="자유 게시판 게시물 댓글 번호")]
+    content: Annotated[Optional[str] | None, Form(description="자유 게시판 게시물 댓글 내용")]
+    create_date: Annotated[datetime, Field(description="댓글 작성 일자")] = Field(
         default_factory=lambda: datetime.now().replace(second=0, microsecond=0).replace(tzinfo=None), description="댓글 작성 일자")
-    Likes: Annotated[int, Field(description="자유 게시판 게시물 댓글 공감수")]
+    likes: Annotated[int, Field(description="자유 게시판 게시물 댓글 공감수")]
 
     class Config:
         from_attributes = True
 
 class UpdateComment(BaseDTO):
-    Content: Annotated[Optional[str] | None, Form(description="자유 게시판 게시물 댓글 내용")]
+    content: Annotated[Optional[str] | None, Form(description="자유 게시판 게시물 댓글 내용")]
 
 class CreateComment(UpdateComment):
     ...

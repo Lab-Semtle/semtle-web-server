@@ -83,8 +83,7 @@ async def update_exam_sharing_board_comment(
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD),
 )
 async def delete_exam_sharing_board_comment(
-    exam_sharing_board_no: int,
     exam_sharing_board_comment_no: int # JWT 토큰에서 id 가져오는 방식으로 변경, 임시조치
 ):
-    await comm_exam_svc.delete_exam_sharing_board_comment(exam_sharing_board_no, exam_sharing_board_comment_no)
+    await comm_exam_svc.delete_exam_sharing_board_comment(exam_sharing_board_comment_no)
     return ResultType(status='success', message=SU.SUCCESS[1])

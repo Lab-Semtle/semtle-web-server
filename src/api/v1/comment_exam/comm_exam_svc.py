@@ -24,5 +24,5 @@ async def update_exam_sharing_board_comment(exam_sharing_board_no: int ,exam_sha
     
 
 # Delete
-async def delete_exam_sharing_board_comment(exam_sharing_board_no: int, exam_sharing_board_comment_no: int) -> None:
-    await comm_exam_dao.delete_exam_sharing_board_comment(exam_sharing_board_no, exam_sharing_board_comment_no)
+async def delete_exam_sharing_board_comment(exam_sharing_board_comment_no: int) -> None:
+    await comm_exam_dao.delete_exam_sharing_board_comment(exam_sharing_board_comment_no)
