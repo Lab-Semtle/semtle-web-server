@@ -5,11 +5,9 @@ from email.message import EmailMessage
 import random
 import string
 from src.core import settings
-import logging
-logger = logging.getLogger(__name__)
-
 
 random_string = ""
+
 USERNAME = settings.general.SEND_EMAIL_USERNAME
 PASSWARD = settings.general.SEND_EMAIL_PASSWORD
 
@@ -68,7 +66,6 @@ async def verify_email(code) -> bool:
     '''
     사용자가 입력한 코드와 저장된 코드를 비교하여 일치 여부를 반환하는 함수
     '''
-    logger.info('verify_email 호출 확인 ')
     global random_string
     if random_string == code:
         return True

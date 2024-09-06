@@ -2,20 +2,17 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Response, Request, Query, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import timedelta
-from decouple import config
 from src.lib.type import ResultType
 from src.lib.status import Status, SU, ER
 from src.api.v1.login import login_svc
 from src.lib.security import JWTBearer, create_access_token, create_refresh_token, verify_access_token, verify_refresh_token
 from src.api.v1.login.login_dto import CreateUserInfo
 from src.core import settings
-import logging
-logger = logging.getLogger(__name__)
-
 
 # 환경 변수에서 토큰 만료 시간 설정
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.jwt.JWT_ACCESS_TOKEN_EXPIRE_MIN
 REFRESH_TOKEN_EXPIRE_MINUTES = settings.jwt.JWT_REFRESH_TOKEN_EXPIRE_MINUTES
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 router = APIRouter(prefix="/login", tags=["login"])
@@ -47,7 +44,7 @@ async def post_login(
         # 쿠키에 저장
         response.set_cookie(key="access_token", value=access_token, expires=access_token_expires, httponly=True)
         response.set_cookie(key="refresh_token", value=refresh_token, expires=refresh_token_expires, httponly=True)
-        
+
         return ResultType(status='success', message=SU.SUCCESS[1])
     except:
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])
@@ -69,7 +66,6 @@ async def post_signup(
     if login_info and await login_svc.is_user(login_info.user_nickname, login_info.user_name, login_info.user_email, login_info.user_phone):
         return ResultType(status='error', message=ER.DUPLICATE_RECORD[1])
     if not await login_svc.verify_email(code):
-        logger.info('인증되지 않은 이메일 입니다.')
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
     # 회원가입 처리
@@ -129,18 +125,15 @@ async def refresh_token(request: Request, response: Response):
 토큰 검증 엔드포인트
 '''
 @router.get(
-    "/token",
-    summary="토큰 상태 확인",
-    description="Access 및 Refresh 토큰의 상태를 확인합니다.",
+    "/access_token",
+    summary="토큰 가져오기",
+    description="Access 토큰을 가져옵니다.",
     responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
 )
-async def get_token(request: Request):
+async def get_access_token(request: Request):
     try:
         access_token = request.cookies.get("access_token")
-        refresh_token = request.cookies.get("refresh_token")
-        ac = verify_access_token(access_token)
-        rf = verify_refresh_token(refresh_token)
-        return {"access_token": ac, "refresh_token": rf}
+        return {"access_token": access_token}
     except:
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])
 
