@@ -64,7 +64,7 @@ class FreeBoard(Base):
     create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
     views = Column(Integer, nullable=False)
 
-    free_comment = relationship("free_comment", back_populates="free_board", cascade="all, delete-orphan")
+    free_comment = relationship("FreeComment", back_populates="free_board", cascade="all, delete-orphan")
 
 class FreeComment(Base):
     """ 자유 게시판 댓글 """
@@ -76,7 +76,7 @@ class FreeComment(Base):
     create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
     likes = Column(Integer, nullable=False)
 
-    free_board = relationship("free_board", back_populates="free_comment")
+    free_board = relationship("FreeBoard", back_populates="free_comment")
 
 class StudyBoard(Base):
     """ 스터디 모집 게시판 콘텐츠 """
@@ -89,7 +89,7 @@ class StudyBoard(Base):
     image_paths = Column(String, nullable=True)
     views = Column(Integer, nullable=False)
 
-    study_comment = relationship("study_comment", back_populates="study_board", cascade="all, delete-orphan")
+    study_comment = relationship("StudyComment", back_populates="study_board", cascade="all, delete-orphan")
 
 class StudyComment(Base):
     """ 스터디 모집 게시판 댓글 """
@@ -102,7 +102,7 @@ class StudyComment(Base):
     image_paths = Column(String, nullable=True)
     likes = Column(Integer, nullable=False)
 
-    study_board = relationship("study_board", back_populates="study_comment")
+    study_board = relationship("StudyBoard", back_populates="study_comment")
 
 class ExamBoard(Base):
     """ 족보 공유 게시판 콘텐츠 """
@@ -115,7 +115,7 @@ class ExamBoard(Base):
     image_paths = Column(String, nullable=True)
     views = Column(Integer, nullable=False)
 
-    exam_comment = relationship("exam_comment", back_populates="exam_board", cascade="all, delete-orphan")
+    exam_comment = relationship("ExamComment", back_populates="exam_board", cascade="all, delete-orphan")
 
 class ExamComment(Base):
     """ 족보 공유 게시판 댓글 """
@@ -128,7 +128,7 @@ class ExamComment(Base):
     image_paths = Column(String, nullable=True)
     likes = Column(Integer, nullable=False)
 
-    exam_board = relationship("exam_board", back_populates="exam_comment")
+    exam_board = relationship("ExamBoard", back_populates="exam_comment")
 
 class Professor(Base):
     """ 교수님 정보 """
