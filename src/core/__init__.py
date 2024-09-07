@@ -34,8 +34,8 @@ class RDBSettings(BaseSettings):
         return f"{self.DB_PROTOCAL}://{self.DB_USERNAME}:{self.DB_PASSWORD.get_secret_value()}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
 class JWTSettings(BaseSettings):
-    JWT_SECRET_ACCESS_KEY: SecretStr = SecretStr(os.getenv("JWT_SECRET_ACCESS_KEY"))
-    JWT_SECRET_REFRESH_KEY: SecretStr= SecretStr(os.getenv("JWT_SECRET_REFRESH_KEY"))
+    JWT_SECRET_ACCESS_KEY: str = os.getenv("JWT_SECRET_ACCESS_KEY")
+    JWT_SECRET_REFRESH_KEY: str = os.getenv("JWT_SECRET_REFRESH_KEY")
     JWT_ACCESS_TOKEN_EXPIRE_MIN: float = float(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES"))
     JWT_REFRESH_TOKEN_EXPIRE_MINUTES: float = float(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_MINUTES"))
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")
