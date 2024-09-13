@@ -89,7 +89,6 @@ async def upload_file_exam_sharing_board(exam_sharing_board_no: int, file_name: 
     image_paths = ",".join(image_paths)
     create_values = {"image_paths": image_paths}
     await db.execute(update(ExamBoard).filter(ExamBoard.board_no == exam_sharing_board_no).values(create_values))
-    await db.commit()
     
     
 # # Update
@@ -118,7 +117,6 @@ async def upload_file_exam_sharing_board(exam_sharing_board_no: int, file_name: 
 @rdb.dao(transactional=True)
 async def update_exam_sharing_board(exam_sharing_board_no: int, exam_sharing_board_info: Optional[CreateBoard], db: AsyncSession):
     await db.execute(update(ExamBoard).filter(ExamBoard.board_no == exam_sharing_board_no).values(exam_sharing_board_info.dict()))
-    await db.commit()
 
 
 # Update add file
@@ -145,7 +143,6 @@ async def upload_file_add_exam_sharing_board(exam_sharing_board_no: int, file_na
     image_paths = ",".join(image_paths)
     create_values = {"image_paths": image_paths}
     await db.execute(update(ExamBoard).filter(ExamBoard.board_no == exam_sharing_board_no).values(create_values))
-    await db.commit()
 
 
 
@@ -153,7 +150,6 @@ async def upload_file_add_exam_sharing_board(exam_sharing_board_no: int, file_na
 @rdb.dao(transactional=True)
 async def delete_exam_sharing_board(exam_sharing_board_no: int, db: AsyncSession) -> None:
     await db.execute(delete(ExamBoard).filter(ExamBoard.board_no == exam_sharing_board_no))
-    await db.commit()
 
 
 # Delte file
@@ -167,7 +163,6 @@ async def delete_file_exam_sharing_board(exam_sharing_board_no: int, db: AsyncSe
             full_path = os.path.join(STATIC_DIR, image_path.strip())
             os.remove(full_path)
     await db.execute(update(ExamBoard).filter(ExamBoard.board_no == exam_sharing_board_no).values(image_paths=None))
-    await db.commit()
 
 
 #sort
