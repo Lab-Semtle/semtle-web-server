@@ -50,7 +50,6 @@ async def get_Images_study_board_commet(file_name: str = ""):
     "/",
     summary="입력 받은 데이터를 데이터베이스에 추가",
     description="- String-Form / String-Form / Integer-Field",
-    response_model=ResultType,
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def create_study_board_comment(
