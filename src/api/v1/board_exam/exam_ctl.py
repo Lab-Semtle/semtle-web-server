@@ -19,7 +19,7 @@ SERVER_IMG_DIR = os.path.join('http://localhost:8000/', 'images/exam_sharing_boa
 router = APIRouter(prefix="/exam_sharing_board", tags=["exam_sharing_board"])
 
 @router.get(
-    "/get list",
+    "/get_list",
     summary="족보 게시판 게시물 전체 조회",
     description="- 족보 게시판 게시물 전체 리스트 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,
@@ -71,7 +71,7 @@ async def create_exam_sharing_board(
     return { "status": SU.CREATED, "Exam_Sharing_Board_No": exam_sharing_board_no}
 
 @router.put(
-    "/create upload",
+    "/create_upload",
     summary="입력 받은 이미지를 데이터베이스에 추가",
     description="- List[UploadFile]",
     # response_model=ResultType, # -> 코드 미완성, 주석처리
@@ -101,7 +101,7 @@ async def update_exam_sharing_board(
     return SU.SUCCESS
 
 @router.put(
-    "/update upload",
+    "/update_upload",
     summary="입력 받은 파일로 파일 경로 수정",
     description="- no가 일치하는 데이터의 file_name 수정",
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD)
@@ -128,7 +128,7 @@ async def delete_exam_sharing_board(
     return SU.SUCCESS
 
 @router.get(
-    "/sort title",
+    "/sort_title",
     summary="족보 게시판 게시물 제목 정렬",
     description="- 족보 게시판 게시물 제목을 가나다순으로 정렬하여 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,

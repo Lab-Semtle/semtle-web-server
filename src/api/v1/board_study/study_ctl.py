@@ -19,7 +19,7 @@ SERVER_IMG_DIR = os.path.join('http://localhost:8000/', 'images/study_board/')
 router = APIRouter(prefix="/study_board", tags=["study_board"])
 
 @router.get(
-    "/get list",
+    "/get_list",
     summary="스터디 게시판 게시물 전체 조회",
     description="- 스터디 게시판 게시물 전체 리스트 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,
@@ -71,7 +71,7 @@ async def create_study_board(
     return { "status": SU.CREATED, "Study_Board_No": study_board_no}
 
 @router.put(
-    "/create upload",
+    "/create_upload",
     summary="입력 받은 이미지을 데이터베이스에 추가",
     description="- List[UploadFile]",
     # response_model=ResultType,
@@ -101,7 +101,7 @@ async def update_study_board(
     return SU.SUCCESS
 
 @router.put(
-    "/update upload",
+    "/update_upload",
     summary="입력 받은 이미지로 이미지 경로 수정",
     description="- List[UploadFile]",
     # response_model=ResultType, # -> 코드 미완성, 주석처리
@@ -129,7 +129,7 @@ async def delete_study_board(
     return SU.SUCCESS
 
 @router.get(
-    "/sort title",
+    "/sort_title",
     summary="스터디 게시판 게시물 제목 정렬",
     description="- 스터디 게시판 게시물 제목을 가나다순으로 정렬하여 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,

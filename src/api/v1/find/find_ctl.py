@@ -9,7 +9,7 @@ router = APIRouter(prefix="/find", tags=["find"])
 이메일과 전화번호를 통해 비밀번호를 찾는 API 엔드포인트
 """
 @router.get(
-    "/find-password",
+    "/find_password",
     summary="비밀번호 찾기",
     description="이메일과 전화번호를 통해 비밀번호를 찾습니다.",
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
@@ -30,7 +30,7 @@ async def find_pw(
 전화번호를 통해 이메일을 찾는 API 엔드포인트
 """
 @router.get(
-    "/find-email",
+    "/find_email",
     summary="이메일 찾기",
     description="전화번호를 통해 이메일을 찾습니다.",
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)

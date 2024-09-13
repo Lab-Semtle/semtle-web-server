@@ -61,7 +61,7 @@ async def create_study_board_comment(
     return { "status": SU.CREATED, "Study_Board_Comment_No": study_board_comment_no}
 
 @router.put(
-    "/create upload",
+    "/create_upload",
     summary="입력 받은 이미지를 데이터베이스에 추가",
     description="- List[UploadFile]",
     # response_model=ResultType, # -> 코드 미완성, 주석처리
@@ -91,7 +91,7 @@ async def update_study_board_comment(
     return SU.SUCCESS
 
 @router.put(
-    "/update upload",
+    "/update_upload",
     summary="입력 받은 이미지로 이미지 경로 수정",
     description="- List[UploadFile]",
     # response_model=ResultType, # -> 코드 미완성, 주석처리
