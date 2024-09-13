@@ -15,7 +15,7 @@ import os
 from src.api.v1.board_study.study_dto import ReadBoard, ReadBoardlist, CreateBoard, UpdateBoard
 from src.api.v1.board_study import study_svc
 
-BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/')
+BASE_DIR = os.path.dirname('')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/study_board/')
 SERVER_IMG_DIR = os.path.join('http://localhost:8000/', 'images/study_board/')
 

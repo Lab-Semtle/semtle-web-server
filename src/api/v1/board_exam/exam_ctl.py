@@ -14,7 +14,7 @@ import os
 from src.api.v1.board_exam.exam_dto import ReadBoard, ReadBoardlist, CreateBoard, UpdateBoard
 from src.api.v1.board_exam import exam_svc
 
-BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/')
+BASE_DIR = os.path.dirname('')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/exam_sharing_board/')
 SERVER_IMG_DIR = os.path.join('http://localhost:8000/', 'images/exam_sharing_board/')
 

@@ -13,7 +13,7 @@ from src.database.models import StudyComment
 from src.database.session import rdb
 
 
-BASE_DIR = os.path.dirname('C:/Users/user/Documents/GitHub/Semtle-Web-Server/src/')
+BASE_DIR = os.path.dirname('')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/study_board_comment/')
 SERVER_IMG_DIR = os.path.join('http://localhost:8000/', 'images/study_board_comment/')
 
