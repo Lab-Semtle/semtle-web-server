@@ -36,6 +36,7 @@ class User(Base):
     user_role = Column(String(128), default="학생", nullable=False)
     grade_id = Column(Integer, ForeignKey("grades.grade_id"))
     user_activate = Column(Boolean, default=False, nullable=False)    
+    data = Column(String, nullable=True)
     
     grade = relationship("Grade", back_populates="user")
 
@@ -126,7 +127,7 @@ class ExamComment(Base):
     content = Column(String, nullable=False)
     create_date = Column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0), nullable=False)
     image_paths = Column(String, nullable=True)
-    likes = Column(Integer, nullable=False)
+    likes = Column(Integer, nullable=False, default = 0)
 
     exam_board = relationship("ExamBoard", back_populates="exam_comment")
 
