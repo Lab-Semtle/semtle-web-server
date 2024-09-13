@@ -28,7 +28,7 @@ router = APIRouter(prefix="/exam_sharing_board", tags=["exam_sharing_board"])
 
 # Read List
 @router.get(
-    "/get list",
+    "/get_list",
     summary="족보 공유 게시판 게시물 전체 조회",
     description="- 족보 게시판 게시물 전체 리스트 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,
@@ -61,19 +61,20 @@ async def get_exam_sharing_board(exam_sharing_board_no: int = 0):
     return exam_sharing_board_info
 
 
-# Image 
+# file
 @router.get(
     "/images",
-    summary="족보 게시판 특정 게시물 이미지 조회",
-    description="- 족보 게시판 특정 게시물 이미지 반환, 등록된 예제가 없는 경우 `[]` 반환",
+    summary="족보 게시판 특정 게시물 파일 조회",
+    description="- 족보 게시판 특정 게시물 파일 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=list[str],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
 async def get_exam_sharing_board(file_name: str = ""):
     # 개발 중 logging 사용하고 싶을 때 이 코드 추가
-    logger.info("----------족보 게시판 특정 게시물 이미지 조회----------")
-    return FileResponse(''.join([STATIC_DIR,file_name]))
+    logger.info("----------족보 게시판 특정 게시물 파일 조회----------")
+    file_path = os.path.join(STATIC_DIR, file_name)
+    return FileResponse(file_path, filename=file_name, media_type='application/x-zip-compressed')
 
 
 # Create
@@ -112,7 +113,7 @@ async def create_exam_sharing_board(
 
 # Create
 @router.put(
-    "/create upload",
+    "/create_upload",
     summary="입력 받은 이미지를 데이터베이스에 추가",
     description="- List[UploadFile]",
     response_model=ResultType,
@@ -166,7 +167,7 @@ async def update_exam_sharing_board(
 
 # Update
 @router.put(
-    "/update upload",
+    "/update_upload",
     summary="입력 받은 파일로 파일 경로 수정",
     description="- no가 일치하는 데이터의 file_name 수정",
     response_model=ResultType,
@@ -199,7 +200,7 @@ async def delete_exam_sharing_board(
 
 # sort title
 @router.get(
-    "/sort title",
+    "/sort_title",
     summary="족보 게시판 게시물 제목 정렬",
     description="- 족보 게시판 게시물 제목을 가나다순으로 정렬하여 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,
