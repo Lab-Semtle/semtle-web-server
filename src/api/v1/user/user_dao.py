@@ -44,7 +44,7 @@ async def delete_user(user_id: str, db: AsyncSession) -> None:
     try:
         stmt = delete(User).where(User.user_email == user_id)
         await db.execute(stmt)
-        await db.commit()
+
     except:
         return False
 

@@ -5,6 +5,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import FileResponse
 from src.lib.status import Status, SU, ER
+from src.lib.type import ResultType
 import logging
 import os
 from src.api.v1.comment_study.comm_study_dto import UpdateComment, ReadComment, CreateComment, ReadCommentlist
@@ -49,7 +50,7 @@ async def get_Images_study_board_commet(file_name: str = ""):
     "/",
     summary="입력 받은 데이터를 데이터베이스에 추가",
     description="- String-Form / String-Form / Integer-Field",
-    # response_model=ResultType, # -> 코드 미완성, 주석처리
+    response_model=ResultType,
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def create_study_board_comment(
@@ -64,7 +65,7 @@ async def create_study_board_comment(
     "/create_upload",
     summary="입력 받은 이미지를 데이터베이스에 추가",
     description="- List[UploadFile]",
-    # response_model=ResultType, # -> 코드 미완성, 주석처리
+    response_model=ResultType,
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def upload_file_study_board_comment(
@@ -73,13 +74,14 @@ async def upload_file_study_board_comment(
 ):
     logger.info("----------스터디 게시판 신규 게시물 이미지 생성----------")
     await comm_study_svc.upload_file_study_board_comment(study_board_comment_no, file_name)
-    return SU.CREATED
+    return ResultType(status='success', message=SU.CREATED[1])
 
 @router.put(
     "/",
     summary="입력 받은 데이터로 변경 사항 수정",
     description="- no가 일치하는 데이터의 title, content, view 수정",
-    responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD)
+    response_model=ResultType,
+    responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def update_study_board_comment(
     study_board_comment_no: int,
@@ -88,14 +90,14 @@ async def update_study_board_comment(
 ):
     logger.info("----------스터디 게시판 기존 게시물 수정----------")
     await comm_study_svc.update_study_board_comment(study_board_comment_no, study_board_comment_info, select=select)
-    return SU.SUCCESS
+    return ResultType(status='success', message=SU.SUCCESS[1])
 
 @router.put(
     "/update_upload",
     summary="입력 받은 이미지로 이미지 경로 수정",
     description="- List[UploadFile]",
-    # response_model=ResultType, # -> 코드 미완성, 주석처리
-    responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD)
+    response_model=ResultType,
+    responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def upload_update_file_study_board_comment(
     study_board_comment_no: int,
@@ -104,16 +106,17 @@ async def upload_update_file_study_board_comment(
 ):
     logger.info("----------스터디 게시판 기존 게시물 이미지 수정----------")
     await comm_study_svc.upload_update_file_study_board_comment(study_board_comment_no, file_name, select=select)
-    return SU.SUCCESS
+    return ResultType(status='success', message=SU.SUCCESS[1])
 
 @router.delete(
     "/",
     summary="스터디 게시판 게시물 댓글 삭제",
     description="- study_board_comment_no가 일치하는 데이터 삭제",
+    response_model=ResultType,
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD),
 )
 async def delete_study_board_comment(
     study_board_comment_no: int, # JWT 토큰에서 id 가져오는 방식으로 변경, 임시조치
 ):
     await comm_study_svc.delete_study_board_comment(study_board_comment_no)
-    return SU.SUCCESS
+    return ResultType(status='success', message=SU.SUCCESS[1])
