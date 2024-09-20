@@ -6,8 +6,10 @@ from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import FileResponse
 from src.lib.status import Status, SU, ER
 from src.lib.type import ResultType
+from src.lib.security import JWTBearer
 import logging
 import os
+
 from src.api.v1.comment_study.comm_study_dto import UpdateComment, ReadComment, CreateComment, ReadCommentlist
 from src.api.v1.comment_study import comm_study_svc
 logger = logging.getLogger(__name__)
@@ -24,6 +26,7 @@ router = APIRouter(prefix="/study_board_comment", tags=["study_board_comment"])
     summary="스터디 게시판 게시물 댓글 조회",
     description="- 스터디 게시판 게시물 댓글 리스트 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadCommentlist,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 async def get_study_board_comment(study_board_no: int, page: int = 0):
@@ -39,6 +42,7 @@ async def get_study_board_comment(study_board_no: int, page: int = 0):
     summary="스터디 게시판 특정 게시물 댓글 이미지 조회",
     description="- 스터디 게시판 특정 게시물 댓글 이미지 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=list[str],
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 async def get_Images_study_board_commet(file_name: str = ""):
@@ -50,6 +54,7 @@ async def get_Images_study_board_commet(file_name: str = ""):
     "/",
     summary="입력 받은 데이터를 데이터베이스에 추가",
     description="- String-Form / String-Form / Integer-Field",
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def create_study_board_comment(
@@ -65,6 +70,7 @@ async def create_study_board_comment(
     summary="입력 받은 이미지를 데이터베이스에 추가",
     description="- List[UploadFile]",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def upload_file_study_board_comment(
@@ -80,6 +86,7 @@ async def upload_file_study_board_comment(
     summary="입력 받은 데이터로 변경 사항 수정",
     description="- no가 일치하는 데이터의 title, content, view 수정",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def update_study_board_comment(
@@ -96,6 +103,7 @@ async def update_study_board_comment(
     summary="입력 받은 이미지로 이미지 경로 수정",
     description="- List[UploadFile]",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def upload_update_file_study_board_comment(
@@ -112,6 +120,7 @@ async def upload_update_file_study_board_comment(
     summary="스터디 게시판 게시물 댓글 삭제",
     description="- study_board_comment_no가 일치하는 데이터 삭제",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD),
 )
 async def delete_study_board_comment(

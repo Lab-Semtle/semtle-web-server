@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import FileResponse
 from src.lib.status import Status, SU, ER
 from src.lib.type import ResultType
+from src.lib.security import JWTBearer
 import logging
 import os
 
@@ -32,6 +33,7 @@ router = APIRouter(prefix="/exam_sharing_board", tags=["exam_sharing_board"])
     summary="족보 공유 게시판 게시물 전체 조회",
     description="- 족보 게시판 게시물 전체 리스트 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
@@ -51,6 +53,7 @@ async def get_exam_sharing_board_list(page: int = 0):
     summary="족보 공유 게시판 특정 게시물 조회",
     description="- 족보 공유 게시판 특정 게시물 정보 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoard,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
@@ -67,6 +70,7 @@ async def get_exam_sharing_board(exam_sharing_board_no: int = 0):
     summary="족보 게시판 특정 게시물 파일 조회",
     description="- 족보 게시판 특정 게시물 파일 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=list[str],
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
@@ -82,6 +86,7 @@ async def get_exam_sharing_board(file_name: str = ""):
     "/",
     summary="입력 받은 데이터를 데이터베이스에 추가",
     description="- String-Form / String-Form / Integer-Form",
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def create_exam_sharing_board(
@@ -117,6 +122,7 @@ async def create_exam_sharing_board(
     summary="입력 받은 이미지를 데이터베이스에 추가",
     description="- List[UploadFile]",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def upload_file_exam_sharing_board(
@@ -134,6 +140,7 @@ async def upload_file_exam_sharing_board(
     summary="입력 받은 데이터로 기존 게시글 제목 및 내용 수정",
     description="- no가 일치하는 데이터의 title, content, view 수정",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def update_exam_sharing_board(
@@ -171,6 +178,7 @@ async def update_exam_sharing_board(
     summary="입력 받은 파일로 파일 경로 수정",
     description="- no가 일치하는 데이터의 file_name 수정",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def upload_update_file_exam_sharing_board(
@@ -189,6 +197,7 @@ async def upload_update_file_exam_sharing_board(
     summary="족보 공유 게시판 게시물 삭제",
     description="- exam_sharing_board_no가 일치하는 데이터 삭제",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD),
 )
 async def delete_exam_sharing_board(
@@ -204,6 +213,7 @@ async def delete_exam_sharing_board(
     summary="족보 게시판 게시물 제목 정렬",
     description="- 족보 게시판 게시물 제목을 가나다순으로 정렬하여 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성

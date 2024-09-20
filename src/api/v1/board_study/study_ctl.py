@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import FileResponse
 from src.lib.status import Status, SU, ER
 from src.lib.type import ResultType
+from src.lib.security import JWTBearer
 import logging
 import os
 
@@ -33,6 +34,7 @@ router = APIRouter(prefix="/study_board", tags=["study_board"])
     summary="스터디 게시판 게시물 전체 조회",
     description="- 스터디 게시판 게시물 전체 리스트 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
@@ -51,6 +53,7 @@ async def get_study_board_list(page: int = 0):
     summary="스터디 게시판 특정 게시물 조회",
     description="- 스터디 게시판 특정 게시물 정보 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoard,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
@@ -66,6 +69,7 @@ async def get_study_board(study_board_no: int = 0):
     summary="스터디 게시판 특정 게시물 이미지 조회",
     description="- 스터디 게시판 특정 게시물 이미지 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=list[str],
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
@@ -81,6 +85,7 @@ async def get_Images_study_board(file_name: str = ""):
     summary="스터디 게시판 신규 게시물 생성",
     description="- String-Form / String-Form / Integer-Field",
     # response_model=ResultType, # -> 코드 미완성, 주석처리
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def create_study_board(
@@ -115,6 +120,7 @@ async def create_study_board(
     summary="스터디 게시판 신규 게시물 이미지 생성",
     description="- List[UploadFile]",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD, ER.FIELD_VALIDATION_ERROR)
 )
 async def upload_file_study_board(
@@ -132,6 +138,7 @@ async def upload_file_study_board(
     summary="스터디 게시판 기존 게시물 수정",
     description="- no가 일치하는 데이터의 title, content, view 수정",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def update_study_board(
@@ -168,6 +175,7 @@ async def update_study_board(
     summary="스터디 게시판 기존 게시물 이미지 수정",
     description="- List[UploadFile]",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def upload_update_file_study_board(
@@ -186,6 +194,7 @@ async def upload_update_file_study_board(
     summary="스터디 게시판 게시물 삭제",
     description="- study_board_no가 일치하는 데이터 삭제",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD),
 )
 async def delete_study_board(
@@ -201,6 +210,7 @@ async def delete_study_board(
     summary="스터디 게시판 게시물 제목 정렬",
     description="- 스터디 게시판 게시물 제목을 가나다순으로 정렬하여 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadBoardlist,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성

@@ -6,6 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from src.lib.status import Status, SU, ER
 from src.lib.type import ResultType
+from src.lib.security import JWTBearer
 import logging
 
 
@@ -27,6 +28,7 @@ router = APIRouter(prefix="/free_board_comment", tags=["free_board_comment"])
     summary="자유 게시판 게시물 댓글 조회",
     description="- 자유 게시판 게시물 댓글 리스트 반환, 등록된 예제가 없는 경우 `[]` 반환",
     response_model=ReadCommentlist,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.NOT_FOUND)
 )
 # 함수명 get, post, update, delete 중 1택 + 목적에 맞게 이름 작성
@@ -46,6 +48,7 @@ async def get_free_board_comment(free_board_no: int, page: int = 0):
     summary="입력 받은 데이터를 데이터베이스에 추가",
     description="- Integer-Field / Integer-Field / String-Form / datetime-Field / Integer-Field",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.CREATED, ER.DUPLICATE_RECORD)
 )
 async def create_free_board_comment(
@@ -63,6 +66,7 @@ async def create_free_board_comment(
     summary="입력 받은 데이터로 변경 사항 수정",
     description="- no가 일치하는 데이터의 Content 수정",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD)
 )
 async def update_free_board_comment(
@@ -81,6 +85,7 @@ async def update_free_board_comment(
     summary="자유 게시판 게시물 댓글 삭제",
     description="- free_board_comment_no가 일치하는 데이터 삭제",
     response_model=ResultType,
+    dependencies=[Depends(JWTBearer())],
     responses=Status.docs(SU.SUCCESS, ER.DUPLICATE_RECORD),
 )
 async def delete_free_board_comment(
