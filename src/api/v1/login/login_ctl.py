@@ -128,11 +128,13 @@ async def refresh_token(request: Request, response: Response):
     "/access_token",
     summary="토큰 가져오기",
     description="Access 토큰을 가져옵니다.",
-    responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST),
+    responses=Status.docs(SU.SUCCESS, ER.INVALID_REQUEST, ER.INVALID_TOKEN),
 )
 async def get_access_token(request: Request):
     try:
         access_token = request.cookies.get("access_token")
+        if not JWTBearer.verify_jwt_access(access_token):
+            return ResultType(status='error', message=ER.INVALID_TOKEN[1])
         return {"access_token": access_token}
     except:
         return ResultType(status='error', message=ER.INVALID_REQUEST[1])
