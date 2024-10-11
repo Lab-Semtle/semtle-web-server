@@ -12,7 +12,7 @@ class CreateUserInfo(BaseDTO):
     user_email: Annotated[EmailStr, Field(description="유저 이메일")]
     user_phone: Annotated[str, Field(description="유저 전화번호")]
     user_birth: Annotated[date, Field(description="유저 생년월일")]
-    create_date: Annotated[datetime, Field(description="가입 일자")]
+    # create_date: Annotated[datetime, Field(description="가입 일자")]
     
     # 필수 필드가 빈 문자열이나 공백이 아닌지 확인하는 유효성 검사기
     @field_validator('user_nickname', 'user_email', 'user_name', 'user_phone', 'user_password')
