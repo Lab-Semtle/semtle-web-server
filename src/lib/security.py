@@ -83,7 +83,7 @@ class JWTBearer(HTTPBearer):
         else:
             raise HTTPException(status_code=403, detail="유효하지 않은 인증 코드입니다.")
 
-    def verify_jwt_access(self, jwtoken: str) -> bool:
+    def verify_jwt_access(jwtoken: str) -> bool:
         isTokenValid: bool = False
 
         try:
