@@ -1,6 +1,21 @@
 # version: '3.8'
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile # FastAPI 애플리케이션의 Dockerfile 경로
+    container_name: fastapi-semtle
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/app # 로컬 디렉토리를 컨테이너의 /app에 마운트
+    ports:
+      - "8000:8000" # FastAPI 애플리케이션의 포트 매핑
+    depends_on:
+      - db # db 서비스가 실행된 후 app 서비스 실행
+    env_file:
+      - .env
+
   db:
     container_name: pgsqldb-semtle
     image: postgres:latest #ankane/pgvector
@@ -8,9 +23,9 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - 5432:5432
 
