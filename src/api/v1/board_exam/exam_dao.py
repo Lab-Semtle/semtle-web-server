@@ -13,6 +13,7 @@ from typing import Optional
 from src.database.session import rdb
 from src.api.v1.board_exam.exam_dto import ReadBoard, ReadBoardlist, CreateBoard
 from src.database.models import ExamBoard
+from src.core import settings
 
 BASE_DIR = os.path.dirname('')
 STATIC_DIR = os.path.join(BASE_DIR, 'images/exam_sharing_board/')
@@ -80,15 +81,35 @@ async def upload_file_exam_sharing_board(exam_sharing_board_no: int, file_name: 
             currentTime = datetime.now().strftime("%Y%m%d%H%M%S")
             original_extension = os.path.splitext(file.filename)[1]  # 원래 파일의 확장자 추출
             saved_file_name = f"{currentTime}{secrets.token_hex(16)}{original_extension}"  # 확장자 포함
-            file_location = os.path.join(STATIC_DIR, saved_file_name)
-            with open(file_location, "wb+") as file_object:
-                file_object.write(file.file.read())
-            image_paths.append(saved_file_name)
+            
+            # (수정전) 벡엔드 파일 디렉토리에 업로드
+            # file_location = os.path.join(STATIC_DIR, saved_file_name)
+            # with open(file_location, "wb+") as file_object:
+            #     file_object.write(file.file.read())
+            # image_paths.append(saved_file_name)
+            
+            # (수정후) Cloudflare R2에 파일 업로드
+            try:
+                settings.storage.S3_CLIENT.upload_fileobj(
+                    file.file,
+                    settings.storage.R2_BUCKET_NAME,
+                    saved_file_name,
+                    ExtraArgs={"ACL": "public-read"}
+                )
+                file_url = f"{settings.storage.R2_ENDPOINT_URL}/{settings.storage.R2_BUCKET_NAME}/{saved_file_name}"
+                image_paths.append(file_url)
+            except Exception as e:
+                print(f"Error uploading file: {e}")
+                raise
     
-    image_paths = ",".join(image_paths)
-    create_values = {"image_paths": image_paths}
-    await db.execute(update(ExamBoard).filter(ExamBoard.board_no == exam_sharing_board_no).values(create_values))
-
+    # (수정전)
+    # image_paths = ",".join(image_paths)
+    # create_values = {"image_paths": image_paths}
+    # await db.execute(update(ExamBoard).filter(ExamBoard.board_no == exam_sharing_board_no).values(create_values))
+    
+    # (수정후)
+    image_paths_str = ",".join(image_paths)
+    await db.execute(update(ExamBoard).filter(ExamBoard.board_no == exam_sharing_board_no).values(image_paths=image_paths_str))
     
     
 # # Update
@@ -146,8 +167,6 @@ async def upload_file_add_exam_sharing_board(exam_sharing_board_no: int, file_na
     await db.execute(update(ExamBoard).filter(ExamBoard.board_no == exam_sharing_board_no).values(create_values))
 
 
-
-
 # Delete
 @rdb.dao(transactional=True)
 async def delete_exam_sharing_board(exam_sharing_board_no: int, db: AsyncSession) -> None:
@@ -166,7 +185,6 @@ async def delete_file_exam_sharing_board(exam_sharing_board_no: int, db: AsyncSe
             full_path = os.path.join(STATIC_DIR, image_path.strip())
             os.remove(full_path)
     await db.execute(update(ExamBoard).filter(ExamBoard.board_no == exam_sharing_board_no).values(image_paths=None))
-
 
 
 #sort

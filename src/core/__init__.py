@@ -7,6 +7,7 @@ from pathlib import Path
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings
 from decouple import config
+import boto3
 import logging
 import logging.config
 
@@ -40,10 +41,29 @@ class JWTSettings(BaseSettings):
     JWT_REFRESH_TOKEN_EXPIRE_MINUTES: float = float(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_MINUTES"))
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")
 
+class CloudFlareSettings(BaseSettings):
+    R2_ACCESS_KEY_ID: str = os.getenv("R2_ACCESS_KEY_ID")
+    R2_SECRET_ACCESS_KEY: str = os.getenv("R2_SECRET_ACCESS_KEY") 
+    R2_BUCKET_NAME: str = os.getenv("R2_BUCKET_NAME") 
+    R2_ENDPOINT_URL: str = os.getenv("R2_ENDPOINT_URL")
+    R2_API_TOKEN: str = os.getenv("R2_API_TOKEN")
+    
+    # boto3 S3 클라이언트 설정
+    @property
+    def S3_CLIENT(self):
+        return boto3.client(
+            "s3",
+            endpoint_url = self.R2_ENDPOINT_URL,
+            aws_access_key_id = self.R2_ACCESS_KEY_ID,
+            aws_secret_access_key = self.R2_SECRET_ACCESS_KEY,
+        )
+        
+
 class Settings:
     general: GeneralSettings = GeneralSettings()    
     rdb: RDBSettings = RDBSettings()
     jwt: JWTSettings = JWTSettings()
+    storage: CloudFlareSettings = CloudFlareSettings()
     
 settings = Settings()
 
